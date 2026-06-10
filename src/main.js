@@ -1148,7 +1148,7 @@ function toggleSidebar() {
   const current = store.getSidebarOpen();
   const next = !current;
   store.setSidebarOpen(next);
-  reRenderApp();
+  renderApp();
 }
 
 /* ------------------------------------------------------------------ */

@@ -101,7 +101,7 @@ function renderMessenger(state, isDark) {
         </div>
         <div class="flex items-center gap-2 px-3 py-1.5 shrink-0 text-white" style="background:${barBg}">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-          <span class="text-[15px] font-medium">${escapeHtml(state.username)}</span>
+          <span id="mockup-author" class="text-[15px] font-medium">${escapeHtml(state.author)}</span>
         </div>
         <div class="flex-1 p-3 overflow-y-auto flex flex-col gap-3" style="background:var(--chat-bg, ${chatBg})${state.chatBg ? `;background-image:url(${state.chatBg});background-size:cover` : ''}">
           <div class="flex justify-end">
