@@ -132,10 +132,10 @@ const SVG = {
 const LANG = currentLocale();
 const LANG_LABELS = { de: 'Deutsch', en: 'English', es: 'Español' };
 
-function flagSvg(locale) {
-  if (locale === 'de') return '<svg viewBox="0 0 640 480"><path fill="#FFCC00" d="M0 320h640v160H0z"/><path fill="#000001" d="M0 0h640v160H0z"/><path fill="red" d="M0 160h640v160H0z"/></svg>';
-  if (locale === 'en') return '<svg viewBox="0 0 640 480"><path fill="#bd3d44" d="M0 0h640v480H0"/><path fill="#fff" d="M0 55.3h640m0 73.7H0m0 74h640m0 73.7H0m0 74h640"/><path fill="#192f5d" d="M0 0h364.8v258.5H0"/></svg>';
-  if (locale === 'es') return '<svg viewBox="0 0 640 480"><path fill="#AD1519" d="M0 0h640v480H0"/><path fill="#F1BF00" d="M0 120h640v240H0z"/></svg>';
+function flagEmoji(locale) {
+  if (locale === 'de') return '🇩🇪';
+  if (locale === 'en') return '🇬🇧';
+  if (locale === 'es') return '🇪🇸';
   return '';
 }
 
@@ -198,7 +198,7 @@ function renderTopbar(state) {
           <button id="lang-btn"
             class="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-full px-2.5 py-1.5 text-xs
                    text-zinc-400 hover:text-zinc-200 hover:border-white/20 outline-0 transition-all cursor-pointer">
-            <span class="w-4 h-3 shrink-0 rounded-[2px] overflow-hidden">${flagSvg(LANG)}</span>
+            <span class="text-sm shrink-0 leading-none">${flagEmoji(LANG)}</span>
             <span class="text-[10px] font-semibold leading-none">${LANG.toUpperCase()}</span>
             <span class="text-zinc-500">${SVG.chevronDown}</span>
           </button>
@@ -206,7 +206,7 @@ function renderTopbar(state) {
             ${['de', 'en', 'es'].map(code => `
               <button data-lang="${code}"
                 class="flex items-center gap-2 w-full px-3 py-2 text-xs text-zinc-300 hover:text-white hover:bg-white/5 transition-all text-left">
-                <span class="w-5 h-4 shrink-0 rounded-[2px] overflow-hidden">${flagSvg(code)}</span>
+                <span class="text-sm shrink-0 leading-none">${flagEmoji(code)}</span>
                 ${LANG_LABELS[code]}
               </button>
             `).join('')}
@@ -256,22 +256,6 @@ function renderSidebar(state) {
                 </button>
               `;
             }).join('')}
-          </div>
-        </div>
-      </div>
-
-      <div id="design-panel" class="rounded-2xl border border-white/[6%] bg-[#1a1714] p-4 flex flex-col gap-3">
-        <div class="flex items-center justify-between cursor-pointer select-none" id="design-toggle">
-          <span class="text-xs font-semibold text-zinc-300 tracking-wide">Design</span>
-          <span id="design-chevron" class="text-zinc-500 transition-transform">${SVG.chevronDown}</span>
-        </div>
-        <div id="design-body">
-          <div class="flex flex-wrap gap-1.5">
-            ${GRADIENT_PRESETS.map((g) => `
-              <button data-gradient="${g.value}" aria-label="${g.label}"
-                class="w-7 h-7 rounded-lg ${g.value} ring-1 ring-white/[8%] hover:ring-white/30 transition-all
-                  ${state.bgGradient === g.value ? 'ring-2 ring-white scale-110' : ''}"></button>
-            `).join('')}
           </div>
         </div>
       </div>
@@ -676,10 +660,6 @@ function bindEvents() {
   bind('btn-zoom-in', 'click', () => changeZoom(10));
   bind('btn-zoom-out', 'click', () => changeZoom(-10));
 
-  document.querySelectorAll('[data-gradient]').forEach((btn) => {
-    btn.addEventListener('click', () => store.set('bgGradient', btn.dataset.gradient));
-  });
-
   document.querySelectorAll('[data-chat-bg]').forEach((btn) => {
     btn.addEventListener('click', () => store.set('chatBgGradient', btn.dataset.chatBg));
   });
@@ -716,18 +696,6 @@ function bindEvents() {
     toggleBtn.addEventListener('click', () => {
       const body = document.getElementById('app-library-body');
       const chevron = document.getElementById('app-library-chevron');
-      if (!body) return;
-      const isHidden = body.style.display === 'none';
-      body.style.display = isHidden ? '' : 'none';
-      if (chevron) chevron.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
-    });
-  }
-
-  const designToggle = document.getElementById('design-toggle');
-  if (designToggle) {
-    designToggle.addEventListener('click', () => {
-      const body = document.getElementById('design-body');
-      const chevron = document.getElementById('design-chevron');
       if (!body) return;
       const isHidden = body.style.display === 'none';
       body.style.display = isHidden ? '' : 'none';
@@ -1128,7 +1096,7 @@ function fitMockupToScreen() {
   const mockup = document.getElementById('mockup');
   if (!canvas || !mockup) return;
   const rect = canvas.getBoundingClientRect();
-  const baseScale = Math.min(rect.width / 390, rect.height / 844) * 0.9;
+  const baseScale = Math.min(rect.width / 390, rect.height / 844) * 0.8;
   const zoom = store.get('_zoom') || 0;
   const zoomScale = 1 + (zoom / 100);
   const combinedScale = baseScale * zoomScale;
