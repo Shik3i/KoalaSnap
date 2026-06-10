@@ -40,7 +40,7 @@ export function render(state) {
     : `<div id="discord-avatar" class="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-xs font-bold">?</div>`;
 
   return `
-    <div id="mockup-card" class="mx-auto" style="width:390px; height:844px;">
+    <div id="mockup-card" class="mx-auto" style="width:390px; height:844px;font-family:${state.fontFamily};">
       <div class="w-full h-full overflow-hidden rounded-[2.5rem] border-8 flex flex-col" style="border-color:#1e1f22;background:#1e1f22">
         <div class="flex items-center gap-0 h-12 shrink-0 px-4" style="background:${m.sidebarBg}">
           <div class="flex items-center gap-2 flex-1 min-w-0">
@@ -52,7 +52,7 @@ export function render(state) {
             <span>${MEMBER_SVG}</span>
           </div>
         </div>
-        <div class="flex-1 flex flex-col overflow-y-auto" style="background:${m.chatBg};background-image:${m.dotPattern}">
+        <div class="flex-1 flex flex-col overflow-y-auto" style="background:${m.chatBg}${state.chatBg ? `;background-image:url(${state.chatBg});background-size:cover` : `;background-image:${m.dotPattern}`}">
           <div class="p-4">
             <div class="flex items-start gap-4">
               <div class="w-10 h-10 rounded-full overflow-hidden shrink-0 mt-0.5">

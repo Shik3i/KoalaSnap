@@ -42,7 +42,7 @@ export function render(state) {
   const m = mode(state);
   const phoneBorder = state.mockupTheme === 'light' ? '#e5e5ea' : '#1c1c1e';
   return `
-    <div id="mockup-card" class="mx-auto" style="width:390px; height:844px;">
+    <div id="mockup-card" class="mx-auto" style="width:390px; height:844px;font-family:${state.fontFamily};">
       <div class="w-full h-full overflow-hidden rounded-[2.5rem] border-8 flex flex-col" style="border-color:${phoneBorder};background:${phoneBorder}">
         ${renderStatusBar(m)}
         ${renderNavBar(state, m)}
@@ -89,7 +89,7 @@ function renderNavBar(state, m) {
 
 function renderChat(state, m) {
   return `
-    <div class="flex-1 p-3 flex flex-col" style="background:${m.chatBg}">
+    <div class="flex-1 p-3 flex flex-col" style="background:${m.chatBg}${state.chatBg ? `;background-image:url(${state.chatBg});background-size:cover` : ''}">
       <div class="flex justify-end">
         <div class="relative max-w-[80%]">
           <div class="rounded-2xl px-3.5 py-2" style="background:${m.sentBg}">

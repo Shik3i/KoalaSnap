@@ -67,6 +67,8 @@ const defaults = {
   mockupTheme: 'light',
   waMode: 'sent',
   locale: 'en',
+  fontFamily: 'system-ui',
+  chatBg: null,
   messages: [
     { id: 1, text: 'Hey, are you coming online tonight?', type: 'sent', time: '7:18 PM', status: 'read' },
     { id: 2, text: 'Yeah, give me 5!', type: 'received', time: '7:20 PM', status: 'read' },

@@ -24,7 +24,9 @@
       "message": "Nachricht",
       "avatar": "Avatar",
       "padding": "Abstand",
-      "background": "Hintergrund"
+      "background": "Hintergrund",
+      "font": "Schriftart",
+      "uploadBg": "Hintergrund hochladen"
     },
     "addMessage": "Nachricht hinzufügen",
     "deleteMessage": "Löschen",

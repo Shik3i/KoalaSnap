@@ -292,7 +292,8 @@ function renderMessageRow(msg, idx) {
   const recvActive = !isSent ? 'bg-white text-zinc-900' : 'bg-white/[4%] text-zinc-500 hover:text-zinc-300';
   const status = msg.status || 'read';
   return `
-    <div class="rounded-xl border border-white/[6%] bg-white/[3%] p-2.5 flex flex-col gap-1.5" data-msg-idx="${idx}">
+    <div draggable="true" data-msg-idx="${idx}"
+      class="rounded-xl border border-white/[6%] bg-white/[3%] p-2.5 flex flex-col gap-1.5 cursor-grab active:cursor-grabbing">
       <textarea data-msg-idx="${idx}" rows="2"
         class="w-full rounded-lg border border-white/[6%] bg-white/[4%] px-2.5 py-1.5 text-xs text-zinc-200 placeholder:text-zinc-600 outline-0 focus:border-zinc-600 transition-colors resize-none" placeholder="${t('sidebar.messagePlaceholder')}">${escapeHtml(msg.text)}</textarea>
       <div class="flex items-center gap-1.5">
@@ -338,6 +339,20 @@ function renderSharedSettings(state) {
         `).join('')}
       </div>
     </label>
+    <label class="flex flex-col gap-1.5 mt-4">
+      <span class="text-[10px] uppercase tracking-wider text-zinc-500">${t('sidebar.labels.font')}</span>
+      <select id="input-font"
+        class="rounded-xl border border-white/[6%] bg-white/[4%] px-3 py-2 text-sm text-zinc-200 outline-0 focus:border-zinc-600 transition-colors">
+        <option value="system-ui" ${state.fontFamily === 'system-ui' ? 'selected' : ''}>System UI</option>
+        <option value="Inter" ${state.fontFamily === 'Inter' ? 'selected' : ''}>Inter</option>
+      </select>
+    </label>
+    ${currentTheme !== 'social-post' && !['messenger', 'instagram', 'twitter', 'tiktok'].includes(currentTheme) ? `
+    <label class="flex flex-col gap-1.5 mt-4">
+      <span class="text-[10px] uppercase tracking-wider text-zinc-500">${t('sidebar.labels.uploadBg')}</span>
+      <input id="input-chatbg" type="file" accept="image/*"
+        class="text-xs text-zinc-500 file:mr-3 file:rounded-xl file:border-0 file:bg-white/10 file:px-3 file:py-1.5 file:text-xs file:text-zinc-200 file:font-medium hover:file:bg-white/15 transition-colors" />
+    </label>` : ''}
   `;
 }
 
@@ -440,6 +455,24 @@ function bindSettingsEvents() {
     if (val) val.textContent = e.target.value;
   });
 
+  bind('input-font', 'change', (e) => store.set('fontFamily', e.target.value));
+
+  bind('input-chatbg', 'change', async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return;
+    if (file.size > 5 * 1024 * 1024) return;
+    try {
+      const url = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      store.set('chatBg', url);
+    } catch { /* ignore */ }
+  });
+
   bind('input-message', 'input', (e) => store.set('message', e.target.value));
 
   bind('input-avatar', 'change', async (e) => {
@@ -528,6 +561,41 @@ function bindMessageEvents() {
       updateMessageList(store.getState());
     }
   });
+
+  let dragSrcIdx = null;
+  list.addEventListener('dragstart', (e) => {
+    const el = e.target.closest('[draggable]');
+    if (!el) return;
+    dragSrcIdx = parseInt(el.dataset.msgIdx);
+    el.style.opacity = '0.4';
+  });
+  list.addEventListener('dragend', (e) => {
+    const el = e.target.closest('[draggable]');
+    if (el) el.style.opacity = '';
+    dragSrcIdx = null;
+  });
+  list.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    const el = e.target.closest('[draggable]');
+    if (el) el.style.borderColor = 'rgba(255,255,255,0.3)';
+  });
+  list.addEventListener('dragleave', (e) => {
+    const el = e.target.closest('[draggable]');
+    if (el) el.style.borderColor = '';
+  });
+  list.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const el = e.target.closest('[draggable]');
+    if (!el) return;
+    el.style.borderColor = '';
+    const dropIdx = parseInt(el.dataset.msgIdx);
+    if (dragSrcIdx === null || dragSrcIdx === dropIdx) return;
+    const msgs = [...store.get('messages')];
+    const [moved] = msgs.splice(dragSrcIdx, 1);
+    msgs.splice(dropIdx, 0, moved);
+    store.set('messages', msgs);
+    updateMessageList(store.getState());
+  });
 }
 
 function updateMessageList(state) {
@@ -590,6 +658,11 @@ function syncMockup(key, value, state) {
   if (key === 'mockupTheme') {
     const btn = document.getElementById('btn-mockup-theme');
     if (btn) btn.innerHTML = value === 'light' ? SVG.sun : SVG.moon;
+    renderCurrentTheme();
+    return;
+  }
+
+  if (key === 'fontFamily' || key === 'chatBg') {
     renderCurrentTheme();
     return;
   }

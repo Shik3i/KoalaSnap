@@ -70,7 +70,7 @@ export function render(state) {
   const m = mode(state);
   const phoneBorder = state.mockupTheme === 'light' ? '#ffffff' : '#121212';
   return `
-    <div id="mockup-card" class="mx-auto" style="width:390px; height:844px;">
+    <div id="mockup-card" class="mx-auto" style="width:390px; height:844px;font-family:${state.fontFamily};">
       <div class="w-full h-full overflow-hidden rounded-[2.5rem] border-8 flex flex-col" style="border-color:${phoneBorder};background:${phoneBorder}">
         ${renderStatusBar(m)}
         ${renderHeader(state, m)}
@@ -118,7 +118,7 @@ function renderHeader(state, m) {
 
 function renderChat(state, m) {
   return `
-    <div class="flex-1 p-4 overflow-y-auto" style="background:${m.chatBg};background-image:${m.dotPattern}">
+    <div class="flex-1 p-4 overflow-y-auto" style="background:${m.chatBg}${state.chatBg ? `;background-image:url(${state.chatBg});background-size:cover` : `;background-image:${m.dotPattern}`}">
       <div id="wa-messages" class="flex flex-col gap-3">
         ${state.messages.map(msg => renderBubble(msg, m)).join('')}
       </div>

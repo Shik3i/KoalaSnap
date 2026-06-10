@@ -24,7 +24,9 @@
       "message": "Message",
       "avatar": "Avatar",
       "padding": "Padding",
-      "background": "Background"
+      "background": "Background",
+      "font": "Font",
+      "uploadBg": "Upload Background"
     },
     "addMessage": "Add Message",
     "deleteMessage": "Delete",

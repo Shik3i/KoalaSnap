@@ -23,7 +23,7 @@ function renderTwitter(state, isDark) {
   const textBody = isDark ? 'text-zinc-300' : 'text-zinc-800';
   const border = isDark ? 'border-zinc-700' : 'border-zinc-200';
   return `
-    <div id="mockup-card" class="${cardBg} rounded-2xl shadow-2xl shadow-black/20 mx-auto overflow-hidden ring-1 ring-white/[6%] p-3" style="width:400px; height:520px;">
+    <div id="mockup-card" class="${cardBg} rounded-2xl shadow-2xl shadow-black/20 mx-auto overflow-hidden ring-1 ring-white/[6%] p-3" style="width:400px; height:520px;font-family:${state.fontFamily};">
       <div class="flex items-start gap-3">
         <div class="w-11 h-11 rounded-full shrink-0 overflow-hidden">
           ${avatarMarkup(state.avatar, isDark)}
@@ -56,7 +56,7 @@ function renderInstagram(state, isDark) {
   const textSecondary = isDark ? 'text-zinc-400' : 'text-zinc-500';
   const border = isDark ? 'border-zinc-800' : 'border-zinc-200';
   return `
-    <div id="mockup-card" class="${cardBg} rounded-2xl shadow-2xl shadow-black/20 mx-auto overflow-hidden ring-1 ring-white/[6%]" style="width:400px; height:600px;">
+    <div id="mockup-card" class="${cardBg} rounded-2xl shadow-2xl shadow-black/20 mx-auto overflow-hidden ring-1 ring-white/[6%]" style="width:400px; height:600px;font-family:${state.fontFamily};">
       <div class="flex items-center gap-3 px-3 py-2.5">
         <div class="w-8 h-8 rounded-full shrink-0 overflow-hidden">
           ${avatarMarkup(state.avatar, isDark)}
@@ -89,7 +89,7 @@ function renderMessenger(state, isDark) {
   const sentBg = isDark ? '#007aff' : '#007aff';
   const textSecondary = isDark ? 'text-zinc-400' : 'text-zinc-500';
   return `
-    <div id="mockup-card" class="mx-auto" style="width:390px; height:844px;">
+    <div id="mockup-card" class="mx-auto" style="width:390px; height:844px;font-family:${state.fontFamily};">
       <div class="w-full h-full overflow-hidden rounded-[2.5rem] border-8 flex flex-col" style="border-color:${isDark ? '#121212' : '#ffffff'};background:${isDark ? '#121212' : '#ffffff'}">
         <div class="flex items-center justify-between px-6 h-[44px] shrink-0 text-white" style="background:${barBg}">
           <span class="text-[14px] font-semibold tracking-tight" style="font-family:-apple-system,system-ui,sans-serif">09:41</span>
@@ -103,7 +103,7 @@ function renderMessenger(state, isDark) {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
           <span class="text-[15px] font-medium">${escapeHtml(state.username)}</span>
         </div>
-        <div class="flex-1 p-3 overflow-y-auto flex flex-col gap-3" style="background:${chatBg}">
+        <div class="flex-1 p-3 overflow-y-auto flex flex-col gap-3" style="background:${chatBg}${state.chatBg ? `;background-image:url(${state.chatBg});background-size:cover` : ''}">
           <div class="flex justify-end">
             <div class="max-w-[75%] rounded-2xl px-3.5 py-2" style="background:${sentBg}">
               <p id="mockup-message" class="text-white text-[15px]/[1.4] whitespace-pre-wrap break-words">${escapeHtml(state.message)}</p>
@@ -129,7 +129,7 @@ function renderTiktok(state, isDark) {
   const barBg = isDark ? '#111111' : '#161616';
   const OVERLAY = 'linear-gradient(transparent 60%, rgba(0,0,0,0.7))';
   return `
-    <div id="mockup-card" class="mx-auto" style="width:390px; height:844px;">
+    <div id="mockup-card" class="mx-auto" style="width:390px; height:844px;font-family:${state.fontFamily};">
       <div class="w-full h-full overflow-hidden rounded-[2.5rem] border-8 flex flex-col relative" style="border-color:#111;background:#111">
         <div class="absolute inset-0 ${isDark ? 'bg-zinc-900' : 'bg-zinc-800'} flex items-center justify-center text-6xl">🎵</div>
         <div class="absolute inset-0" style="background:${OVERLAY}"></div>
