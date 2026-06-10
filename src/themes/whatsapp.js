@@ -126,7 +126,7 @@ function renderHeader(state, m) {
 function renderChat(state, m) {
   const bgImg = state.chatBg
     ? `url(${state.chatBg})`
-    : (state.mockupTheme === 'light' ? 'url(/whatsapp-bg-light.png)' : 'url(/whatsapp-bg-dark.png)');
+    : (state.mockupTheme === 'light' ? 'url(/whatsapp-bg-light.png)' : 'linear-gradient(rgba(11, 20, 26, 0.94), rgba(11, 20, 26, 0.94)), url(/whatsapp-bg-dark.png)');
   const bgSize = state.chatBg ? 'cover' : '360px';
   const bgRepeat = state.chatBg ? 'no-repeat' : 'repeat';
 
@@ -281,7 +281,7 @@ export function sync(state) {
     const m = mode(state);
     const bgImg = state.chatBg
       ? `url(${state.chatBg})`
-      : (state.mockupTheme === 'light' ? 'url(/whatsapp-bg-light.png)' : 'url(/whatsapp-bg-dark.png)');
+      : (state.mockupTheme === 'light' ? 'url(/whatsapp-bg-light.png)' : 'linear-gradient(rgba(11, 20, 26, 0.94), rgba(11, 20, 26, 0.94)), url(/whatsapp-bg-dark.png)');
     const bgSize = state.chatBg ? 'cover' : '360px';
     const bgRepeat = state.chatBg ? 'no-repeat' : 'repeat';
     chatContainer.style.background = `var(--chat-bg, ${m.chatBg})`;
