@@ -104,6 +104,15 @@ const SVG = {
 
   chevronDown: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`,
   github: `<svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>`,
+
+  sidebarToggle: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>`,
+  undo: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>`,
+  redo: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>`,
+  clipboard: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>`,
+  link: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`,
+  folder: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>`,
+  zoomIn: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>`,
+  zoomOut: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>`,
 };
 
 const LANG = currentLocale();
@@ -112,18 +121,50 @@ const LANG = currentLocale();
 /*  Layout-Komponenten                                                 */
 /* ------------------------------------------------------------------ */
 function renderTopbar(state) {
+  const sidebarOpen = store.getSidebarOpen();
   return `
     <header class="h-14 shrink-0 flex items-center justify-between px-5 border-b border-white/[5%] bg-[#0d0a07]/80 backdrop-blur-xl">
       <div class="flex items-center gap-3">
         <div class="text-zinc-100">${SVG.koala}</div>
-        <span class="text-sm font-bold tracking-tight">${t('app.name')}</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <button id="btn-topbar-export" aria-label="${t('topbar.export')}"
-          class="flex items-center gap-1.5 rounded-full bg-[#f97316] px-4 py-1.5 text-xs font-semibold text-white hover:bg-[#ea580c] active:scale-[0.97] transition-all disabled:opacity-60 disabled:pointer-events-none">
-          <span id="btn-export-icon">${SVG.download}</span>
-          <span id="btn-export-label">${t('topbar.export')}</span>
+        <span class="text-sm font-bold tracking-tight hidden sm:inline">${t('app.name')}</span>
+        <button id="btn-sidebar-toggle" aria-label="${t('topbar.toggleSidebar')}"
+          class="rounded-full p-1.5 text-zinc-500 hover:text-zinc-200 hover:bg-white/5 transition-all ml-2">
+          ${SVG.sidebarToggle}
         </button>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <button id="btn-undo" aria-label="${t('topbar.undo')}"
+          class="rounded-full p-1.5 text-zinc-500 hover:text-zinc-200 hover:bg-white/5 transition-all disabled:opacity-30 disabled:pointer-events-none"
+          ${store.canUndo() ? '' : 'disabled'}>
+          ${SVG.undo}
+        </button>
+        <button id="btn-redo" aria-label="${t('topbar.redo')}"
+          class="rounded-full p-1.5 text-zinc-500 hover:text-zinc-200 hover:bg-white/5 transition-all disabled:opacity-30 disabled:pointer-events-none"
+          ${store.canRedo() ? '' : 'disabled'}>
+          ${SVG.redo}
+        </button>
+        <div class="relative" id="export-dropdown-container">
+          <button id="btn-topbar-export" aria-label="${t('topbar.export')}"
+            class="flex items-center gap-1.5 rounded-full bg-[#f97316] px-4 py-1.5 text-xs font-semibold text-white hover:bg-[#ea580c] active:scale-[0.97] transition-all disabled:opacity-60 disabled:pointer-events-none">
+            <span id="btn-export-icon">${SVG.download}</span>
+            <span id="btn-export-label">${t('topbar.export')}</span>
+          </button>
+          <button id="btn-export-chevron" aria-label="${t('topbar.more')}"
+            class="rounded-full bg-[#f97316] px-1.5 py-1.5 text-xs font-semibold text-white hover:bg-[#ea580c] active:scale-[0.97] transition-all -ml-[1px]">
+            ${SVG.chevronDown}
+          </button>
+          <div id="export-dropdown" class="absolute right-0 top-full mt-1 z-50 hidden min-w-[200px] rounded-xl border border-white/10 bg-[#1a1714]/95 backdrop-blur-2xl py-1 shadow-2xl shadow-black/50">
+            <button data-export-action="png" class="flex items-center gap-2.5 w-full px-3 py-2 text-xs text-zinc-300 hover:bg-white/5 hover:text-white transition-all text-left">
+              ${SVG.download} <span>${t('topbar.exportPng')}</span>
+            </button>
+            <button data-export-action="clipboard" class="flex items-center gap-2.5 w-full px-3 py-2 text-xs text-zinc-300 hover:bg-white/5 hover:text-white transition-all text-left">
+              ${SVG.clipboard} <span>${t('topbar.exportClipboard')}</span>
+            </button>
+            <button data-export-action="share" class="flex items-center gap-2.5 w-full px-3 py-2 text-xs text-zinc-300 hover:bg-white/5 hover:text-white transition-all text-left">
+              ${SVG.link} <span>${t('topbar.exportShare')}</span>
+            </button>
+          </div>
+        </div>
         <button id="btn-start-tour" aria-label="${t('tutorial.restart')}"
           class="rounded-full bg-white/5 border border-white/10 px-3 py-1.5 text-xs text-zinc-400 hover:text-zinc-200 hover:border-white/20 transition-all mr-1">${t('tutorial.restart')}</button>
         <a href="https://github.com/Shik3i/KoalaSnap" target="_blank" rel="noopener noreferrer"
@@ -146,8 +187,10 @@ function renderTopbar(state) {
 }
 
 function renderSidebar(state) {
+  const sidebarOpen = store.getSidebarOpen();
+  if (!sidebarOpen) return '<aside id="sidebar" class="w-0 shrink-0 overflow-hidden transition-all duration-300"></aside>';
   return `
-    <aside id="sidebar" class="w-[340px] shrink-0 h-full overflow-y-auto p-4 flex flex-col gap-4">
+    <aside id="sidebar" class="w-[340px] shrink-0 h-full overflow-y-auto p-4 flex flex-col gap-4 transition-all duration-300">
       <div id="app-library" class="rounded-2xl border border-white/[6%] bg-[#1a1714] p-4 flex flex-col gap-3">
         <div class="flex items-center justify-between cursor-pointer select-none" id="app-library-toggle">
           <span class="text-xs font-semibold text-zinc-300 tracking-wide">${t('sidebar.appLibrary')}</span>
@@ -185,7 +228,38 @@ function renderSidebar(state) {
         <span class="text-xs font-semibold text-zinc-300 tracking-wide">${t('sidebar.settings')} · <span class="text-zinc-500 font-normal normal-case">${themeLabel()}</span></span>
         ${renderSettingsFields(state)}
       </div>
+
+      ${renderTemplateSection()}
     </aside>
+  `;
+}
+
+function renderTemplateSection() {
+  const templates = store.listTemplates();
+  return `
+    <div id="templates-section" class="rounded-2xl border border-white/[6%] bg-[#1a1714] p-4 flex flex-col gap-3">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold text-zinc-300 tracking-wide">${t('templates.title')}</span>
+        <span class="text-[10px] text-zinc-600">${templates.length}</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <input id="input-template-name" type="text" placeholder="${t('templates.namePlaceholder')}"
+          class="flex-1 rounded-xl border border-white/[6%] bg-white/[4%] px-3 py-2 text-xs text-zinc-300 placeholder:text-zinc-600 outline-0 focus:border-zinc-600 transition-colors" />
+        <button id="btn-template-save"
+          class="rounded-xl bg-[#f97316] px-3 py-2 text-xs font-semibold text-white hover:bg-[#ea580c] transition-all shrink-0">${t('templates.save')}</button>
+      </div>
+      <div id="template-list" class="flex flex-col gap-1 max-h-[140px] overflow-y-auto">
+        ${templates.length === 0 ? `<span class="text-[10px] text-zinc-600 text-center py-2">${t('templates.empty')}</span>` :
+          templates.map(name => `
+            <div class="flex items-center gap-1 group" data-tmpl-name="${name}">
+              <span class="flex-1 text-xs text-zinc-400 truncate">${name}</span>
+              <button data-tmpl-action="load" class="hidden group-hover:inline-flex px-2 py-0.5 rounded-lg text-[10px] text-zinc-500 hover:text-zinc-200 hover:bg-white/5 transition-all">${t('templates.load')}</button>
+              <button data-tmpl-action="delete" class="hidden group-hover:inline-flex px-2 py-0.5 rounded-lg text-[10px] text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all">${t('templates.delete')}</button>
+            </div>
+          `).join('')
+        }
+      </div>
+    </div>
   `;
 }
 
@@ -359,6 +433,7 @@ function renderSharedSettings(state) {
 function renderBottomBar(state) {
   const locale = currentLocale();
   const prefix = locale === 'de' ? '/de' : '';
+  const zoom = store.get('_zoom') || 0;
   return `
     <div id="bottom-bar" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20
                 flex items-center gap-1 rounded-full bg-white/[6%] backdrop-blur-2xl
@@ -366,7 +441,18 @@ function renderBottomBar(state) {
       <button id="btn-mockup-theme" aria-label="${t('bottom.toggleTheme')}" class="rounded-full p-2 text-zinc-400 hover:text-zinc-200 hover:bg-white/10 transition-all" title="${t('bottom.toggleTheme')}">
         ${state.mockupTheme === 'light' ? SVG.sun : SVG.moon}
       </button>
-      <span class="ml-2 flex items-center gap-2 pl-2 border-l border-white/[6%] text-[10px] text-zinc-600">
+      <span class="w-px h-4 bg-white/[6%] mx-1"></span>
+      <button id="btn-zoom-out" aria-label="${t('bottom.zoomOut')}" class="rounded-full p-1.5 text-zinc-500 hover:text-zinc-200 hover:bg-white/10 transition-all" title="${t('bottom.zoomOut')}">
+        ${SVG.zoomOut}
+      </button>
+      <input id="zoom-slider" type="range" min="-50" max="100" value="${zoom}"
+        class="w-20 h-1 accent-[#f97316] cursor-pointer" />
+      <button id="btn-zoom-in" aria-label="${t('bottom.zoomIn')}" class="rounded-full p-1.5 text-zinc-500 hover:text-zinc-200 hover:bg-white/10 transition-all" title="${t('bottom.zoomIn')}">
+        ${SVG.zoomIn}
+      </button>
+      <span id="zoom-label" class="text-[10px] text-zinc-500 w-8 text-center">${zoom > 0 ? '+' : ''}${zoom}%</span>
+      <span class="w-px h-4 bg-white/[6%] mx-1"></span>
+      <span class="flex items-center gap-2 pl-1 text-[10px] text-zinc-600">
         <a href="${prefix}/imprint" class="hover:text-zinc-400 transition-colors">${t('bottom.imprint')}</a>
         <a href="${prefix}/privacy" class="hover:text-zinc-400 transition-colors">${t('bottom.privacy')}</a>
       </span>
@@ -381,9 +467,11 @@ function renderApp() {
   const app = document.getElementById('app');
   if (!app) return;
   const state = store.getState();
+  const sidebarOpen = store.getSidebarOpen();
   app.innerHTML = `
     ${renderTopbar(state)}
-    <div id="main-area" class="flex-1 flex overflow-hidden">
+    <div id="main-area" class="flex-1 flex overflow-hidden relative">
+      <div id="sidebar-overlay" class="hidden fixed inset-0 z-30 bg-black/40"></div>
       ${renderSidebar(state)}
       <main id="canvas" class="flex-1 relative overflow-hidden">
         <div id="canvas-area" class="absolute inset-0 flex items-center justify-center overflow-hidden z-10">
@@ -395,6 +483,17 @@ function renderApp() {
   `;
   bindEvents();
   renderCurrentTheme();
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar) sidebar.style.width = sidebarOpen ? '340px' : '0px';
+  const zoom = store.get('_zoom') || 0;
+  applyZoom(zoom);
+}
+
+function updateUndoRedoButtons() {
+  const undoBtn = document.getElementById('btn-undo');
+  const redoBtn = document.getElementById('btn-redo');
+  if (undoBtn) undoBtn.disabled = !store.canUndo();
+  if (redoBtn) redoBtn.disabled = !store.canRedo();
 }
 
 function updateSettingsPanel(state) {
@@ -411,7 +510,12 @@ function updateSettingsPanel(state) {
 /*  Event-Binding                                                      */
 /* ------------------------------------------------------------------ */
 function bindEvents() {
-  bind('btn-topbar-export', 'click', downloadPng);
+  bind('btn-topbar-export', 'click', () => downloadPng());
+  bind('btn-export-chevron', 'click', toggleExportDropdown);
+  bind('btn-sidebar-toggle', 'click', toggleSidebar);
+  bind('sidebar-overlay', 'click', toggleSidebar);
+  bind('btn-undo', 'click', () => store.undo());
+  bind('btn-redo', 'click', () => store.redo());
   bind('btn-mockup-theme', 'click', () => {
     const next = store.get('mockupTheme') === 'light' ? 'dark' : 'light';
     store.set('mockupTheme', next);
@@ -421,6 +525,10 @@ function bindEvents() {
     window.location.href = val === 'en' ? '/' : `/${val}/`;
   });
   bind('btn-start-tour', 'click', () => startTutorial());
+  bind('btn-template-save', 'click', saveTemplate);
+  bind('zoom-slider', 'input', onZoomChange);
+  bind('btn-zoom-in', 'click', () => changeZoom(10));
+  bind('btn-zoom-out', 'click', () => changeZoom(-10));
 
   document.querySelectorAll('[data-gradient]').forEach((btn) => {
     btn.addEventListener('click', () => store.set('bgGradient', btn.dataset.gradient));
@@ -430,6 +538,26 @@ function bindEvents() {
     btn.addEventListener('click', () => {
       const app = APPS.find((a) => a.id === btn.dataset.app);
       if (app) store.set('theme', app.theme);
+    });
+  });
+
+  document.querySelectorAll('[data-export-action]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const action = btn.dataset.exportAction;
+      closeExportDropdown();
+      if (action === 'png') downloadPng();
+      else if (action === 'clipboard') copyToClipboard();
+      else if (action === 'share') copyShareLink();
+    });
+  });
+
+  document.querySelectorAll('[data-tmpl-action]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const action = btn.dataset.tmplAction;
+      const name = btn.closest('[data-tmpl-name]')?.dataset.tmplName;
+      if (!name) return;
+      if (action === 'load') store.loadTemplate(name);
+      else if (action === 'delete') { store.deleteTemplate(name); reRenderTemplates(); }
     });
   });
 
@@ -443,6 +571,42 @@ function bindEvents() {
       body.style.display = isHidden ? '' : 'none';
       if (chevron) chevron.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
     });
+  }
+
+  /* Close export dropdown on outside click */
+  document.addEventListener('click', (e) => {
+    const container = document.getElementById('export-dropdown-container');
+    if (container && !container.contains(e.target)) {
+      closeExportDropdown();
+    }
+  });
+
+  /* Keyboard shortcuts */
+  document.addEventListener('keydown', (e) => {
+    const isCmd = e.metaKey || e.ctrlKey;
+    if (isCmd && e.key === 'z' && !e.shiftKey) {
+      e.preventDefault();
+      store.undo();
+    }
+    if (isCmd && e.key === 'z' && e.shiftKey) {
+      e.preventDefault();
+      store.redo();
+    }
+    if (isCmd && e.key === 'e') {
+      e.preventDefault();
+      downloadPng();
+    }
+  });
+
+  /* Mouse wheel zoom on canvas */
+  const canvas = document.getElementById('canvas');
+  if (canvas) {
+    canvas.addEventListener('wheel', (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        changeZoom(e.deltaY > 0 ? -5 : 5);
+      }
+    }, { passive: false });
   }
 
   bindSettingsEvents();
@@ -671,6 +835,18 @@ function syncMockup(key, value, state) {
     return;
   }
 
+  if (key === '_zoom') {
+    applyZoom(value);
+    return;
+  }
+
+  if (key === '_undo' || key === '_redo') {
+    renderCurrentTheme();
+    updateSettingsPanel(store.getState());
+    updateUndoRedoButtons();
+    return;
+  }
+
   /* Avatar-Update: altes Image vorher freigeben */
   if (key === 'avatar') {
     const avatarId = currentTheme === 'discord' ? 'discord-avatar'
@@ -720,8 +896,11 @@ function fitMockupToScreen() {
   const card = document.getElementById('mockup-card');
   if (!canvas || !card) return;
   const rect = canvas.getBoundingClientRect();
-  const scale = Math.min(rect.width / 390, rect.height / 844) * 0.9;
-  card.style.transform = `scale(${scale})`;
+  const baseScale = Math.min(rect.width / 390, rect.height / 844) * 0.9;
+  const zoom = store.get('_zoom') || 0;
+  const zoomScale = 1 + (zoom / 100);
+  const combinedScale = baseScale * zoomScale;
+  card.style.transform = `scale(${combinedScale})`;
   card.style.transformOrigin = 'center center';
 }
 
@@ -819,6 +998,164 @@ async function downloadPng() {
     if (icon) icon.innerHTML = SVG.download;
     if (label) label.textContent = t('topbar.export');
   }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Export Dropdown                                                    */
+/* ------------------------------------------------------------------ */
+function toggleExportDropdown() {
+  const dd = document.getElementById('export-dropdown');
+  if (!dd) return;
+  const isOpen = !dd.classList.contains('hidden');
+  dd.classList.toggle('hidden', isOpen);
+}
+
+function closeExportDropdown() {
+  const dd = document.getElementById('export-dropdown');
+  if (dd) dd.classList.add('hidden');
+}
+
+async function copyToClipboard() {
+  const el = document.getElementById('mockup-card');
+  if (!el) return;
+  const btn = document.getElementById('btn-topbar-export');
+  const icon = document.getElementById('btn-export-icon');
+  const label = document.getElementById('btn-export-label');
+  if (btn) btn.disabled = true;
+  if (icon) icon.innerHTML = SVG.spinner;
+  if (label) label.textContent = t('topbar.rendering');
+  try {
+    const origTransform = el.style.transform;
+    const origOrigin = el.style.transformOrigin;
+    el.style.transform = '';
+    el.style.transformOrigin = '';
+    const bgEls = el.querySelectorAll('[style*="background-image"]');
+    const savedBg = [];
+    bgEls.forEach((bgEl, i) => { savedBg[i] = bgEl.style.backgroundImage; bgEl.style.backgroundImage = 'none'; });
+    const imgs = el.querySelectorAll('img');
+    const savedSrc = [];
+    imgs.forEach((img, i) => { savedSrc[i] = img.src; if (img.src.startsWith('blob:')) img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; });
+    await new Promise(r => requestAnimationFrame(r));
+    const { toBlob } = await import('html-to-image');
+    const blob = await toBlob(el, { pixelRatio: 2 });
+    el.style.transform = origTransform;
+    el.style.transformOrigin = origOrigin;
+    bgEls.forEach((bgEl, i) => { bgEl.style.backgroundImage = savedBg[i]; });
+    imgs.forEach((img, i) => { if (savedSrc[i]) img.src = savedSrc[i]; });
+    if (blob) {
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+      showToast(t('topbar.copied'));
+    }
+  } catch (err) {
+    console.error('Clipboard copy failed:', err);
+    showToast(t('topbar.exportFailed'));
+  }
+  if (btn) btn.disabled = false;
+  if (icon) icon.innerHTML = SVG.download;
+  if (label) label.textContent = t('topbar.export');
+}
+
+function copyShareLink() {
+  const url = store.getShareUrl();
+  if (!url) { showToast(t('topbar.exportFailed')); return; }
+  try {
+    navigator.clipboard.writeText(url);
+    showToast(t('topbar.linkCopied'));
+  } catch {
+    showToast(t('topbar.exportFailed'));
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Toast Notification                                                 */
+/* ------------------------------------------------------------------ */
+function showToast(msg) {
+  const existing = document.getElementById('toast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.id = 'toast';
+  toast.className = 'fixed bottom-28 left-1/2 -translate-x-1/2 z-50 rounded-full bg-zinc-800/90 backdrop-blur-xl border border-white/10 px-5 py-2.5 text-sm text-zinc-200 shadow-2xl shadow-black/30 animate-fade-in';
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 0.3s';
+    setTimeout(() => toast.remove(), 300);
+  }, 2000);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Sidebar Toggle                                                     */
+/* ------------------------------------------------------------------ */
+function toggleSidebar() {
+  const current = store.getSidebarOpen();
+  const next = !current;
+  store.setSidebarOpen(next);
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar) {
+    sidebar.style.width = next ? '340px' : '0px';
+  }
+  const overlay = document.getElementById('sidebar-overlay');
+  if (overlay) {
+    if (next && window.innerWidth < 768) {
+      overlay.classList.remove('hidden');
+    } else {
+      overlay.classList.add('hidden');
+    }
+  }
+  requestAnimationFrame(fitMockupToScreen);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Zoom                                                               */
+/* ------------------------------------------------------------------ */
+function changeZoom(delta) {
+  const current = store.get('_zoom') || 0;
+  const next = Math.max(-50, Math.min(100, current + delta));
+  store.set('_zoom', next);
+}
+
+function onZoomChange(e) {
+  const val = parseInt(e.target.value);
+  store.set('_zoom', val);
+}
+
+function applyZoom(zoom) {
+  const slider = document.getElementById('zoom-slider');
+  if (slider) slider.value = zoom;
+  const label = document.getElementById('zoom-label');
+  if (label) label.textContent = zoom > 0 ? `+${zoom}%` : `${zoom}%`;
+  fitMockupToScreen();
+}
+
+function reRenderTemplates() {
+  const section = document.getElementById('templates-section');
+  if (!section) return;
+  const parent = document.getElementById('sidebar');
+  if (!parent) return;
+  const newSection = document.createElement('div');
+  newSection.innerHTML = renderTemplateSection();
+  section.replaceWith(newSection.firstElementChild);
+  /* Re-bind template buttons */
+  document.querySelectorAll('[data-tmpl-action]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const action = btn.dataset.tmplAction;
+      const name = btn.closest('[data-tmpl-name]')?.dataset.tmplName;
+      if (!name) return;
+      if (action === 'load') store.loadTemplate(name);
+      else if (action === 'delete') { store.deleteTemplate(name); reRenderTemplates(); }
+    });
+  });
+}
+
+function saveTemplate() {
+  const input = document.getElementById('input-template-name');
+  if (!input || !input.value.trim()) return;
+  const name = input.value.trim();
+  store.saveTemplate(name);
+  input.value = '';
+  reRenderTemplates();
+  showToast(t('templates.saved'));
 }
 
 /* ------------------------------------------------------------------ */

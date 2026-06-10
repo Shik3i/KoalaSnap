@@ -1,0 +1,9 @@
+{
+  "name": "KoalaSnap — Mockup Editor",
+  "short_name": "KoalaSnap",
+  "description": "Create pixel-perfect chat and social media mockups",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d0a07",
+  "theme_color": "#0d0a07"
+}

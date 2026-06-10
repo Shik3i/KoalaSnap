@@ -1,4 +1,6 @@
 const STORAGE_KEY = 'koalasnap_state';
+const TEMPLATES_KEY = 'koalasnap_templates';
+const SIDEBAR_KEY = 'koalasnap_sidebar';
 
 function loadPersisted(defaults) {
   try {
@@ -15,9 +17,35 @@ function savePersisted(state) {
   } catch { /* ignore */ }
 }
 
+function loadStateFromUrl() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const encoded = params.get('state');
+    if (!encoded) return null;
+    const binary = atob(encoded);
+    const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+    const json = new TextDecoder().decode(bytes);
+    const parsed = JSON.parse(json);
+    if (parsed && typeof parsed === 'object') return parsed;
+  } catch { /* ignore */ }
+  return null;
+}
+
 function createStore(defaults) {
-  const state = loadPersisted(defaults);
+  const urlState = loadStateFromUrl();
+  const state = urlState ? { ...defaults, ...urlState } : loadPersisted(defaults);
   const listeners = new Set();
+  const history = [];
+  const redoStack = [];
+  const MAX_HISTORY = 50;
+  let _historyPaused = false;
+
+  function snapshot() {
+    if (_historyPaused) return;
+    history.push(JSON.parse(JSON.stringify(state)));
+    if (history.length > MAX_HISTORY) history.shift();
+    redoStack.length = 0;
+  }
 
   return {
     get(key) {
@@ -27,16 +55,19 @@ function createStore(defaults) {
       return { ...state };
     },
     set(key, value) {
+      snapshot();
       state[key] = value;
       savePersisted(state);
       listeners.forEach((fn) => fn(key, value, state));
     },
     setAll(patch) {
+      snapshot();
       Object.assign(state, patch);
       savePersisted(state);
       listeners.forEach((fn) => fn(null, null, state));
     },
     mutate(patch) {
+      snapshot();
       Object.assign(state, patch);
       savePersisted(state);
       listeners.forEach((fn) => fn(null, null, state));
@@ -46,9 +77,90 @@ function createStore(defaults) {
       return () => listeners.delete(fn);
     },
     reset() {
+      snapshot();
       Object.assign(state, defaults);
       savePersisted(state);
       listeners.forEach((fn) => fn(null, null, state));
+    },
+    undo() {
+      if (history.length === 0) return;
+      redoStack.push(JSON.parse(JSON.stringify(state)));
+      const prev = history.pop();
+      Object.assign(state, prev);
+      savePersisted(state);
+      listeners.forEach((fn) => fn('_undo', null, state));
+    },
+    redo() {
+      if (redoStack.length === 0) return;
+      history.push(JSON.parse(JSON.stringify(state)));
+      const next = redoStack.pop();
+      Object.assign(state, next);
+      savePersisted(state);
+      listeners.forEach((fn) => fn('_redo', null, state));
+    },
+    canUndo() {
+      return history.length > 0;
+    },
+    canRedo() {
+      return redoStack.length > 0;
+    },
+    pauseHistory() {
+      _historyPaused = true;
+    },
+    resumeHistory() {
+      _historyPaused = false;
+    },
+    /* Templates */
+    saveTemplate(name) {
+      try {
+        const templates = JSON.parse(localStorage.getItem(TEMPLATES_KEY) || '{}');
+        const { avatar: _, ...rest } = state;
+        templates[name] = rest;
+        localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
+        return true;
+      } catch { return false; }
+    },
+    deleteTemplate(name) {
+      try {
+        const templates = JSON.parse(localStorage.getItem(TEMPLATES_KEY) || '{}');
+        delete templates[name];
+        localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
+        return true;
+      } catch { return false; }
+    },
+    loadTemplate(name) {
+      try {
+        const templates = JSON.parse(localStorage.getItem(TEMPLATES_KEY) || '{}');
+        const tmpl = templates[name];
+        if (!tmpl) return false;
+        this.mutate(tmpl);
+        return true;
+      } catch { return false; }
+    },
+    listTemplates() {
+      try {
+        return Object.keys(JSON.parse(localStorage.getItem(TEMPLATES_KEY) || '{}'));
+      } catch { return []; }
+    },
+    /* Sidebar state */
+    getSidebarOpen() {
+      return localStorage.getItem(SIDEBAR_KEY) !== 'false';
+    },
+    setSidebarOpen(open) {
+      localStorage.setItem(SIDEBAR_KEY, String(open));
+    },
+    /* Encode current state as shareable base64 URL */
+    getShareUrl() {
+      try {
+        const { avatar: _, ...rest } = state;
+        const json = JSON.stringify(rest);
+        const bytes = new TextEncoder().encode(json);
+        const binary = String.fromCharCode(...bytes);
+        const encoded = btoa(binary);
+        const url = new URL(window.location.href.split('?')[0].split('#')[0]);
+        url.searchParams.set('state', encoded);
+        return url.toString();
+      } catch { return null; }
     },
   };
 }

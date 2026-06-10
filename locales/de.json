@@ -6,7 +6,16 @@
     "export": "Exportieren",
     "rendering": "Rendern…",
     "exported": "Exportiert!",
-    "exportFailed": "Fehlgeschlagen"
+    "exportFailed": "Fehlgeschlagen",
+    "toggleSidebar": "Seitenleiste umschalten",
+    "undo": "Rückgängig",
+    "redo": "Wiederholen",
+    "more": "Mehr",
+    "exportPng": "Als PNG speichern",
+    "exportClipboard": "In Zwischenablage",
+    "exportShare": "Link kopieren",
+    "copied": "Kopiert!",
+    "linkCopied": "Link kopiert!"
   },
   "sidebar": {
     "appLibrary": "App Bibliothek",
@@ -41,8 +50,19 @@
   },
   "bottom": {
     "toggleTheme": "Design wechseln",
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern",
     "imprint": "Impressum",
     "privacy": "Datenschutz"
+  },
+  "templates": {
+    "title": "Vorlagen",
+    "save": "Speichern",
+    "load": "Laden",
+    "delete": "Löschen",
+    "saved": "Vorlage gespeichert!",
+    "namePlaceholder": "Vorlagenname…",
+    "empty": "Keine gespeicherten Vorlagen"
   },
   "tutorial": {
     "step1": "Wähle hier den Messenger, den du simulieren möchtest.",
