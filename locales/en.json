@@ -1,7 +1,6 @@
 {
   "app": {
-    "name": "KoalaSnap",
-    "subtitle": "Mockup Editor"
+    "name": "KoalaSnap"
   },
   "topbar": {
     "export": "Export",
@@ -14,7 +13,6 @@
     "apps": "apps",
     "search": "Search apps…",
     "settings": "Settings",
-    "settingsFor": "Settings ·",
     "discord": "Discord",
     "socialPost": "Social Post",
     "labels": {
@@ -40,12 +38,7 @@
     "social": "Social"
   },
   "bottom": {
-    "undo": "Undo",
-    "redo": "Redo",
-    "toggleView": "Toggle view",
-    "toggleTheme": "Toggle theme",
-    "mobile": "Mobile",
-    "desktop": "Desktop"
+    "toggleTheme": "Toggle theme"
   },
   "tutorial": {
     "step1": "Choose the messenger you want to simulate.",
@@ -59,11 +52,6 @@
     "skip": "Skip",
     "restart": "Start Tour",
     "of": "of"
-  },
-  "export": {
-    "rendering": "Rendering…",
-    "exported": "Exported!",
-    "failed": "Failed"
   },
   "dummySets": [
     {

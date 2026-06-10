@@ -1,3 +1,5 @@
+import { escapeHtml } from '../i18n.js';
+
 export function render(state) {
   const avatarHtml = state.avatar
     ? `<img id="discord-avatar" src="${state.avatar}" class="w-full h-full rounded-full object-cover" />`
@@ -15,11 +17,11 @@ export function render(state) {
           <div class="flex items-baseline gap-2">
             <span id="discord-username"
               class="font-medium text-[16px] leading-tight truncate max-w-[280px]"
-              style="color: ${state.roleColor}">${state.username}</span>
-            <span id="discord-timestamp" class="text-[#949ba4] text-xs leading-tight shrink-0">${state.timestamp}</span>
+              style="color: ${state.roleColor}">${escapeHtml(state.username)}</span>
+            <span id="discord-timestamp" class="text-[#949ba4] text-xs leading-tight shrink-0">${escapeHtml(state.timestamp)}</span>
           </div>
           <div id="discord-message"
-            class="text-[#dbdee1] text-[16px]/[1.4] mt-0.5 whitespace-pre-wrap break-words">${state.message}</div>
+            class="text-[#dbdee1] text-[16px]/[1.4] mt-0.5 whitespace-pre-wrap break-words">${escapeHtml(state.message)}</div>
         </div>
       </div>
     </div>

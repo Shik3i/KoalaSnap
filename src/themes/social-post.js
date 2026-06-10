@@ -1,4 +1,4 @@
-import { currentLocale } from '../i18n.js';
+import { currentLocale, escapeHtml } from '../i18n.js';
 
 const PLACEHOLDER_INITIALS = '?';
 
@@ -34,14 +34,14 @@ export function render(state) {
           ${avatarMarkup(state.avatar, state.mockupTheme)}
         </div>
         <div class="flex-1 min-w-0">
-          <p id="mockup-author" class="text-[15px] font-bold ${textPrimary} leading-tight truncate">${state.author}</p>
+          <p id="mockup-author" class="text-[15px] font-bold ${textPrimary} leading-tight truncate">${escapeHtml(state.author)}</p>
           <p class="flex items-center gap-1 text-sm ${textSecondary} leading-tight">
-            <span id="mockup-handle" class="truncate">@${state.handle}</span>
+            <span id="mockup-handle" class="truncate">@${escapeHtml(state.handle)}</span>
             <span class="shrink-0">· 1h</span>
           </p>
         </div>
       </div>
-      <p id="mockup-message" class="mt-3 text-[15px] ${textBody} leading-relaxed whitespace-pre-wrap break-words">${state.message}</p>
+      <p id="mockup-message" class="mt-3 text-[15px] ${textBody} leading-relaxed whitespace-pre-wrap break-words">${escapeHtml(state.message)}</p>
       <div class="mt-3 h-48 rounded-xl ${mediaBg} flex items-center justify-center ${mediaText} text-sm">
         📷 Media placeholder
       </div>

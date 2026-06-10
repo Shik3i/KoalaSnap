@@ -1,3 +1,5 @@
+import { escapeHtml } from '../i18n.js';
+
 const BACK_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e9edef" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`;
 
 const VIDEO_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#aebac1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>`;
@@ -103,7 +105,7 @@ function renderHeader(state, m) {
         }
       </div>
       <div class="flex-1 min-w-0">
-        <div id="wa-contact-name" class="text-white text-[15px] font-medium leading-tight truncate">${state.username}</div>
+        <div id="wa-contact-name" class="text-white text-[15px] font-medium leading-tight truncate">${escapeHtml(state.username)}</div>
         <div id="wa-status-text" class="text-[#8696a0] text-[11px] leading-tight">online</div>
       </div>
       <div class="flex items-center gap-2 shrink-0">
@@ -152,9 +154,9 @@ function renderBubble(msg, m) {
       ${isSent ? '' : '<div class="w-[34px] shrink-0"></div>'}
       <div class="relative max-w-[80%]">
         <div class="rounded-2xl px-3.5 py-2" style="background:${bg}">
-          <p class="text-[14.5px]/[1.4] whitespace-pre-wrap break-words ${boldClass}" style="color:${textColor}">${msg.text}</p>
+          <p class="text-[14.5px]/[1.4] whitespace-pre-wrap break-words ${boldClass}" style="color:${textColor}">${escapeHtml(msg.text)}</p>
           <div class="flex items-center justify-end gap-1 mt-0.5">
-            <span class="text-[11px] leading-none" style="color:${m.timeText}">${msg.time}</span>
+            <span class="text-[11px] leading-none" style="color:${m.timeText}">${escapeHtml(msg.time)}</span>
             ${checkIcon ? `<span class="inline-flex -mb-0.5">${checkIcon}</span>` : ''}
             ${unreadDot}
           </div>

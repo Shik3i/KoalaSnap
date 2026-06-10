@@ -1,3 +1,5 @@
+import { escapeHtml } from '../i18n.js';
+
 export function render(state) {
   return `
     <div id="mockup-card"
@@ -5,10 +7,10 @@ export function render(state) {
       style="padding: ${state.padding}px">
       <div class="flex justify-end">
         <div class="max-w-[78%]">
-          <p id="im-time" class="text-[11px] text-[#8e8e93] text-right mb-1">${state.timestamp}</p>
+          <p id="im-time" class="text-[11px] text-[#8e8e93] text-right mb-1">${escapeHtml(state.timestamp)}</p>
           <div class="relative">
             <div class="rounded-3xl px-4 py-2.5 bg-gradient-to-br from-[#007aff] to-[#0a84ff]">
-              <p id="im-message" class="text-[#ffffff] text-[16px]/[1.4] whitespace-pre-wrap break-words">${state.message}</p>
+              <p id="im-message" class="text-[#ffffff] text-[16px]/[1.4] whitespace-pre-wrap break-words">${escapeHtml(state.message)}</p>
             </div>
             <div class="absolute -bottom-[6px] -right-[6px] w-3 h-3 bg-[#0a84ff] rounded-full"></div>
           </div>

@@ -1,5 +1,5 @@
 import { store } from './store.js';
-import { t, currentLocale } from './i18n.js';
+import { t, currentLocale, escapeHtml } from './i18n.js';
 import { compressAvatar, releaseAvatar } from './avatar.js';
 import { startTutorial, isCompleted, isTutorialActive, reapplyStep } from './tutorial.js';
 import { render as renderSocialPost, sync as syncSocialPost } from './themes/social-post.js';
@@ -21,6 +21,8 @@ const themes = {
   'imessage': { render: renderIMessage, sync: syncIMessage },
 };
 let currentTheme = store.get('theme');
+let _syncing = false;
+let _isExporting = false;
 
 /* ------------------------------------------------------------------ */
 /*  App-liste für die Library                                          */
@@ -284,7 +286,7 @@ function renderMessageRow(msg, idx) {
   return `
     <div class="rounded-xl border border-white/[6%] bg-white/[3%] p-2.5 flex flex-col gap-1.5" data-msg-idx="${idx}">
       <textarea data-msg-idx="${idx}" rows="2"
-        class="w-full rounded-lg border border-white/[6%] bg-white/[4%] px-2.5 py-1.5 text-xs text-zinc-200 placeholder:text-zinc-600 outline-0 focus:border-zinc-600 transition-colors resize-none" placeholder="${t('sidebar.messagePlaceholder')}">${msg.text}</textarea>
+        class="w-full rounded-lg border border-white/[6%] bg-white/[4%] px-2.5 py-1.5 text-xs text-zinc-200 placeholder:text-zinc-600 outline-0 focus:border-zinc-600 transition-colors resize-none" placeholder="${t('sidebar.messagePlaceholder')}">${escapeHtml(msg.text)}</textarea>
       <div class="flex items-center gap-1.5">
         <button data-msg-idx="${idx}" data-msg-type="sent"
           class="flex-1 py-1 rounded-lg text-[10px] font-medium transition-all ${sentActive}">${t('sidebar.sent')}</button>
@@ -297,7 +299,7 @@ function renderMessageRow(msg, idx) {
               title="${s.title}">${s.svg}</button>
           `).join('')}
         </div>
-        <input type="text" data-msg-idx="${idx}" data-msg-field="time" value="${msg.time}"
+        <input type="text" data-msg-idx="${idx}" data-msg-field="time" value="${escapeHtml(msg.time)}"
           class="w-14 rounded-lg border border-white/[6%] bg-white/[4%] px-2 py-1 text-[10px] text-zinc-200 text-center outline-0 focus:border-zinc-600 transition-colors" placeholder="${t('sidebar.timePlaceholder')}" />
         <button data-msg-idx="${idx}" data-msg-action="delete"
           class="p-1 rounded-lg text-zinc-600 hover:text-red-400 hover:bg-red-500/10 transition-all" title="${t('sidebar.deleteMessage')}">
@@ -430,6 +432,8 @@ function bindSettingsEvents() {
   bind('input-avatar', 'change', async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (!file.type.startsWith('image/')) return;
+    if (file.size > 5 * 1024 * 1024) return;
     try {
       const oldUrl = store.get('avatar');
       const newUrl = await compressAvatar(file);
@@ -457,67 +461,66 @@ function bindSettingsEvents() {
     }
   }
 
-  /* waMode toggle (default type for new messages) */
-  if (currentTheme === 'whatsapp') {
-    const rows = document.querySelectorAll('[data-msg-type]');
-    rows.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const idx = parseInt(btn.dataset.msgIdx);
-        const type = btn.dataset.msgType;
-        const msgs = [...store.get('messages')];
-        msgs[idx].type = type;
-        store.set('messages', msgs);
-      });
-    });
-  }
 }
 
 function bindMessageEvents() {
-  bind('btn-add-message', 'click', () => {
-    const msgs = [...store.get('messages')];
-    msgs.push({ id: Date.now(), text: '', type: store.get('waMode') || 'sent', time: '' });
-    store.set('messages', msgs);
-  });
-
-  /* Text edits */
-  document.querySelectorAll('#wa-message-list textarea[data-msg-idx]').forEach((el) => {
-    el.addEventListener('input', () => {
-      const idx = parseInt(el.dataset.msgIdx);
+  const addBtn = document.getElementById('btn-add-message');
+  if (addBtn) {
+    addBtn.onclick = () => {
       const msgs = [...store.get('messages')];
-      msgs[idx].text = el.value;
+      msgs.push({ id: Date.now(), text: '', type: store.get('waMode') || 'sent', time: '' });
       store.set('messages', msgs);
-    });
-  });
+      updateMessageList(store.getState());
+    };
+  }
 
-  /* Time edits */
-  document.querySelectorAll('[data-msg-field="time"]').forEach((el) => {
-    el.addEventListener('input', () => {
-      const idx = parseInt(el.dataset.msgIdx);
+  const list = document.getElementById('wa-message-list');
+  if (!list) return;
+
+  list.addEventListener('input', (e) => {
+    const el = e.target;
+    const idx = parseInt(el.dataset.msgIdx);
+    if (isNaN(idx)) return;
+
+    if (el.tagName === 'TEXTAREA') {
       const msgs = [...store.get('messages')];
-      msgs[idx].time = el.value;
+      if (msgs[idx]) msgs[idx] = { ...msgs[idx], text: el.value };
       store.set('messages', msgs);
-    });
+    } else if (el.dataset.msgField === 'time') {
+      const msgs = [...store.get('messages')];
+      if (msgs[idx]) msgs[idx] = { ...msgs[idx], time: el.value };
+      store.set('messages', msgs);
+    }
   });
 
-  /* Delete */
-  document.querySelectorAll('[data-msg-action="delete"]').forEach((el) => {
-    el.addEventListener('click', () => {
-      const idx = parseInt(el.dataset.msgIdx);
+  list.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-msg-type], [data-msg-status], [data-msg-action]');
+    if (!btn) return;
+    const idx = parseInt(btn.dataset.msgIdx);
+    if (isNaN(idx)) return;
+
+    if (btn.dataset.msgType) {
+      const msgs = [...store.get('messages')];
+      if (msgs[idx]) msgs[idx] = { ...msgs[idx], type: btn.dataset.msgType };
+      store.set('messages', msgs);
+      updateMessageList(store.getState());
+    } else if (btn.dataset.msgStatus) {
+      const msgs = [...store.get('messages')];
+      if (msgs[idx]) msgs[idx] = { ...msgs[idx], status: btn.dataset.msgStatus };
+      store.set('messages', msgs);
+      updateMessageList(store.getState());
+    } else if (btn.dataset.msgAction === 'delete') {
       const msgs = store.get('messages').filter((_, i) => i !== idx);
       store.set('messages', msgs);
-    });
+      updateMessageList(store.getState());
+    }
   });
+}
 
-  /* Status */
-  document.querySelectorAll('[data-msg-status]').forEach((el) => {
-    el.addEventListener('click', () => {
-      const idx = parseInt(el.dataset.msgIdx);
-      const status = el.dataset.msgStatus;
-      const msgs = [...store.get('messages')];
-      msgs[idx].status = status;
-      store.set('messages', msgs);
-    });
-  });
+function updateMessageList(state) {
+  const container = document.getElementById('wa-message-list');
+  if (!container) return;
+  container.innerHTML = state.messages.map((msg, idx) => renderMessageRow(msg, idx)).join('');
 }
 
 /* ------------------------------------------------------------------ */
@@ -534,6 +537,9 @@ function renderCurrentTheme() {
 }
 
 function syncMockup(key, value, state) {
+  if (_syncing) return;
+  _syncing = true;
+  try {
   const theme = themes[currentTheme];
   if (!theme) return;
 
@@ -588,6 +594,9 @@ function syncMockup(key, value, state) {
   }
 
   theme.sync(state);
+  } finally {
+    _syncing = false;
+  }
 }
 
 function updateAppLibrary(activeTheme) {
@@ -620,6 +629,7 @@ function updateBackground(state) {
 /*  Auto-Scale (Figma-Trick)                                          */
 /* ------------------------------------------------------------------ */
 function fitMockupToScreen() {
+  if (_isExporting) return;
   const canvas = document.getElementById('canvas');
   const card = document.getElementById('mockup-card');
   if (!canvas || !card) return;
@@ -640,6 +650,7 @@ async function downloadPng() {
   const label = document.getElementById('btn-export-label');
   if (!btn || btn.disabled) return;
 
+  _isExporting = true;
   btn.disabled = true;
   if (icon) icon.innerHTML = SVG.spinner;
   if (label) label.textContent = t('topbar.rendering');
@@ -691,6 +702,7 @@ async function downloadPng() {
   }
 
   function resetExportButton() {
+    _isExporting = false;
     btn.disabled = false;
     btn.classList.remove('bg-emerald-500', 'hover:bg-emerald-600');
     btn.classList.add('bg-[#f97316]', 'hover:bg-[#ea580c]');
