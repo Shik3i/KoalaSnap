@@ -1,3 +1,5 @@
+import { currentLocale } from '../i18n.js';
+
 const PLACEHOLDER_INITIALS = '?';
 
 function avatarMarkup(src, theme) {
@@ -18,7 +20,7 @@ export function render(state) {
   const mediaBg = isDark ? 'bg-zinc-800' : 'bg-zinc-100';
   const mediaText = isDark ? 'text-zinc-600' : 'text-zinc-400';
 
-  const time = new Intl.DateTimeFormat('de-DE', {
+  const time = new Intl.DateTimeFormat(currentLocale() === 'de' ? 'de-DE' : 'en-US', {
     hour: '2-digit', minute: '2-digit',
     day: '2-digit', month: 'short', year: 'numeric',
   }).format(new Date());
