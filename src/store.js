@@ -224,6 +224,7 @@ const defaults = {
   waMode: 'sent',
   locale: 'en',
   fontFamily: 'system-ui',
+  _toolbarPos: 'right',
   chatBg: null,
   chatBgGradient: '',
   messages: [

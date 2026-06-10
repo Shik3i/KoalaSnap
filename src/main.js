@@ -127,6 +127,8 @@ const SVG = {
   folder: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>`,
   zoomIn: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>`,
   zoomOut: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>`,
+  dockRight: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>`,
+  dockBottom: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="15" x2="21" y2="15"/></svg>`,
 };
 
 const LANG = currentLocale();
@@ -550,25 +552,57 @@ function renderSharedSettings(state) {
 
 function renderBottomBar(state) {
   const zoom = store.get('_zoom') || 0;
+  const pos = store.get('_toolbarPos') || 'right';
+  return bottomBarHtml(state, pos, zoom);
+}
+
+function bottomBarHtml(state, pos, zoom) {
+  const dockIcon = pos === 'right' ? SVG.dockBottom : SVG.dockRight;
   return `
-    <div id="bottom-bar" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20
-                flex items-center gap-1 rounded-full bg-white/[6%] backdrop-blur-2xl
-                border border-white/[8%] px-2 py-1.5 shadow-2xl shadow-black/30">
+    <div id="bottom-bar" class="absolute z-20 transition-all duration-300
+                flex items-center gap-1 rounded-2xl bg-white/[6%] backdrop-blur-2xl
+                border border-white/[8%] px-2 py-1.5 shadow-2xl shadow-black/30
+                ${pos === 'right' ? 'right-4 top-1/2 -translate-y-1/2 flex-col' : 'bottom-8 left-1/2 -translate-x-1/2 flex-row'}">
+      <button id="btn-toolbar-pos" aria-label="Toggle toolbar position"
+        class="rounded-full p-1.5 text-zinc-500 hover:text-zinc-200 hover:bg-white/10 transition-all" title="Toolbar position">
+        ${dockIcon}
+      </button>
+      <span class="w-px h-4 bg-white/[6%] mx-1 ${pos === 'right' ? 'hidden' : ''}"></span>
+      <span class="h-px w-4 bg-white/[6%] my-1 ${pos !== 'right' ? 'hidden' : ''}"></span>
       <button id="btn-mockup-theme" aria-label="${t('bottom.toggleTheme')}" class="rounded-full p-2 text-zinc-400 hover:text-zinc-200 hover:bg-white/10 transition-all" title="${t('bottom.toggleTheme')}">
         ${state.mockupTheme === 'light' ? SVG.sun : SVG.moon}
       </button>
-      <span class="w-px h-4 bg-white/[6%] mx-1"></span>
+      <span class="w-px h-4 bg-white/[6%] mx-1 ${pos === 'right' ? 'hidden' : ''}"></span>
+      <span class="h-px w-4 bg-white/[6%] my-1 ${pos !== 'right' ? 'hidden' : ''}"></span>
       <button id="btn-zoom-out" aria-label="${t('bottom.zoomOut')}" class="rounded-full p-1.5 text-zinc-500 hover:text-zinc-200 hover:bg-white/10 transition-all" title="${t('bottom.zoomOut')}">
         ${SVG.zoomOut}
       </button>
       <input id="zoom-slider" type="range" min="-50" max="100" value="${zoom}"
-        class="w-20 h-1 accent-[#f97316] cursor-pointer" />
+        class="w-20 h-1 accent-[#f97316] cursor-pointer ${pos === 'right' ? 'hidden' : ''}" />
       <button id="btn-zoom-in" aria-label="${t('bottom.zoomIn')}" class="rounded-full p-1.5 text-zinc-500 hover:text-zinc-200 hover:bg-white/10 transition-all" title="${t('bottom.zoomIn')}">
         ${SVG.zoomIn}
       </button>
-      <span id="zoom-label" class="text-[10px] text-zinc-500 w-8 text-center">${zoom > 0 ? '+' : ''}${zoom}%</span>
+      <span id="zoom-label" class="text-[10px] text-zinc-500 w-8 text-center ${pos === 'right' ? 'hidden' : ''}">${zoom > 0 ? '+' : ''}${zoom}%</span>
     </div>
   `;
+}
+
+function updateToolbarPos(pos) {
+  const bar = document.getElementById('bottom-bar');
+  if (!bar) return;
+  bar.classList.remove('right-4', 'top-1/2', '-translate-y-1/2', 'flex-col', 'bottom-8', 'left-1/2', '-translate-x-1/2', 'flex-row');
+  if (pos === 'right') {
+    bar.classList.add('right-4', 'top-1/2', '-translate-y-1/2', 'flex-col');
+  } else {
+    bar.classList.add('bottom-8', 'left-1/2', '-translate-x-1/2', 'flex-row');
+  }
+  const dockBtn = document.getElementById('btn-toolbar-pos');
+  if (dockBtn) dockBtn.innerHTML = pos === 'right' ? SVG.dockBottom : SVG.dockRight;
+  const isRight = pos === 'right';
+  document.getElementById('zoom-slider')?.classList.toggle('hidden', isRight);
+  document.getElementById('zoom-label')?.classList.toggle('hidden', isRight);
+  bar.querySelectorAll('.mx-1').forEach(el => el.classList.toggle('hidden', isRight));
+  bar.querySelectorAll('.my-1').forEach(el => el.classList.toggle('hidden', !isRight));
 }
 
 /* ------------------------------------------------------------------ */
@@ -659,6 +693,10 @@ function bindEvents() {
   bind('zoom-slider', 'input', onZoomChange);
   bind('btn-zoom-in', 'click', () => changeZoom(10));
   bind('btn-zoom-out', 'click', () => changeZoom(-10));
+  bind('btn-toolbar-pos', 'click', () => {
+    const next = store.get('_toolbarPos') === 'right' ? 'bottom' : 'right';
+    store.set('_toolbarPos', next);
+  });
 
   document.querySelectorAll('[data-chat-bg]').forEach((btn) => {
     btn.addEventListener('click', () => store.set('chatBgGradient', btn.dataset.chatBg));
@@ -1019,6 +1057,11 @@ function syncMockup(key, value, state) {
 
   if (key === '_zoom') {
     applyZoom(value);
+    return;
+  }
+
+  if (key === '_toolbarPos') {
+    updateToolbarPos(value);
     return;
   }
 
