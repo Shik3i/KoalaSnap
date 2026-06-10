@@ -113,6 +113,11 @@ function highlightStep(index) {
   el.classList.add('tutorial-highlight');
   el.style.zIndex = '50';
 
+  /* preserve existing positioning (don't override absolute/fixed) */
+  if (getComputedStyle(el).position === 'static') {
+    el.style.position = 'relative';
+  }
+
   el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
   const rect = el.getBoundingClientRect();
@@ -135,6 +140,7 @@ function removeHighlight(index) {
   if (el) {
     el.classList.remove('tutorial-highlight');
     el.style.zIndex = '';
+    el.style.position = '';
   }
 
   const tooltip = document.getElementById('tutorial-tooltip');
