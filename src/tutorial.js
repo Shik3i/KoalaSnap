@@ -5,7 +5,7 @@ const LS_KEY = 'koalasnap_tutorial_completed';
 const STEPS = [
   { target: 'app-library', key: 'tutorial.step1' },
   { target: 'settings-panel', key: 'tutorial.step2' },
-  { target: 'mockup-container', key: 'tutorial.step3' },
+  { target: 'canvas-area', key: 'tutorial.step3' },
   { target: 'bottom-bar', key: 'tutorial.step4' },
   { target: 'btn-topbar-export', key: 'tutorial.step5' },
 ];
