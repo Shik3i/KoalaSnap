@@ -147,5 +147,30 @@
         { "text": "Looks good, approved! ✅", "type": "sent", "time": "3:10 PM" }
       ]
     }
-  ]
+  ],
+  "seo": {
+    "title": "KoalaSnap — Chat Mockup Generator & Social Post Simulator",
+    "description": "Generate realistic chat simulator screenshots for WhatsApp, Discord, Telegram, Signal, iMessage, and social media. Free, privacy-friendly, and high-resolution PNG exports.",
+    "keywords": "chat mockup, whatsapp simulator, discord simulator, telegram mockup, fake chat generator, social media mockup, koalasnap",
+    "headerTitle": "KoalaSnap — Free Chat Mockup Generator",
+    "headerSubtitle": "Create pixel-perfect mockup screenshots for WhatsApp, Discord, Telegram, Signal, iMessage, and social media posts. Perfect for presentations, tutorials, and content creation.",
+    "featuresTitle": "Powerful Features for Real-Time Customization",
+    "features": {
+      "whatsapp": "Design custom mobile and desktop WhatsApp chat screenshots with status indicators, bubble customization, and read receipts.",
+      "discord": "Simulate Discord server messages, custom usernames, timestamps, and realistic colored user roles.",
+      "others": "Generate pixel-perfect mockups for Telegram, Signal, and Apple iMessage apps with authentic UI components.",
+      "social": "Simulate posts and comments from platforms like X (Twitter), Instagram, and TikTok with author avatar uploads.",
+      "export": "Download Retina-quality PNG images or copy screenshots directly to your clipboard for instant sharing.",
+      "privacy": "Completely client-side rendering. No messages, images, or assets are uploaded to any server. Your data stays in your browser."
+    },
+    "faqTitle": "Frequently Asked Questions (FAQ)",
+    "faq": {
+      "q1": "What is KoalaSnap?",
+      "a1": "KoalaSnap is a free, open-source online utility designed to generate realistic mockup screenshots of various chat and social media platforms. It runs entirely in your local browser.",
+      "q2": "How do I customize the chat templates?",
+      "a2": "Using the settings panel, you can modify contact names, statuses, battery levels, connection states (WiFi/cellular), text bubbles, send/receive status, emojis, reactions, and custom avatars.",
+      "q3": "Is KoalaSnap safe and private to use?",
+      "a3": "Yes, it is 100% private. All avatar uploads, message text changes, and image rendering are performed client-side on your own device. No data is stored, tracked, or sent to any server."
+    }
+  }
 }

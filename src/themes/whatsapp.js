@@ -22,6 +22,13 @@ const CHECK_SENT = `<svg width="14" height="14" viewBox="0 0 16 11" fill="none">
 
 const UNREAD_BADGE = `<svg width="8" height="8" viewBox="0 0 8 8" fill="#53bdeb"><circle cx="4" cy="4" r="4"/></svg>`;
 
+const STATUS_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9" stroke-dasharray="10 4 6 4"/></svg>`;
+const NEW_CHAT_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
+const MENU_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>`;
+const SMILEY_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`;
+const CLIP_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>`;
+const SEARCH_DESKTOP_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
+
 /* Light-mode colours */
 const L = {
   barBg: '#008069',
@@ -71,6 +78,9 @@ function renderSignal(bars) {
 
 export function render(state) {
   const m = mode(state);
+  if (state.viewMode === 'desktop') {
+    return renderDesktop(state, m);
+  }
   const phoneBorder = state.mockupTheme === 'light' ? '#ffffff' : '#121212';
   return `
     <div id="mockup-card" class="mx-auto" style="width:390px; height:844px;font-family:${state.fontFamily};">
@@ -79,6 +89,135 @@ export function render(state) {
         ${renderHeader(state, m)}
         ${renderChat(state, m)}
         ${renderFooter(m)}
+      </div>
+    </div>
+  `;
+}
+
+function renderDesktop(state, m) {
+  const isDark = state.mockupTheme === 'dark';
+  const sidebarBg = isDark ? '#111b21' : '#ffffff';
+  const sidebarHeaderBg = isDark ? '#202c33' : '#f0f2f5';
+  const chatListActiveBg = isDark ? '#2a3942' : '#f0f2f5';
+  const borderCol = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
+  const secondaryText = isDark ? '#8696a0' : '#667781';
+  const primaryText = isDark ? '#e9edef' : '#111b21';
+
+  const lastMsg = state.messages[state.messages.length - 1] || { text: '', time: '' };
+  const lastMsgText = lastMsg.text || (lastMsg.image ? '📷 Photo' : '');
+  const lastMsgTime = lastMsg.time || '';
+  
+  let checkIcon = '';
+  if (lastMsg.type === 'sent') {
+    if (lastMsg.status === 'read') checkIcon = CHECK_READ;
+    else if (lastMsg.status === 'delivered') checkIcon = CHECK_DELIVERED;
+    else if (lastMsg.status === 'sent') checkIcon = CHECK_SENT;
+  }
+
+  const userAvatarHtml = state.avatar
+    ? `<img src="${state.avatar}" class="w-full h-full rounded-full object-cover" />`
+    : `<div class="w-full h-full rounded-full bg-[#2c2c2c] flex items-center justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="#8696a0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>`;
+
+  const targetAvatarHtml = state.avatar
+    ? `<img id="wa-avatar" src="${state.avatar}" class="w-full h-full rounded-full object-cover" />`
+    : `<div id="wa-avatar" class="w-full h-full rounded-full bg-[#2c2c2c] flex items-center justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="#8696a0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>`;
+
+  const bgImg = state.chatBg
+    ? `url(${state.chatBg})`
+    : (state.mockupTheme === 'light' ? 'url(/whatsapp-bg-light.png)' : 'linear-gradient(rgba(11, 20, 26, 0.94), rgba(11, 20, 26, 0.94)), url(/whatsapp-bg-dark.png)');
+  const bgSize = state.chatBg ? 'cover' : '360px';
+  const bgRepeat = state.chatBg ? 'no-repeat' : 'repeat';
+
+  return `
+    <div id="mockup-card" class="mx-auto flex rounded-xl overflow-hidden shadow-2xl border" style="width:1000px; height:700px; font-family:${state.fontFamily}; border-color:${borderCol}; background:${sidebarBg}; color:${primaryText};">
+      <div class="w-[320px] flex flex-col shrink-0 border-r" style="border-color:${borderCol}; background:${sidebarBg};">
+        <div class="h-[59px] shrink-0 flex items-center justify-between px-4" style="background:${sidebarHeaderBg};">
+          <div class="w-10 h-10 rounded-full overflow-hidden">
+            ${userAvatarHtml}
+          </div>
+          <div class="flex items-center gap-4.5" style="color:${secondaryText};">
+            ${STATUS_SVG}
+            ${NEW_CHAT_SVG}
+            ${MENU_SVG}
+          </div>
+        </div>
+        <div class="p-2 shrink-0 border-b flex items-center" style="border-color:${borderCol}; background:${sidebarBg};">
+          <div class="w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs" style="background:${isDark ? '#202c33' : '#f0f2f5'}; color:${secondaryText};">
+            <span>${SEARCH_DESKTOP_SVG}</span>
+            <span class="flex-1 text-left opacity-70">Search or start new chat</span>
+          </div>
+        </div>
+        <div class="flex-1 overflow-y-auto flex flex-col">
+          <div class="flex gap-3 px-3 py-3 cursor-pointer select-none" style="background:${chatListActiveBg};">
+            <div class="w-12 h-12 rounded-full overflow-hidden shrink-0">
+              ${targetAvatarHtml}
+            </div>
+            <div class="flex-1 min-w-0 flex flex-col justify-center">
+              <div class="flex items-center justify-between">
+                <span id="wa-contact-name" class="font-medium text-[15.5px] truncate" style="color:${primaryText};">${escapeHtml(state.username)}</span>
+                <span id="wa-chat-time" class="text-[11.5px] shrink-0" style="color:${secondaryText};">${escapeHtml(lastMsgTime)}</span>
+              </div>
+              <div class="flex items-center gap-1 mt-0.5">
+                ${checkIcon ? `<span class="inline-flex">${checkIcon}</span>` : ''}
+                <span id="wa-chat-last-message" class="text-[13px] truncate flex-1" style="color:${secondaryText};">${escapeHtml(lastMsgText)}</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-3 px-3 py-3 border-t cursor-pointer select-none opacity-40 hover:opacity-60 transition-opacity" style="border-color:${borderCol};">
+            <div class="w-12 h-12 rounded-full bg-zinc-600 flex items-center justify-center shrink-0 text-white font-semibold">W</div>
+            <div class="flex-1 min-w-0 flex flex-col justify-center">
+              <div class="flex items-center justify-between">
+                <span class="font-medium text-[15.5px]" style="color:${primaryText};">Work Group</span>
+                <span class="text-[11.5px]" style="color:${secondaryText};">16:45</span>
+              </div>
+              <span class="text-[13px] truncate" style="color:${secondaryText};">John: Let's schedule a meeting</span>
+            </div>
+          </div>
+          <div class="flex gap-3 px-3 py-3 border-t cursor-pointer select-none opacity-40 hover:opacity-60 transition-opacity" style="border-color:${borderCol};">
+            <div class="w-12 h-12 rounded-full bg-zinc-600 flex items-center justify-center shrink-0 text-white font-semibold">M</div>
+            <div class="flex-1 min-w-0 flex flex-col justify-center">
+              <div class="flex items-center justify-between">
+                <span class="font-medium text-[15.5px]" style="color:${primaryText};">Mom</span>
+                <span class="text-[11.5px]" style="color:${secondaryText};">Yesterday</span>
+              </div>
+              <span class="text-[13px] truncate" style="color:${secondaryText};">Love you! ❤️</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flex-1 flex flex-col min-w-0">
+        <div class="h-[59px] shrink-0 flex items-center justify-between px-4 border-l" style="background:${sidebarHeaderBg}; border-color:${borderCol};">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 rounded-full overflow-hidden shrink-0">
+              ${targetAvatarHtml}
+            </div>
+            <div class="min-w-0">
+              <div id="wa-contact-name-header" class="font-medium text-[15.5px] truncate" style="color:${primaryText};">${escapeHtml(state.username)}</div>
+              <div id="wa-status-text" class="text-[12px] truncate" style="color:${secondaryText};">${escapeHtml(state.statusText || 'online')}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-5" style="color:${secondaryText};">
+            ${SEARCH_DESKTOP_SVG}
+            ${MENU_SVG}
+          </div>
+        </div>
+        <div id="wa-chat-container" class="flex-1 p-6 overflow-y-auto" style="background:var(--chat-bg, ${m.chatBg});background-image:${bgImg};background-size:${bgSize};background-repeat:${bgRepeat}">
+          <div id="wa-messages" class="flex flex-col gap-0.5 relative max-w-[800px] mx-auto">
+            ${state.messages.map((msg, idx) => renderBubble(msg, idx, state, m)).join('')}
+          </div>
+        </div>
+        <div class="h-[62px] shrink-0 flex items-center gap-3 px-4 py-2 border-l" style="background:${sidebarHeaderBg}; border-color:${borderCol}; color:${secondaryText};">
+          <div class="flex items-center gap-4">
+            ${SMILEY_SVG}
+            ${CLIP_SVG}
+          </div>
+          <div class="flex-1 rounded-lg px-4 py-2.5 text-[14.5px] flex items-center" style="background:${m.fieldBg}; color:${isDark ? '#e9edef' : '#111b21'};">
+            <span class="opacity-50">Type a message</span>
+          </div>
+          <div>
+            ${MIC_SVG}
+          </div>
+        </div>
       </div>
     </div>
   `;
@@ -243,6 +382,10 @@ function renderFooter(m) {
 }
 
 export function sync(state) {
+  if (state.viewMode === 'desktop') {
+    syncDesktop(state);
+    return;
+  }
   const m = mode(state);
   const statusBar = document.getElementById('wa-statusbar');
   if (statusBar) {
@@ -279,6 +422,64 @@ export function sync(state) {
   const chatContainer = document.getElementById('wa-chat-container');
   if (chatContainer) {
     const m = mode(state);
+    const bgImg = state.chatBg
+      ? `url(${state.chatBg})`
+      : (state.mockupTheme === 'light' ? 'url(/whatsapp-bg-light.png)' : 'linear-gradient(rgba(11, 20, 26, 0.94), rgba(11, 20, 26, 0.94)), url(/whatsapp-bg-dark.png)');
+    const bgSize = state.chatBg ? 'cover' : '360px';
+    const bgRepeat = state.chatBg ? 'no-repeat' : 'repeat';
+    chatContainer.style.background = `var(--chat-bg, ${m.chatBg})`;
+    chatContainer.style.backgroundImage = bgImg;
+    chatContainer.style.backgroundSize = bgSize;
+    chatContainer.style.backgroundRepeat = bgRepeat;
+  }
+}
+
+function syncDesktop(state) {
+  const m = mode(state);
+  
+  byId('wa-contact-name', (el) => { el.textContent = state.username; });
+  byId('wa-contact-name-header', (el) => { el.textContent = state.username; });
+  byId('wa-status-text', (el) => { el.textContent = state.statusText || 'online'; });
+  
+  const lastMsg = state.messages[state.messages.length - 1] || { text: '', time: '' };
+  const lastMsgText = lastMsg.text || (lastMsg.image ? '📷 Photo' : '');
+  byId('wa-chat-time', (el) => { el.textContent = lastMsg.time || ''; });
+  
+  let checkIcon = '';
+  if (lastMsg.type === 'sent') {
+    if (lastMsg.status === 'read') checkIcon = CHECK_READ;
+    else if (lastMsg.status === 'delivered') checkIcon = CHECK_DELIVERED;
+    else if (lastMsg.status === 'sent') checkIcon = CHECK_SENT;
+  }
+  byId('wa-chat-last-message', (el) => {
+    el.innerHTML = `${checkIcon ? `<span class="inline-flex mr-1">${checkIcon}</span>` : ''}${escapeHtml(lastMsgText)}`;
+  });
+
+  const slots = document.querySelectorAll('#wa-avatar');
+  slots.forEach(slot => {
+    if (state.avatar) {
+      const img = document.createElement('img');
+      img.id = 'wa-avatar';
+      img.src = state.avatar;
+      img.className = 'w-full h-full rounded-full object-cover';
+      img.alt = '';
+      slot.replaceWith(img);
+    } else {
+      const div = document.createElement('div');
+      div.id = 'wa-avatar';
+      div.className = 'w-full h-full rounded-full bg-[#2c2c2c] flex items-center justify-center';
+      div.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="#8696a0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+      slot.replaceWith(div);
+    }
+  });
+
+  const msgContainer = document.getElementById('wa-messages');
+  if (msgContainer) {
+    msgContainer.innerHTML = state.messages.map((msg, idx) => renderBubble(msg, idx, state, m)).join('');
+  }
+
+  const chatContainer = document.getElementById('wa-chat-container');
+  if (chatContainer) {
     const bgImg = state.chatBg
       ? `url(${state.chatBg})`
       : (state.mockupTheme === 'light' ? 'url(/whatsapp-bg-light.png)' : 'linear-gradient(rgba(11, 20, 26, 0.94), rgba(11, 20, 26, 0.94)), url(/whatsapp-bg-dark.png)');

@@ -204,6 +204,7 @@ function createStore(defaults) {
 const defaults = {
   _version: STATE_VERSION,
   theme: 'whatsapp',
+  viewMode: 'mobile',
   author: 'Maya',
   handle: '@maya_99',
   username: 'Maya',

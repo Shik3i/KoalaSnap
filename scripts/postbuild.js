@@ -60,6 +60,91 @@ for (const lang of LOCALES) {
     .join('\n') +
     `\n    <link rel="alternate" hreflang="x-default" href="${SITE_URL}/" />`;
 
+  const canonicalUrl = lang === 'en' ? `${SITE_URL}/` : `${SITE_URL}/${lang}/`;
+
+  /* Dynamic SEO / GEO / AEO meta tags */
+  const metaTagsHtml = `
+    <meta name="description" content="${localeData.seo.description}" />
+    <meta name="keywords" content="${localeData.seo.keywords}" />
+    <link rel="canonical" href="${canonicalUrl}" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="${localeData.seo.title}" />
+    <meta property="og:description" content="${localeData.seo.description}" />
+    <meta property="og:url" content="${canonicalUrl}" />
+    <meta property="og:image" content="${SITE_URL}/koalasnap-192.png" />
+    <meta property="og:site_name" content="KoalaSnap" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="${localeData.seo.title}" />
+    <meta name="twitter:description" content="${localeData.seo.description}" />
+    <meta name="twitter:image" content="${SITE_URL}/koalasnap-192.png" />
+
+    <!-- Schema.org JSON-LD (GEO / AEO) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "KoalaSnap",
+      "alternateName": "KoalaSnap Mockup Editor",
+      "url": "${canonicalUrl}",
+      "image": "${SITE_URL}/koalasnap-192.png",
+      "description": "${localeData.seo.description}",
+      "applicationCategory": "DesignApplication, UtilitiesApplication",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires JavaScript. Requires HTML5.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "KoalaSnap",
+        "url": "https://koalasnap.net"
+      }
+    }
+    </script>
+  `;
+
+  /* Localized static fallback content (GEO / AEO / crawlers) */
+  const fallbackHtml = `
+    <main style="position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0;">
+      <h1>${localeData.seo.headerTitle}</h1>
+      <p>${localeData.seo.headerSubtitle}</p>
+      
+      <section>
+        <h2>${localeData.seo.featuresTitle}</h2>
+        <ul>
+          <li><strong>WhatsApp Simulator:</strong> ${localeData.seo.features.whatsapp}</li>
+          <li><strong>Discord Simulator:</strong> ${localeData.seo.features.discord}</li>
+          <li><strong>Telegram & iMessage:</strong> ${localeData.seo.features.others}</li>
+          <li><strong>Social Media Post Mockups:</strong> ${localeData.seo.features.social}</li>
+          <li><strong>Instant Export:</strong> ${localeData.seo.features.export}</li>
+          <li><strong>Privacy First:</strong> ${localeData.seo.features.privacy}</li>
+        </ul>
+      </section>
+
+      <section id="faq">
+        <h2>${localeData.seo.faqTitle}</h2>
+        <article>
+          <h3>${localeData.seo.faq.q1}</h3>
+          <p>${localeData.seo.faq.a1}</p>
+        </article>
+        <article>
+          <h3>${localeData.seo.faq.q2}</h3>
+          <p>${localeData.seo.faq.a2}</p>
+        </article>
+        <article>
+          <h3>${localeData.seo.faq.q3}</h3>
+          <p>${localeData.seo.faq.a3}</p>
+        </article>
+      </section>
+    </main>
+  `;
+
   /* External locale JS file (avoids CSP 'script-src' blocking inline scripts) */
   const localeScript = `window.__LOCALE__=${localeJson}`;
   const localeFileName = `locale.${lang}.js`;
@@ -67,6 +152,9 @@ for (const lang of LOCALES) {
 
   const outHtml = html
     .replace('<html lang="de"', `<html lang="${lang}"`)
+    .replace('<title>KoalaSnap — Mockup Editor</title>', `<title>${localeData.seo.title}</title>`)
+    .replace('<!-- SEO_META_TAGS -->', metaTagsHtml)
+    .replace('<!-- SEO_FALLBACK_CONTENT -->', fallbackHtml)
     .replace(
       '</head>',
       `  ${hreflangLinks}\n    <script src="/${localeFileName}"></script>\n  </head>`,

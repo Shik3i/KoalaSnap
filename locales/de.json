@@ -147,5 +147,30 @@
         { "text": "Sieht gut aus, approved! ✅", "type": "sent", "time": "15:10" }
       ]
     }
-  ]
+  ],
+  "seo": {
+    "title": "KoalaSnap — Chat Mockup Generator & Social-Media-Simulator",
+    "description": "Erstelle realistische Chat-Simulator-Screenshots für WhatsApp, Discord, Telegram, Signal, iMessage und Social Media. Kostenlos, datenschutzfreundlich und mit Retina-PNG-Export.",
+    "keywords": "Chat Mockup, WhatsApp Simulator, Discord Simulator, Fake Chat Generator, Social Media Mockup, KoalaSnap",
+    "headerTitle": "KoalaSnap — Kostenloser Chat-Mockup-Generator",
+    "headerSubtitle": "Erstelle pixelgenaue Mockup-Screenshots für WhatsApp, Discord, Telegram, Signal, iMessage und Social-Media-Beiträge. Perfekt für Präsentationen, Tutorials und Content Creation.",
+    "featuresTitle": "Leistungsstarke Funktionen für Echtzeit-Anpassung",
+    "features": {
+      "whatsapp": "Gestalte individuelle WhatsApp-Chats für Mobilgeräte und Desktop mit Statusanzeigen, Blasenanpassung und Lesebestätigungen.",
+      "discord": "Simuliere Discord-Server-Nachrichten mit benutzerdefinierten Benutzernamen, Zeitstempeln und realistisch eingefärbten Benutzerrollen.",
+      "others": "Generiere pixelgenaue Mockups für Telegram, Signal und Apple iMessage mit authentischen UI-Komponenten.",
+      "social": "Simuliere Beiträge und Kommentare für Plattformen wie X (Twitter), Instagram und TikTok inklusive Avatar-Upload.",
+      "export": "Lade Bilder in Retina-Qualität als PNG herunter oder kopiere sie direkt in deine Zwischenablage zur sofortigen Verwendung.",
+      "privacy": "Vollständig clientseitige Generierung. Es werden keine Nachrichten, Bilder oder Avatare an Server übertragen. Deine Daten bleiben bei dir."
+    },
+    "faqTitle": "Häufig gestellte Fragen (FAQ)",
+    "faq": {
+      "q1": "Was ist KoalaSnap?",
+      "a1": "KoalaSnap ist ein kostenloses, quelloffenes Online-Tool zur Erstellung realistischer Mockup-Screenshots verschiedener Chat- und Social-Media-Plattformen. Es läuft vollständig lokal in deinem Browser.",
+      "q2": "Wie passe ich die Chat-Vorlagen an?",
+      "a2": "Über die Einstellungen kannst du Kontaktnamen, Online-Status, Akkuladung, Verbindungstyp (WLAN/Mobilfunk), Textblasen, Sende-/Empfangszustand, Emojis, Reaktionen und Avatare anpassen.",
+      "q3": "Ist die Nutzung von KoalaSnap sicher und privat?",
+      "a3": "Ja, KoalaSnap ist absolut datenschutzfreundlich. Alle Uploads von Avataren, Texteingaben und die Bildgenerierung finden lokal auf deinem Gerät statt. Es werden keine Daten an Server gesendet."
+    }
+  }
 }

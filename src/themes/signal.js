@@ -71,6 +71,9 @@ function renderSignal(bars) {
 
 export function render(state) {
   const m = mode(state);
+  if (state.viewMode === 'desktop') {
+    return renderDesktop(state, m);
+  }
   const phoneBorder = state.mockupTheme === 'light' ? '#ffffff' : '#121212';
   return `
     <div id="mockup-card" class="mx-auto" style="width:390px; height:844px;font-family:${state.fontFamily};">
@@ -79,6 +82,98 @@ export function render(state) {
         ${renderHeader(state, m)}
         ${renderChat(state, m)}
         ${renderFooter(m)}
+      </div>
+    </div>
+  `;
+}
+
+function renderDesktop(state, m) {
+  const isDark = state.mockupTheme === 'dark';
+  const sidebarBg = isDark ? '#1e1e21' : '#ffffff';
+  const headerBg = isDark ? '#2e2f33' : '#f8f9fa';
+  const activeChatBg = isDark ? '#3d3e42' : '#f0f2f5';
+  const borderCol = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
+  const secondaryText = isDark ? '#9e9ea2' : '#5c636a';
+  const primaryText = isDark ? '#f8f9fa' : '#1a1a1a';
+
+  const lastMsg = state.messages[state.messages.length - 1] || { text: '', time: '' };
+  const lastMsgText = lastMsg.text || (lastMsg.image ? '📷 Photo' : '');
+  const lastMsgTime = lastMsg.time || '';
+
+  const targetAvatarHtml = state.avatar
+    ? `<img id="sg-avatar" src="${state.avatar}" class="w-full h-full rounded-full object-cover" />`
+    : `<div id="sg-avatar" class="w-full h-full rounded-full bg-[#2c2c2c] flex items-center justify-center text-white text-[13px] font-bold">${escapeHtml(state.username.slice(0, 2))}</div>`;
+
+  return `
+    <div id="mockup-card" class="mx-auto flex rounded-xl overflow-hidden shadow-2xl border" style="width:1000px; height:700px; font-family:${state.fontFamily}; border-color:${borderCol}; background:${sidebarBg}; color:${primaryText};">
+      <!-- Sidebar -->
+      <div class="w-[300px] flex flex-col shrink-0 border-r" style="border-color:${borderCol}; background:${sidebarBg};">
+        <div class="p-3 shrink-0 flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-zinc-600 flex items-center justify-center cursor-pointer select-none">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </div>
+          <div class="flex-1 flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs" style="background:${isDark ? '#2e2f33' : '#f0f2f5'}; color:${secondaryText};">
+            <span class="opacity-70">Search</span>
+          </div>
+        </div>
+        <div class="flex-1 overflow-y-auto flex flex-col">
+          <div class="flex gap-3 px-3 py-2.5 cursor-pointer select-none" style="background:${activeChatBg};">
+            <div class="w-11 h-11 rounded-full overflow-hidden shrink-0">
+              ${targetAvatarHtml}
+            </div>
+            <div class="flex-1 min-w-0 flex flex-col justify-center">
+              <div class="flex items-center justify-between">
+                <span id="sg-contact-name" class="font-medium text-[15px] truncate" style="color:${primaryText};">${escapeHtml(state.username)}</span>
+                <span id="sg-chat-time" class="text-[12px] shrink-0" style="color:${secondaryText};">${escapeHtml(lastMsgTime)}</span>
+              </div>
+              <div class="flex items-center gap-1 mt-0.5">
+                <span id="sg-chat-last-message" class="text-[13px] truncate flex-1" style="color:${secondaryText};">${escapeHtml(lastMsgText)}</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-3 px-3 py-2.5 cursor-pointer select-none opacity-40 hover:opacity-60 transition-opacity">
+            <div class="w-11 h-11 rounded-full bg-blue-600 flex items-center justify-center shrink-0 text-white font-semibold text-[13px]">J</div>
+            <div class="flex-1 min-w-0 flex flex-col justify-center">
+              <div class="flex items-center justify-between">
+                <span class="font-medium text-[15px]" style="color:${primaryText};">Julia</span>
+                <span class="text-[12px]" style="color:${secondaryText};">12:30</span>
+              </div>
+              <span class="text-[13px] truncate" style="color:${secondaryText};">See you later!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Chat Pane -->
+      <div class="flex-1 flex flex-col min-w-0">
+        <!-- Header -->
+        <div class="h-[56px] shrink-0 flex items-center justify-between px-5 border-l" style="background:${headerBg}; border-color:${borderCol};">
+          <div class="min-w-0">
+            <div id="sg-contact-name-header" class="font-medium text-[15.5px] truncate" style="color:${primaryText};">${escapeHtml(state.username)}</div>
+            <div id="sg-status-text" class="text-[12px] truncate" style="color:${secondaryText};">${escapeHtml(state.statusText || 'online')}</div>
+          </div>
+          <div class="flex items-center gap-5" style="color:${secondaryText};">
+            ${VIDEO_SVG}
+            ${PHONE_SVG}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+          </div>
+        </div>
+        <!-- Messages -->
+        <div id="sg-chat-container" class="flex-1 p-6 overflow-y-auto" style="background:var(--chat-bg, ${m.chatBg})${state.chatBg ? `;background-image:url(${state.chatBg});background-size:cover` : ''}">
+          <div id="sg-messages" class="flex flex-col gap-0.5 max-w-[720px] mx-auto">
+            ${state.messages.map((msg, idx) => renderBubble(msg, idx, state, m)).join('')}
+          </div>
+        </div>
+        <!-- Input Footer -->
+        <div class="p-3 shrink-0 flex items-center gap-3 border-l" style="background:${headerBg}; border-color:${borderCol}; text-align: left;">
+          <span style="color:${secondaryText};">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </span>
+          <div class="flex-1 rounded-xl px-4 py-2.5 text-[14.5px] flex items-center" style="background:${m.fieldBg}; color:${m.fieldText};">
+            <span class="opacity-50">New Message</span>
+          </div>
+          <span style="color:${secondaryText};">${EMOJI_SVG}</span>
+          <span style="color:${secondaryText};">${MIC_SVG}</span>
+        </div>
       </div>
     </div>
   `;
@@ -225,58 +320,110 @@ function renderFooter(m) {
   return `
     <div class="flex items-center gap-2 px-3 py-2 shrink-0" style="background:${m.inputBg}">
       <span>${EMOJI_SVG}</span>
-      <div class="flex-1 rounded-xl px-4 py-1.5 text-[15px]" style="background:${m.fieldBg};color:${m.placeholder}">Message</div>
-      <span>${ATTACH_SVG}</span>
-      <span>${MIC_SVG}</span>
-    </div>
-  `;
-}
+              <div class="flex-1 rounded-xl px-4 py-1.5 text-[15px]" style="background:${m.fieldBg};color:${m.placeholder}">Message</div>
+              <span>${ATTACH_SVG}</span>
+              <span>${MIC_SVG}</span>
+            </div>
+          `;
+        }
 
-export function sync(state) {
-  const m = mode(state);
-  const statusBar = document.getElementById('sg-statusbar');
-  if (statusBar) {
-    statusBar.outerHTML = renderStatusBar(state, m);
-  }
-  byId('sg-contact-name', (el) => { el.textContent = state.username; });
-  byId('sg-status-text', (el) => { el.textContent = state.statusText || 'online'; });
+        export function sync(state) {
+          if (state.viewMode === 'desktop') {
+            syncDesktop(state);
+            return;
+          }
+          const m = mode(state);
+          const statusBar = document.getElementById('sg-statusbar');
+          if (statusBar) {
+            statusBar.outerHTML = renderStatusBar(state, m);
+          }
+          byId('sg-contact-name', (el) => { el.textContent = state.username; });
+          byId('sg-status-text', (el) => { el.textContent = state.statusText || 'online'; });
 
-  const slot = document.getElementById('sg-avatar');
-  if (slot) {
-    if (state.avatar) {
-      const img = document.createElement('img');
-      img.id = 'sg-avatar';
-      img.src = state.avatar;
-      img.className = 'w-full h-full rounded-full object-cover';
-      img.alt = '';
-      slot.replaceWith(img);
-    } else {
-      const div = document.createElement('div');
-      div.id = 'sg-avatar';
-      div.className = 'w-full h-full rounded-full bg-[#2c2c2c] flex items-center justify-center';
-      div.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="#8696a0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
-      slot.replaceWith(div);
-    }
-  }
+          const slot = document.getElementById('sg-avatar');
+          if (slot) {
+            if (state.avatar) {
+              const img = document.createElement('img');
+              img.id = 'sg-avatar';
+              img.src = state.avatar;
+              img.className = 'w-full h-full rounded-full object-cover';
+              img.alt = '';
+              slot.replaceWith(img);
+            } else {
+              const div = document.createElement('div');
+              div.id = 'sg-avatar';
+              div.className = 'w-full h-full rounded-full bg-[#2c2c2c] flex items-center justify-center';
+              div.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="#8696a0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+              slot.replaceWith(div);
+            }
+          }
 
-  const msgContainer = document.getElementById('sg-messages');
-  if (msgContainer) {
-    msgContainer.innerHTML = state.messages.map((msg, idx) => renderBubble(msg, idx, state, m)).join('');
-  }
+          const msgContainer = document.getElementById('sg-messages');
+          if (msgContainer) {
+            const m = mode(state);
+            msgContainer.innerHTML = state.messages.map((msg, idx) => renderBubble(msg, idx, state, m)).join('');
+          }
 
-  const chatContainer = document.getElementById('sg-chat-container');
-  if (chatContainer) {
-    chatContainer.style.background = `var(--chat-bg, ${m.chatBg})`;
-    if (state.chatBg) {
-      chatContainer.style.backgroundImage = `url(${state.chatBg})`;
-      chatContainer.style.backgroundSize = 'cover';
-    } else {
-      chatContainer.style.backgroundImage = '';
-    }
-  }
-}
+          const chatContainer = document.getElementById('sg-chat-container');
+          if (chatContainer) {
+            chatContainer.style.background = `var(--chat-bg, ${m.chatBg})`;
+            if (state.chatBg) {
+              chatContainer.style.backgroundImage = `url(${state.chatBg})`;
+              chatContainer.style.backgroundSize = 'cover';
+            } else {
+              chatContainer.style.backgroundImage = '';
+            }
+          }
+        }
 
-function byId(id, fn) {
-  const el = document.getElementById(id);
-  if (el) fn(el);
-}
+        function syncDesktop(state) {
+          const m = mode(state);
+          
+          byId('sg-contact-name', (el) => { el.textContent = state.username; });
+          byId('sg-contact-name-header', (el) => { el.textContent = state.username; });
+          byId('sg-status-text', (el) => { el.textContent = state.statusText || 'online'; });
+          
+          const lastMsg = state.messages[state.messages.length - 1] || { text: '', time: '' };
+          const lastMsgText = lastMsg.text || (lastMsg.image ? '📷 Photo' : '');
+          byId('sg-chat-time', (el) => { el.textContent = lastMsg.time || ''; });
+          byId('sg-chat-last-message', (el) => { el.textContent = lastMsgText; });
+
+          const slots = document.querySelectorAll('#sg-avatar');
+          slots.forEach(slot => {
+            if (state.avatar) {
+              const img = document.createElement('img');
+              img.id = 'sg-avatar';
+              img.src = state.avatar;
+              img.className = 'w-full h-full rounded-full object-cover';
+              img.alt = '';
+              slot.replaceWith(img);
+            } else {
+              const div = document.createElement('div');
+              div.id = 'sg-avatar';
+              div.className = 'w-full h-full rounded-full bg-[#2c2c2c] flex items-center justify-center text-white text-[13px] font-bold';
+              div.textContent = state.username.slice(0, 2);
+              slot.replaceWith(div);
+            }
+          });
+
+          const msgContainer = document.getElementById('sg-messages');
+          if (msgContainer) {
+            msgContainer.innerHTML = state.messages.map((msg, idx) => renderBubble(msg, idx, state, m)).join('');
+          }
+
+          const chatContainer = document.getElementById('sg-chat-container');
+          if (chatContainer) {
+            chatContainer.style.background = `var(--chat-bg, ${m.chatBg})`;
+            if (state.chatBg) {
+              chatContainer.style.backgroundImage = `url(${state.chatBg})`;
+              chatContainer.style.backgroundSize = 'cover';
+            } else {
+              chatContainer.style.backgroundImage = '';
+            }
+          }
+        }
+
+        function byId(id, fn) {
+          const el = document.getElementById(id);
+          if (el) fn(el);
+        }

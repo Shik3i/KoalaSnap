@@ -129,6 +129,8 @@ const SVG = {
   zoomOut: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>`,
   dockRight: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>`,
   dockBottom: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="15" x2="21" y2="15"/></svg>`,
+  mobile: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`,
+  desktop: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`,
 };
 
 const LANG = currentLocale();
@@ -557,6 +559,8 @@ function renderBottomBar(state) {
 
 function bottomBarHtml(state, pos, zoom) {
   const dockIcon = pos === 'right' ? SVG.dockBottom : SVG.dockRight;
+  const viewMode = state.viewMode || 'mobile';
+  const viewIcon = viewMode === 'desktop' ? SVG.mobile : SVG.desktop;
   return `
     <div id="bottom-bar" class="absolute z-20 transition-all duration-300
                 flex items-center gap-1 rounded-2xl bg-white/[6%] backdrop-blur-2xl
@@ -565,6 +569,11 @@ function bottomBarHtml(state, pos, zoom) {
       <button id="btn-toolbar-pos" aria-label="Toggle toolbar position"
         class="rounded-full p-1.5 text-zinc-500 hover:text-zinc-200 hover:bg-white/10 transition-all" title="Toolbar position">
         ${dockIcon}
+      </button>
+      <span class="w-px h-4 bg-white/[6%] mx-1 ${pos === 'right' ? 'hidden' : ''}"></span>
+      <span class="h-px w-4 bg-white/[6%] my-1 ${pos !== 'right' ? 'hidden' : ''}"></span>
+      <button id="btn-view-mode" aria-label="Toggle view mode" class="rounded-full p-2 text-zinc-400 hover:text-zinc-200 hover:bg-white/10 transition-all" title="Toggle Desktop/Mobile View">
+        ${viewIcon}
       </button>
       <span class="w-px h-4 bg-white/[6%] mx-1 ${pos === 'right' ? 'hidden' : ''}"></span>
       <span class="h-px w-4 bg-white/[6%] my-1 ${pos !== 'right' ? 'hidden' : ''}"></span>
@@ -672,6 +681,10 @@ function bindEvents() {
   bind('btn-mockup-theme', 'click', () => {
     const next = store.get('mockupTheme') === 'light' ? 'dark' : 'light';
     store.set('mockupTheme', next);
+  });
+  bind('btn-view-mode', 'click', () => {
+    const next = store.get('viewMode') === 'desktop' ? 'mobile' : 'desktop';
+    store.set('viewMode', next);
   });
   bind('lang-btn', 'click', (e) => {
     e.stopPropagation();
@@ -1043,6 +1056,14 @@ function syncMockup(key, value, state) {
     return;
   }
 
+  if (key === 'viewMode') {
+    const btn = document.getElementById('btn-view-mode');
+    if (btn) btn.innerHTML = value === 'desktop' ? SVG.mobile : SVG.desktop;
+    renderCurrentTheme();
+    fitMockupToScreen();
+    return;
+  }
+
   if (key === 'mockupTheme') {
     const btn = document.getElementById('btn-mockup-theme');
     if (btn) btn.innerHTML = value === 'light' ? SVG.sun : SVG.moon;
@@ -1143,7 +1164,14 @@ function fitMockupToScreen() {
   const mockup = document.getElementById('mockup');
   if (!canvas || !mockup) return;
   const rect = canvas.getBoundingClientRect();
-  const baseScale = Math.min(rect.width / 390, rect.height / 844) * 0.8;
+  const card = document.getElementById('mockup-card');
+  let cardWidth = 390;
+  let cardHeight = 844;
+  if (card) {
+    cardWidth = parseInt(card.style.width) || card.offsetWidth || 390;
+    cardHeight = parseInt(card.style.height) || card.offsetHeight || 844;
+  }
+  const baseScale = Math.min(rect.width / cardWidth, rect.height / cardHeight) * 0.8;
   const zoom = store.get('_zoom') || 0;
   const zoomScale = 1 + (zoom / 100);
   const combinedScale = baseScale * zoomScale;

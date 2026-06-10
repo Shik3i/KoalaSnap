@@ -169,6 +169,20 @@ export function render(state) {
   const isDark = state.mockupTheme === 'dark';
   const platform = state.theme || 'twitter';
 
+  if (state.viewMode === 'desktop') {
+    switch (platform) {
+      case 'instagram':
+        return renderInstagramDesktop(state, isDark);
+      case 'messenger':
+        return renderMessengerDesktop(state, isDark);
+      case 'tiktok':
+        return renderTiktokDesktop(state, isDark);
+      case 'twitter':
+      default:
+        return renderTwitterDesktop(state, isDark);
+    }
+  }
+
   switch (platform) {
     case 'instagram':
       return renderInstagram(state, isDark);
@@ -183,6 +197,10 @@ export function render(state) {
 }
 
 export function sync(state) {
+  if (state.viewMode === 'desktop') {
+    syncDesktop(state);
+    return;
+  }
   const platform = state.theme || 'twitter';
 
   /* fields used by multiple layouts */
@@ -197,6 +215,341 @@ export function sync(state) {
   } else {
     byId('mockup-avatar', (el) => { if (el) avatarToggle(el, state, state.mockupTheme === 'dark'); });
   }
+}
+
+function syncDesktop(state) {
+  const isDark = state.mockupTheme === 'dark';
+  byId('mockup-author', (el) => { if (el) el.textContent = state.author; });
+  byId('mockup-author-header', (el) => { if (el) el.textContent = state.author; });
+  byId('mockup-message', (el) => { if (el) el.textContent = state.message; });
+  byId('mockup-message-preview', (el) => { if (el) el.textContent = state.message; });
+
+  const slots = document.querySelectorAll('#mockup-avatar');
+  slots.forEach(slot => {
+    avatarToggle(slot, state, isDark);
+  });
+}
+
+function renderTwitterDesktop(state, isDark) {
+  const cardBg = isDark ? '#000000' : '#ffffff';
+  const sidebarBg = isDark ? '#000000' : '#ffffff';
+  const textPrimary = isDark ? 'text-zinc-100' : 'text-zinc-900';
+  const textSecondary = 'text-zinc-500';
+  const border = isDark ? 'border-zinc-800' : 'border-zinc-200';
+  
+  const avatarHtml = avatarMarkup(state.avatar, isDark);
+
+  return `
+    <div id="mockup-card" class="mx-auto flex rounded-xl overflow-hidden shadow-2xl border" style="width:1100px; height:750px; font-family:${state.fontFamily}; border-color:${isDark ? '#2f3336' : '#eff3f4'}; background:${cardBg};">
+      <div class="w-[250px] shrink-0 border-r flex flex-col justify-between p-4" style="border-color:${isDark ? '#2f3336' : '#eff3f4'}; background:${sidebarBg};">
+        <div class="flex flex-col gap-6">
+          <div class="px-2 cursor-pointer text-white">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </div>
+          <div class="flex flex-col gap-1 text-left">
+            <div class="flex items-center gap-4 px-3 py-2.5 rounded-full hover:bg-white/10 font-bold text-lg cursor-pointer ${textPrimary}">
+              <span>🏠</span> <span>Home</span>
+            </div>
+            <div class="flex items-center gap-4 px-3 py-2.5 rounded-full hover:bg-white/10 font-medium text-lg cursor-pointer ${textSecondary}">
+              <span>🔍</span> <span>Explore</span>
+            </div>
+            <div class="flex items-center gap-4 px-3 py-2.5 rounded-full hover:bg-white/10 font-medium text-lg cursor-pointer ${textSecondary}">
+              <span>🔔</span> <span>Notifications</span>
+            </div>
+            <div class="flex items-center gap-4 px-3 py-2.5 rounded-full hover:bg-white/10 font-medium text-lg cursor-pointer ${textSecondary}">
+              <span>✉️</span> <span>Messages</span>
+            </div>
+            <div class="flex items-center gap-4 px-3 py-2.5 rounded-full hover:bg-white/10 font-medium text-lg cursor-pointer ${textSecondary}">
+              <span>👤</span> <span>Profile</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 p-2 rounded-full hover:bg-white/10 cursor-pointer text-left">
+          <div class="w-10 h-10 rounded-full overflow-hidden shrink-0">
+            ${avatarHtml}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="font-bold text-sm truncate ${textPrimary}">${escapeHtml(state.author)}</div>
+            <div class="text-xs truncate ${textSecondary}">@${escapeHtml(state.handle)}</div>
+          </div>
+        </div>
+      </div>
+      <div class="flex-1 flex flex-col min-w-0 text-left">
+        <div class="h-14 shrink-0 flex items-center px-4 border-b font-bold text-lg select-none" style="border-color:${isDark ? '#2f3336' : '#eff3f4'}; background:${cardBg}; color:${isDark ? '#fff' : '#000'};">
+          Post
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-full overflow-hidden shrink-0">
+              ${avatarHtml}
+            </div>
+            <div>
+              <div id="mockup-author" class="font-bold text-[16px] leading-tight ${textPrimary}">${escapeHtml(state.author)}</div>
+              <div class="text-[14px] ${textSecondary}">@${escapeHtml(state.handle)}</div>
+            </div>
+          </div>
+          <div id="mockup-message" class="text-[20px]/[1.4] whitespace-pre-wrap break-words ${textPrimary}">${escapeHtml(state.message)}</div>
+          <div class="w-full h-[320px] rounded-xl ${isDark ? 'bg-zinc-800' : 'bg-zinc-100'} flex items-center justify-center ${textSecondary} text-sm" style="${state.chatBg ? `background-image:url(${state.chatBg});background-size:cover;background-position:center;` : ''}">
+            ${state.chatBg ? '' : '📷'}
+          </div>
+          <div class="text-[14.5px] py-1 border-y ${border} ${textSecondary} select-none">
+            7:18 PM · Jun 10, 2026 · <span class="font-semibold ${textPrimary}">142.5K</span> Views
+          </div>
+          <div class="flex gap-6 py-1 border-b ${border} text-[14px] ${textSecondary} select-none">
+            <span><strong class="font-semibold ${textPrimary}">3</strong> Reposts</span>
+            <span><strong class="font-semibold ${textPrimary}">12</strong> Likes</span>
+            <span><strong class="font-semibold ${textPrimary}">1</strong> Bookmark</span>
+          </div>
+          <div class="flex items-center justify-around py-1 border-b ${border} ${textSecondary} select-none">
+            <span class="cursor-pointer hover:text-sky-500">${REPLY_SVG}</span>
+            <span class="cursor-pointer hover:text-emerald-500">${RETWEET_SVG}</span>
+            <span class="cursor-pointer hover:text-rose-500">${HEART_SVG}</span>
+            <span class="cursor-pointer hover:text-sky-500">${SHARE_SVG}</span>
+          </div>
+        </div>
+      </div>
+      <div class="w-[350px] shrink-0 border-l p-4 flex flex-col gap-4 text-left" style="border-color:${isDark ? '#2f3336' : '#eff3f4'}; background:${sidebarBg};">
+        <div class="flex items-center gap-3 px-4 py-2.5 rounded-full text-sm" style="background:${isDark ? '#202327' : '#eff3f4'}; color:${textSecondary};">
+          <span>🔍</span> <span>Search X</span>
+        </div>
+        <div class="rounded-2xl p-4 flex flex-col gap-3" style="background:${isDark ? '#16181c' : '#f7f9f9'};">
+          <h3 class="font-bold text-lg ${textPrimary}">What's happening</h3>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-xs ${textSecondary}">Technology · Trending</span>
+            <span class="font-bold text-sm ${textPrimary}">KoalaSnap v3.0</span>
+            <span class="text-xs ${textSecondary}">10.2K posts</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderInstagramDesktop(state, isDark) {
+  const cardBg = isDark ? '#000000' : '#ffffff';
+  const textPrimary = isDark ? 'text-white' : 'text-zinc-900';
+  const textSecondary = 'text-zinc-500';
+  const border = isDark ? 'border-zinc-800' : 'border-zinc-200';
+  
+  const avatarHtml = avatarMarkup(state.avatar, isDark);
+
+  return `
+    <div id="mockup-card" class="mx-auto flex rounded-xl overflow-hidden shadow-2xl border" style="width:900px; height:600px; font-family:${state.fontFamily}; border-color:${isDark ? '#262626' : '#dbdbdb'}; background:${cardBg};">
+      <div class="flex-1 h-full flex items-center justify-center shrink-0" style="background:${isDark ? '#050505' : '#fafafa'}; border-right:1px solid ${isDark ? '#262626' : '#dbdbdb'};">
+        <div class="w-full h-full flex items-center justify-center" style="${state.chatBg ? `background-image:url(${state.chatBg});background-size:cover;background-position:center;` : ''}">
+          ${state.chatBg ? '' : `<span class="text-3xl text-zinc-500">📷 Photo</span>`}
+        </div>
+      </div>
+      <div class="w-[360px] shrink-0 flex flex-col h-full text-left" style="background:${cardBg};">
+        <div class="flex items-center gap-3 px-4 py-3 border-b shrink-0" style="border-color:${isDark ? '#262626' : '#dbdbdb'};">
+          <div class="w-8 h-8 rounded-full overflow-hidden shrink-0">
+            ${avatarHtml}
+          </div>
+          <div class="flex-1 min-w-0">
+            <span id="mockup-author" class="text-[14px] font-semibold truncate ${textPrimary}">${escapeHtml(state.author)}</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0095f6] cursor-pointer hover:text-white select-none">Follow</span>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
+          <div class="flex items-start gap-3">
+            <div class="w-8 h-8 rounded-full overflow-hidden shrink-0">
+              ${avatarHtml}
+            </div>
+            <div>
+              <span class="text-[14px] font-semibold mr-1.5 ${textPrimary}">${escapeHtml(state.author)}</span>
+              <span id="mockup-message" class="text-[14px] whitespace-pre-wrap break-words ${textPrimary}">${escapeHtml(state.message)}</span>
+            </div>
+          </div>
+          <div class="flex items-start gap-3 opacity-60">
+            <div class="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center text-white text-xs font-bold shrink-0">U</div>
+            <div>
+              <span class="text-[14px] font-semibold mr-1.5 ${textPrimary}">user_99</span>
+              <span class="text-[14px] ${textPrimary}">This looks incredible! 🐨🚀</span>
+            </div>
+          </div>
+        </div>
+        <div class="px-4 py-3 border-t shrink-0 flex flex-col gap-2" style="border-color:${isDark ? '#262626' : '#dbdbdb'};">
+          <div class="flex items-center justify-between text-xl ${textPrimary} select-none">
+            <div class="flex items-center gap-4">
+              <span class="cursor-pointer">${HEART_SVG}</span>
+              <span class="cursor-pointer">${REPLY_SVG}</span>
+              <span class="cursor-pointer">${SHARE_SVG}</span>
+            </div>
+            <span class="cursor-pointer">🔖</span>
+          </div>
+          <div id="mockup-likes" class="text-[14px] font-semibold ${textPrimary}">142 likes</div>
+          <div class="text-[10px] uppercase tracking-wider ${textSecondary}">1 hour ago</div>
+        </div>
+        <div class="px-4 py-3 border-t shrink-0 flex items-center gap-3" style="border-color:${isDark ? '#262626' : '#dbdbdb'};">
+          <span class="text-lg">😊</span>
+          <div class="flex-1 text-[14px] opacity-40">Add a comment...</div>
+          <span class="text-xs font-semibold text-[#0095f6] opacity-50 cursor-pointer select-none">Post</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderTiktokDesktop(state, isDark) {
+  const cardBg = isDark ? '#121212' : '#ffffff';
+  const sidebarBg = isDark ? '#121212' : '#ffffff';
+  const textPrimary = isDark ? 'text-zinc-100' : 'text-zinc-900';
+  const textSecondary = 'text-zinc-500';
+  const border = isDark ? 'border-zinc-800' : 'border-zinc-200';
+  
+  const avatarHtml = avatarMarkup(state.avatar, isDark);
+
+  return `
+    <div id="mockup-card" class="mx-auto flex rounded-xl overflow-hidden shadow-2xl border" style="width:1100px; height:750px; font-family:${state.fontFamily}; border-color:${isDark ? '#2f2f2f' : '#e3e3e3'}; background:${cardBg};">
+      <div class="w-[240px] shrink-0 border-r flex flex-col p-4 gap-6 text-left" style="border-color:${isDark ? '#2f2f2f' : '#e3e3e3'}; background:${sidebarBg};">
+        <div class="flex items-center gap-1.5 px-2 select-none cursor-pointer">
+          <span class="text-xl">🎵</span> <span class="font-black text-xl tracking-tighter ${textPrimary}">TikTok</span>
+        </div>
+        <div class="flex flex-col gap-1">
+          <div class="flex items-center gap-4 px-3 py-2 rounded-lg hover:bg-white/5 font-bold text-lg cursor-pointer text-[#fe2c55]">
+            <span>🏠</span> <span>For You</span>
+          </div>
+          <div class="flex items-center gap-4 px-3 py-2 rounded-lg hover:bg-white/5 font-semibold text-lg cursor-pointer ${textPrimary}">
+            <span>👥</span> <span>Following</span>
+          </div>
+          <div class="flex items-center gap-4 px-3 py-2 rounded-lg hover:bg-white/5 font-semibold text-lg cursor-pointer ${textPrimary}">
+            <span>👀</span> <span>Friends</span>
+          </div>
+          <div class="flex items-center gap-4 px-3 py-2 rounded-lg hover:bg-white/5 font-semibold text-lg cursor-pointer ${textPrimary}">
+            <span>👤</span> <span>Profile</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex-1 flex items-center justify-center shrink-0" style="background:#000000; position:relative;">
+        <div class="w-full h-full flex items-center justify-center" style="${state.chatBg ? `background-image:url(${state.chatBg});background-size:cover;background-position:center;` : ''}">
+          ${state.chatBg ? '' : `<span class="text-4xl text-white opacity-40">${PLAY_SVG}</span>`}
+        </div>
+      </div>
+      <div class="w-[360px] shrink-0 flex flex-col h-full text-left" style="background:${cardBg}; border-left:1px solid ${isDark ? '#2f2f2f' : '#e3e3e3'};">
+        <div class="p-4 border-b flex flex-col gap-3 shrink-0" style="border-color:${isDark ? '#2f2f2f' : '#e3e3e3'};">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full overflow-hidden shrink-0">
+              ${avatarHtml}
+            </div>
+            <div class="flex-1 min-w-0">
+              <span id="mockup-author" class="font-bold text-[15px] truncate block ${textPrimary}">${escapeHtml(state.author)}</span>
+              <span class="text-[13px] truncate block ${textSecondary}">@${escapeHtml(state.handle)}</span>
+            </div>
+            <button class="bg-[#fe2c55] text-white px-4 py-1.5 rounded font-semibold text-xs hover:bg-[#ef234c] transition-all select-none">Follow</button>
+          </div>
+          <div id="mockup-message" class="text-[14.5px] leading-relaxed whitespace-pre-wrap break-words ${textPrimary}">${escapeHtml(state.message)}</div>
+          <div class="text-xs ${textSecondary}">🎵 original sound - ${escapeHtml(state.author)}</div>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
+          <div class="flex items-center justify-around py-2 border-b ${border} select-none">
+            <div class="flex flex-col items-center gap-0.5">
+              <div class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center cursor-pointer text-white">${HEART_SVG}</div>
+              <span id="mockup-likes" class="text-xs ${textSecondary}">12.4k</span>
+            </div>
+            <div class="flex flex-col items-center gap-0.5">
+              <div class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center cursor-pointer text-white">${REPLY_SVG}</div>
+              <span id="mockup-replies" class="text-xs ${textSecondary}">241</span>
+            </div>
+            <div class="flex flex-col items-center gap-0.5">
+              <div class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center cursor-pointer text-white">${SHARE_SVG}</div>
+              <span class="text-xs ${textSecondary}">Share</span>
+            </div>
+          </div>
+          <div class="flex-1 flex flex-col gap-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider ${textSecondary}">Comments</h4>
+            <div class="flex items-start gap-3 opacity-60">
+              <div class="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center text-white text-xs font-bold shrink-0">U</div>
+              <div>
+                <span class="text-xs font-semibold mr-1.5 ${textPrimary}">user_one</span>
+                <p class="text-[13px] ${textPrimary}">Awesome video! 🐨🐨</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderMessengerDesktop(state, isDark) {
+  const cardBg = isDark ? '#181818' : '#ffffff';
+  const sidebarHeaderBg = isDark ? '#1c1c1e' : '#ffffff';
+  const chatListActiveBg = isDark ? '#2e2e2e' : '#f0f2f5';
+  const borderCol = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
+  const secondaryText = isDark ? '#aebac1' : '#65676b';
+  const primaryText = isDark ? '#ffffff' : '#050505';
+
+  const avatarHtml = avatarMarkup(state.avatar, isDark);
+
+  return `
+    <div id="mockup-card" class="mx-auto flex rounded-xl overflow-hidden shadow-2xl border" style="width:1000px; height:700px; font-family:${state.fontFamily}; border-color:${borderCol}; background:${cardBg}; color:${primaryText};">
+      <div class="w-[320px] flex flex-col shrink-0 border-r" style="border-color:${borderCol}; background:${cardBg};">
+        <div class="h-[60px] shrink-0 flex items-center justify-between px-4 text-left" style="background:${sidebarHeaderBg};">
+          <span class="text-xl font-bold ${primaryText}">Chats</span>
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/15 flex items-center justify-center cursor-pointer select-none">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="p-2 shrink-0">
+          <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-full text-xs" style="background:${isDark ? '#2e2e2e' : '#f0f2f5'}; color:${secondaryText};">
+            <span>🔍</span> <span class="opacity-70">Search Messenger</span>
+          </div>
+        </div>
+        <div class="flex-1 overflow-y-auto flex flex-col text-left">
+          <div class="flex gap-3 px-3 py-2.5 cursor-pointer select-none" style="background:${chatListActiveBg};">
+            <div class="w-11 h-11 rounded-full overflow-hidden shrink-0">
+              ${avatarHtml}
+            </div>
+            <div class="flex-1 min-w-0 flex flex-col justify-center">
+              <div class="flex items-center justify-between">
+                <span id="mockup-author" class="font-semibold text-[15px] truncate" style="color:${primaryText};">${escapeHtml(state.author)}</span>
+                <span class="text-[12px] shrink-0" style="color:${secondaryText};">${escapeHtml(state.timestamp)}</span>
+              </div>
+              <div class="flex items-center gap-1 mt-0.5">
+                <span id="mockup-message-preview" class="text-[13px] truncate flex-1" style="color:${secondaryText};">${escapeHtml(state.message)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flex-1 flex flex-col min-w-0 text-left">
+        <div class="h-[60px] shrink-0 flex items-center justify-between px-4 border-b" style="border-color:${borderCol}; background:${sidebarHeaderBg};">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 rounded-full overflow-hidden shrink-0">
+              ${avatarHtml}
+            </div>
+            <div class="min-w-0">
+              <div id="mockup-author-header" class="font-bold text-[15.5px] truncate" style="color:${primaryText};">${escapeHtml(state.author)}</div>
+              <div class="text-[12px] truncate" style="color:${secondaryText};">Active 1m ago</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-5" style="color:#0084ff;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+          </div>
+        </div>
+        <div id="messenger-chat-container" class="flex-1 p-6 overflow-y-auto flex flex-col justify-end" style="background:var(--chat-bg, ${isDark ? '#1a1a2e' : '#f0f2f5'}); ${state.chatBg ? `background-image:url(${state.chatBg});background-size:cover` : ''}">
+          <div class="flex justify-end">
+            <div class="max-w-[70%] rounded-2xl px-4 py-2" style="background:#0084ff;">
+              <p id="mockup-message" class="text-white text-[15px]/[1.4] whitespace-pre-wrap break-words">${escapeHtml(state.message)}</p>
+              <div class="flex items-center justify-end gap-1 mt-0.5">
+                <span class="text-[11px] text-[#ffffffcc]">${escapeHtml(state.timestamp)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="h-[60px] shrink-0 flex items-center gap-3 px-4 py-2 border-t" style="border-color:${borderCol}; background:${sidebarHeaderBg};">
+          <div class="flex-1 rounded-full px-4 py-2.5 text-[15px] bg-[#f0f2f5] text-zinc-400" style="background:${isDark ? '#2e2e2e' : '#f0f2f5'}; color:${isDark ? '#ffffff' : '#000000'};">
+            <span class="opacity-50">Aa</span>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0084ff" stroke-width="2.5" stroke-linecap="round"><polygon points="22 2 11 13 22 2"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 function avatarToggle(slot, state, isDark) {

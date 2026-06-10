@@ -147,5 +147,30 @@
         { "text": "Se ve bien, ¡aprobado! ✅", "type": "sent", "time": "15:10" }
       ]
     }
-  ]
+  ],
+  "seo": {
+    "title": "KoalaSnap — Generador de Chat Mockup y Simulador de Redes Sociales",
+    "description": "Genera capturas de pantalla de chats realistas para WhatsApp, Discord, Telegram, Signal, iMessage y redes sociales. Gratis, centrado en la privacidad y exportación en alta resolución.",
+    "keywords": "chat mockup, simulador whatsapp, simulador discord, generador de chat falso, captura de chat falsa, koalasnap",
+    "headerTitle": "KoalaSnap — Generador Gratuito de Chat Mockup",
+    "headerSubtitle": "Crea capturas de pantalla de maquetas perfectas para WhatsApp, Discord, Telegram, Signal, iMessage y publicaciones de redes sociales. Perfecto para presentaciones, tutoriales y creación de contenido.",
+    "featuresTitle": "Características Potentes para la Personalización en Tiempo Real",
+    "features": {
+      "whatsapp": "Diseña capturas de pantalla de chat de WhatsApp personalizadas para móviles y escritorio con indicadores de estado y confirmaciones de lectura.",
+      "discord": "Simula mensajes de servidor de Discord con nombres de usuario personalizados, marcas de tiempo y roles de usuario realistas de colores.",
+      "others": "Genera maquetas perfectas para las aplicaciones Telegram, Signal y Apple iMessage con componentes de interfaz auténticos.",
+      "social": "Simula publicaciones y comentarios de plataformas como X (Twitter), Instagram y TikTok con subida de avatar del autor.",
+      "export": "Descarga imágenes PNG con calidad Retina o copia capturas de pantalla directamente en tu portapapeles para compartirlas al instante.",
+      "privacy": "Renderizado completamente del lado del cliente. Ningún mensaje, imagen o avatar se sube a ningún servidor. Tus datos permanecen en tu navegador."
+    },
+    "faqTitle": "Preguntas Frecuentes",
+    "faq": {
+      "q1": "¿Qué es KoalaSnap?",
+      "a1": "KoalaSnap es una utilidad en línea gratuita y de código abierto diseñada para generar capturas de pantalla de maquetas realistas de varios chats y redes sociales. Funciona completamente en tu navegador local.",
+      "q2": "¿Cómo puedo personalizar las plantillas de chat?",
+      "a2": "Mediante el panel de configuración, puedes modificar nombres de contacto, estado en línea, nivel de batería, tipo de conexión (WiFi/móvil), burbujas de texto, estados de entrega, emojis, reacciones y avatares.",
+      "q3": "¿Es seguro y privado usar KoalaSnap?",
+      "a3": "Sí, es 100% privado. Todas las cargas de avatar, los cambios de texto de los mensajes y la renderización de imágenes se realizan localmente en tu propio dispositivo. Ningún dato se envía a ningún servidor."
+    }
+  }
 }
