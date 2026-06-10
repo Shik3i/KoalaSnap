@@ -38,7 +38,9 @@
     "social": "Social"
   },
   "bottom": {
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Toggle theme",
+    "imprint": "Imprint",
+    "privacy": "Privacy"
   },
   "tutorial": {
     "step1": "Choose the messenger you want to simulate.",

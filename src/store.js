@@ -1,7 +1,5 @@
 const STORAGE_KEY = 'koalasnap_state';
 
-const AVATAR_FALLBACK_DATA_URL = 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="50" fill="#2c2c2c"/><circle cx="50" cy="46" r="26" fill="#999"/><circle cx="32" cy="28" r="15" fill="#999"/><circle cx="68" cy="28" r="15" fill="#999"/><circle cx="41" cy="41" r="3.5" fill="#1a1a1a"/><circle cx="59" cy="41" r="3.5" fill="#1a1a1a"/><ellipse cx="50" cy="54" rx="8" ry="5.5" fill="#1a1a1a"/></svg>`);
-
 function loadPersisted(defaults) {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -63,7 +61,7 @@ const defaults = {
   roleColor: '#e81224',
   timestamp: '7:18 PM',
   message: 'Hey, are you coming online tonight?',
-  avatar: AVATAR_FALLBACK_DATA_URL,
+  avatar: null,
   bgGradient: 'from-sky-400 to-indigo-600',
   padding: 48,
   mockupTheme: 'light',

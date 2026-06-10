@@ -334,6 +334,8 @@ function renderSharedSettings(state) {
 }
 
 function renderBottomBar(state) {
+  const locale = currentLocale();
+  const prefix = locale === 'de' ? '/de' : '';
   return `
     <div id="bottom-bar" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20
                 flex items-center gap-1 rounded-full bg-white/[6%] backdrop-blur-2xl
@@ -341,6 +343,10 @@ function renderBottomBar(state) {
       <button id="btn-mockup-theme" aria-label="${t('bottom.toggleTheme')}" class="rounded-full p-2 text-zinc-400 hover:text-zinc-200 hover:bg-white/10 transition-all" title="${t('bottom.toggleTheme')}">
         ${state.mockupTheme === 'light' ? SVG.sun : SVG.moon}
       </button>
+      <span class="ml-2 flex items-center gap-2 pl-2 border-l border-white/[6%] text-[10px] text-zinc-600">
+        <a href="${prefix}/imprint" class="hover:text-zinc-400 transition-colors">${t('bottom.imprint')}</a>
+        <a href="${prefix}/privacy" class="hover:text-zinc-400 transition-colors">${t('bottom.privacy')}</a>
+      </span>
     </div>
   `;
 }
@@ -664,18 +670,28 @@ async function downloadPng() {
   el.style.transform = '';
   el.style.transformOrigin = '';
 
+  /* Neutralize avatar images with blob URLs (html-to-image can't load them in clones) */
+  const imgs = el.querySelectorAll('img');
+  const savedSrc = [];
+  imgs.forEach((img, i) => {
+    savedSrc[i] = img.src;
+    if (img.src.startsWith('blob:')) {
+      img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    }
+  });
+
   /* Wait for browser reflow after removing transform */
   await new Promise(r => requestAnimationFrame(r));
 
   try {
     const { toPng } = await import('html-to-image');
-    const dataUrl = await toPng(el, { pixelRatio: 2, cacheBust: true });
+    const dataUrl = await toPng(el, { pixelRatio: 2 });
 
     el.style.transform = origTransform;
     el.style.transformOrigin = origOrigin;
+    imgs.forEach((img, i) => { if (savedSrc[i]) img.src = savedSrc[i]; });
 
     const now = new Date();
-    const ts = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
     const filename = `koalasnap-${currentTheme}-${ts}.png`;
 
     const link = document.createElement('a');
@@ -691,6 +707,7 @@ async function downloadPng() {
   } catch (err) {
     el.style.transform = origTransform;
     el.style.transformOrigin = origOrigin;
+    imgs.forEach((img, i) => { if (savedSrc[i]) img.src = savedSrc[i]; });
     console.error('Export failed:', err);
     if (icon) icon.innerHTML = SVG.download;
     if (label) label.textContent = t('topbar.exportFailed');
