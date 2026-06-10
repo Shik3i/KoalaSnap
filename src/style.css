@@ -42,7 +42,6 @@
   background-size: 400% 400%;
   animation: bg-shift 30s ease infinite;
   pointer-events: none;
-  opacity: 0.85;
 }
 
 @media (max-width: 767px) {

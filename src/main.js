@@ -133,7 +133,7 @@ function flagSvg(locale) {
 function renderTopbar(state) {
   const sidebarOpen = store.getSidebarOpen();
   return `
-    <header class="h-14 shrink-0 flex items-center justify-between px-5 border-b border-white/[5%] bg-[#0d0a07]/80 backdrop-blur-xl">
+    <header class="h-14 shrink-0 flex items-center justify-between px-5 border-b border-white/[5%] bg-[#0d0a07]/80 backdrop-blur-xl relative z-50">
       <div class="flex items-center gap-3">
         <div class="text-zinc-100">${SVG.koala}</div>
         <span class="text-sm font-bold tracking-tight hidden sm:inline">${t('app.name')}</span>
@@ -209,9 +209,9 @@ function renderSidebar(state) {
   const sidebarOpen = store.getSidebarOpen();
   const locale = currentLocale();
   const prefix = locale === 'de' ? '/de' : '';
-  if (!sidebarOpen) return '<aside id="sidebar" class="w-0 shrink-0 overflow-hidden transition-all duration-300"></aside>';
+  if (!sidebarOpen) return '<aside id="sidebar" class="w-0 shrink-0 overflow-hidden transition-all duration-300 bg-[#0d0a07] relative z-10"></aside>';
   return `
-    <aside id="sidebar" class="w-[340px] shrink-0 h-full overflow-y-auto p-4 flex flex-col gap-4 transition-all duration-300">
+    <aside id="sidebar" class="w-[340px] shrink-0 h-full overflow-y-auto p-4 flex flex-col gap-4 transition-all duration-300 bg-[#0d0a07] relative z-10">
       <div id="app-library" class="rounded-2xl border border-white/[6%] bg-[#1a1714] p-4 flex flex-col gap-3">
         <div class="flex items-center justify-between cursor-pointer select-none" id="app-library-toggle">
           <span class="text-xs font-semibold text-zinc-300 tracking-wide">${t('sidebar.appLibrary')}</span>
@@ -911,8 +911,8 @@ function updateBackground(state) {
   const colors = GRADIENT_COLORS[state.bgGradient] || ['#0f172a', '#1e1b4b'];
   const dots = `radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px)`;
   const grad = `linear-gradient(135deg, ${colors[0]}, ${colors[1]})`;
-  canvas.style.background = `${dots}, ${grad}`;
-  canvas.style.backgroundSize = '40px 40px, 100% 100%';
+  canvas.style.background = dots;
+  canvas.style.backgroundSize = '40px 40px';
   canvas.style.setProperty('--bg-grad', grad);
 }
 
@@ -1245,6 +1245,10 @@ try {
 } catch {}
 
 renderApp();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
 
 if (!isCompleted()) {
   setTimeout(() => startTutorial(), 800);
