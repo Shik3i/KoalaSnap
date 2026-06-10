@@ -512,7 +512,7 @@
           <button id="lang-btn"
             class="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-full px-2.5 py-1.5 text-xs
                    text-zinc-400 hover:text-zinc-200 hover:border-white/20 outline-0 transition-all cursor-pointer">
-            <span class="text-sm shrink-0 leading-none">${Ee(Ce)}</span>
+            <span class="font-flags text-sm shrink-0 leading-none">${Ee(Ce)}</span>
             <span class="text-[10px] font-semibold leading-none">${Ce.toUpperCase()}</span>
             <span class="text-zinc-500">${v.chevronDown}</span>
           </button>
@@ -520,7 +520,7 @@
             ${["de","en","es"].map(n=>`
               <button data-lang="${n}"
                 class="flex items-center gap-2 w-full px-3 py-2 text-xs text-zinc-300 hover:text-white hover:bg-white/5 transition-all text-left">
-                <span class="text-sm shrink-0 leading-none">${Ee(n)}</span>
+                <span class="font-flags text-sm shrink-0 leading-none">${Ee(n)}</span>
                 ${ti[n]}
               </button>
             `).join("")}

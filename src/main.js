@@ -198,7 +198,7 @@ function renderTopbar(state) {
           <button id="lang-btn"
             class="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-full px-2.5 py-1.5 text-xs
                    text-zinc-400 hover:text-zinc-200 hover:border-white/20 outline-0 transition-all cursor-pointer">
-            <span class="text-sm shrink-0 leading-none">${flagEmoji(LANG)}</span>
+            <span class="font-flags text-sm shrink-0 leading-none">${flagEmoji(LANG)}</span>
             <span class="text-[10px] font-semibold leading-none">${LANG.toUpperCase()}</span>
             <span class="text-zinc-500">${SVG.chevronDown}</span>
           </button>
@@ -206,7 +206,7 @@ function renderTopbar(state) {
             ${['de', 'en', 'es'].map(code => `
               <button data-lang="${code}"
                 class="flex items-center gap-2 w-full px-3 py-2 text-xs text-zinc-300 hover:text-white hover:bg-white/5 transition-all text-left">
-                <span class="text-sm shrink-0 leading-none">${flagEmoji(code)}</span>
+                <span class="font-flags text-sm shrink-0 leading-none">${flagEmoji(code)}</span>
                 ${LANG_LABELS[code]}
               </button>
             `).join('')}
