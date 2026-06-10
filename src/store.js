@@ -66,12 +66,11 @@ const defaults = {
   bgGradient: 'from-sky-400 to-indigo-600',
   padding: 48,
   mockupTheme: 'light',
-  activeFilter: 'all',
   waMode: 'sent',
   messages: [
-    { id: 1, text: 'Hey, kommst du heute Abend online?', type: 'sent', time: '19:18', status: 'read' },
-    { id: 2, text: 'Ja, bin in 5 Minuten da!', type: 'received', time: '19:20', status: 'read' },
-    { id: 3, text: 'Lass uns raiden gehen 🎮', type: 'sent', time: '19:22', status: 'delivered' },
+    { id: 1, text: 'Hey, are you coming online tonight?', type: 'sent', time: '7:18 PM', status: 'read' },
+    { id: 2, text: 'Yeah, give me 5!', type: 'received', time: '7:20 PM', status: 'read' },
+    { id: 3, text: 'Sure, take your time 🐨', type: 'sent', time: '7:21 PM', status: 'delivered' },
   ],
 };
 

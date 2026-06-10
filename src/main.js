@@ -102,25 +102,11 @@ const LANG = currentLocale();
 /*  Layout-Komponenten                                                 */
 /* ------------------------------------------------------------------ */
 function renderTopbar(state) {
-  const filters = [
-    { id: 'all', label: t('topbar.filters.all') },
-    { id: 'free', label: t('topbar.filters.free') },
-    { id: 'favorites', label: t('topbar.filters.favorites') },
-  ];
   return `
     <header class="h-14 shrink-0 flex items-center justify-between px-5 border-b border-white/[5%] bg-[#0d0a07]/80 backdrop-blur-xl">
       <div class="flex items-center gap-3">
         <div class="text-zinc-100">${SVG.koala}</div>
         <span class="text-sm font-bold tracking-tight">${t('app.name')}</span>
-      </div>
-      <div class="flex items-center gap-1.5">
-        ${filters.map((f) => `
-          <button class="filter-pill px-3.5 py-1.5 rounded-full text-xs font-medium transition-all
-            ${state.activeFilter === f.id
-              ? 'bg-white text-zinc-900'
-              : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'}"
-            data-filter="${f.id}" aria-label="${f.label}">${f.label}</button>
-        `).join('')}
       </div>
       <div class="flex items-center gap-2">
         <button id="btn-topbar-export" aria-label="${t('topbar.export')}"
@@ -405,10 +391,6 @@ function bindEvents() {
   });
   bind('btn-start-tour', 'click', () => startTutorial());
 
-  document.querySelectorAll('.filter-pill').forEach((btn) => {
-    btn.addEventListener('click', () => store.set('activeFilter', btn.dataset.filter));
-  });
-
   document.querySelectorAll('[data-gradient]').forEach((btn) => {
     btn.addEventListener('click', () => store.set('bgGradient', btn.dataset.gradient));
   });
@@ -597,16 +579,6 @@ function syncMockup(key, value, state) {
     return;
   }
 
-  if (key === 'activeFilter') {
-    document.querySelectorAll('.filter-pill').forEach((el) => {
-      const isActive = el.dataset.filter === value;
-      el.className = `filter-pill px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
-        isActive ? 'bg-white text-zinc-900' : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'
-      }`;
-    });
-    return;
-  }
-
   /* Avatar-Update: altes Image vorher freigeben */
   if (key === 'avatar') {
     const avatarId = currentTheme === 'discord' ? 'discord-avatar'
@@ -673,11 +645,20 @@ async function downloadPng() {
   if (label) label.textContent = t('topbar.rendering');
 
   const el = document.querySelector('#mockup > div');
-  if (!el) { resetButton(); return; }
+  if (!el) { resetExportButton(); return; }
+
+  /* Temporarily remove CSS transform so html-to-image captures at native size */
+  const origTransform = el.style.transform;
+  const origOrigin = el.style.transformOrigin;
+  el.style.transform = '';
+  el.style.transformOrigin = '';
 
   try {
     const { toPng } = await import('html-to-image');
-    const dataUrl = await toPng(el, { quality: 1, pixelRatio: 2, cacheBust: true });
+    const dataUrl = await toPng(el, { pixelRatio: 2, cacheBust: true, useCORS: true });
+
+    el.style.transform = origTransform;
+    el.style.transformOrigin = origOrigin;
 
     const now = new Date();
     const ts = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
@@ -692,8 +673,11 @@ async function downloadPng() {
     if (label) label.textContent = t('topbar.exported');
     btn.classList.remove('bg-[#f97316]', 'hover:bg-[#ea580c]');
     btn.classList.add('bg-emerald-500', 'hover:bg-emerald-600');
-    setTimeout(resetButton, 2000);
-  } catch {
+    setTimeout(resetExportButton, 2000);
+  } catch (err) {
+    el.style.transform = origTransform;
+    el.style.transformOrigin = origOrigin;
+    console.error('Export failed:', err);
     if (icon) icon.innerHTML = SVG.download;
     if (label) label.textContent = t('topbar.exportFailed');
     btn.disabled = false;
@@ -703,7 +687,7 @@ async function downloadPng() {
     }, 2000);
   }
 
-  function resetButton() {
+  function resetExportButton() {
     btn.disabled = false;
     btn.classList.remove('bg-emerald-500', 'hover:bg-emerald-600');
     btn.classList.add('bg-[#f97316]', 'hover:bg-[#ea580c]');
@@ -749,6 +733,15 @@ function getRandomDummySet() {
 /*  Boot                                                               */
 /* ------------------------------------------------------------------ */
 store.subscribe(syncMockup);
+
+/* Seed locale-appropriate dummy data on first visit (no localStorage yet) */
+try {
+  if (!localStorage.getItem('koalasnap_state')) {
+    const set = getRandomDummySet();
+    if (set) store.mutate(set);
+  }
+} catch {}
+
 renderApp();
 
 if (!isCompleted()) {

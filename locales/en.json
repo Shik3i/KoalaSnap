@@ -4,11 +4,6 @@
     "subtitle": "Mockup Editor"
   },
   "topbar": {
-    "filters": {
-      "all": "All",
-      "free": "Free",
-      "favorites": "Favorites"
-    },
     "export": "Export",
     "rendering": "Rendering…",
     "exported": "Exported!",
@@ -22,9 +17,6 @@
     "settingsFor": "Settings ·",
     "discord": "Discord",
     "socialPost": "Social Post",
-    "allApps": "All",
-    "free": "Free",
-    "favorites": "Favorites",
     "labels": {
       "author": "Author",
       "handle": "Handle",
