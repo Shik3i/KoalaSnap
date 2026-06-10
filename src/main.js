@@ -1108,6 +1108,44 @@ window.addEventListener('resize', fitMockupToScreen);
 /* ------------------------------------------------------------------ */
 /*  Export                                                             */
 /* ------------------------------------------------------------------ */
+
+/**
+ * Convert blob: URLs in <img> elements to data: URLs using a canvas,
+ * so html-to-image doesn't attempt a fetch() that CSP connect-src blocks.
+ * Returns a restore function to put back the original src values.
+ */
+async function replaceBlobUrlsWithDataUrls(el) {
+  const imgs = el.querySelectorAll('img');
+  const saved = [];
+  for (const img of imgs) {
+    if (img.src && img.src.startsWith('blob:')) {
+      saved.push({ img, src: img.src });
+      try {
+        const dataUrl = await new Promise((resolve, reject) => {
+          const i = new Image();
+          i.onload = () => {
+            const c = document.createElement('canvas');
+            c.width = i.naturalWidth;
+            c.height = i.naturalHeight;
+            const ctx = c.getContext('2d');
+            if (!ctx) { reject(new Error('Canvas 2D not supported')); return; }
+            ctx.drawImage(i, 0, 0);
+            resolve(c.toDataURL('image/png'));
+          };
+          i.onerror = reject;
+          i.src = img.src;
+        });
+        img.src = dataUrl;
+      } catch {
+        img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+      }
+    }
+  }
+  return () => {
+    saved.forEach(({ img, src }) => { img.src = src; });
+  };
+}
+
 async function downloadPng() {
   const btn = document.getElementById('btn-topbar-export');
   const icon = document.getElementById('btn-export-icon');
@@ -1129,7 +1167,9 @@ async function downloadPng() {
 
   await new Promise(r => requestAnimationFrame(r));
 
+  let restoreBlobUrls;
   try {
+    restoreBlobUrls = await replaceBlobUrlsWithDataUrls(el);
     const { toPng } = await import('html-to-image');
     const dataUrl = await toPng(el, { pixelRatio: 2 });
 
@@ -1161,6 +1201,8 @@ async function downloadPng() {
       if (label) label.textContent = t('topbar.export');
       if (icon) icon.innerHTML = SVG.download;
     }, 2000);
+  } finally {
+    if (restoreBlobUrls) restoreBlobUrls();
   }
 
   function resetExportButton() {
@@ -1197,24 +1239,22 @@ async function copyToClipboard() {
   if (btn) btn.disabled = true;
   if (icon) icon.innerHTML = SVG.spinner;
   if (label) label.textContent = t('topbar.rendering');
+  const origTransform = el.style.transform;
+  const origOrigin = el.style.transformOrigin;
+  el.style.transform = '';
+  el.style.transformOrigin = '';
+  let restoreBlobUrls;
   try {
-    const origTransform = el.style.transform;
-    const origOrigin = el.style.transformOrigin;
-    el.style.transform = '';
-    el.style.transformOrigin = '';
+    restoreBlobUrls = await replaceBlobUrlsWithDataUrls(el);
     const bgEls = el.querySelectorAll('[style*="background-image"]');
     const savedBg = [];
     bgEls.forEach((bgEl, i) => { savedBg[i] = bgEl.style.backgroundImage; bgEl.style.backgroundImage = 'none'; });
-    const imgs = el.querySelectorAll('img');
-    const savedSrc = [];
-    imgs.forEach((img, i) => { savedSrc[i] = img.src; if (img.src.startsWith('blob:')) img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; });
     await new Promise(r => requestAnimationFrame(r));
     const { toBlob } = await import('html-to-image');
     const blob = await toBlob(el, { pixelRatio: 2 });
     el.style.transform = origTransform;
     el.style.transformOrigin = origOrigin;
     bgEls.forEach((bgEl, i) => { bgEl.style.backgroundImage = savedBg[i]; });
-    imgs.forEach((img, i) => { if (savedSrc[i]) img.src = savedSrc[i]; });
     if (blob) {
       await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
       showToast(t('topbar.copied'));
@@ -1222,6 +1262,8 @@ async function copyToClipboard() {
   } catch (err) {
     console.error('Clipboard copy failed:', err);
     showToast(t('topbar.exportFailed'));
+  } finally {
+    if (restoreBlobUrls) restoreBlobUrls();
   }
   if (btn) btn.disabled = false;
   if (icon) icon.innerHTML = SVG.download;
