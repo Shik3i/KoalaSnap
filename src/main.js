@@ -143,14 +143,14 @@ function renderTopbar(state) {
           ${store.canRedo() ? '' : 'disabled'}>
           ${SVG.redo}
         </button>
-        <div class="relative" id="export-dropdown-container">
+        <div class="relative flex items-center" id="export-dropdown-container">
           <button id="btn-topbar-export" aria-label="${t('topbar.export')}"
-            class="flex items-center gap-1.5 rounded-full bg-[#f97316] px-4 py-1.5 text-xs font-semibold text-white hover:bg-[#ea580c] active:scale-[0.97] transition-all disabled:opacity-60 disabled:pointer-events-none">
+            class="flex items-center gap-1.5 rounded-l-full bg-[#f97316] pl-4 pr-2.5 py-1.5 text-xs font-semibold text-white hover:bg-[#ea580c] active:scale-[0.97] transition-all disabled:opacity-60 disabled:pointer-events-none">
             <span id="btn-export-icon">${SVG.download}</span>
             <span id="btn-export-label">${t('topbar.export')}</span>
           </button>
           <button id="btn-export-chevron" aria-label="${t('topbar.more')}"
-            class="rounded-full bg-[#f97316] px-1.5 py-1.5 text-xs font-semibold text-white hover:bg-[#ea580c] active:scale-[0.97] transition-all -ml-[1px]">
+            class="rounded-r-full bg-[#f97316] px-1.5 py-1.5 text-xs font-semibold text-white hover:bg-[#ea580c] active:scale-[0.97] transition-all">
             ${SVG.chevronDown}
           </button>
           <div id="export-dropdown" class="absolute right-0 top-full mt-1 z-50 hidden min-w-[200px] rounded-xl border border-white/10 bg-[#1a1714]/95 backdrop-blur-2xl py-1 shadow-2xl shadow-black/50">
@@ -394,6 +394,8 @@ function renderMessageRow(msg, idx) {
 }
 
 function renderSharedSettings(state) {
+  const locale = currentLocale();
+  const prefix = locale === 'de' ? '/de' : '';
   return `
     <label class="flex flex-col gap-1.5">
       <span class="text-[10px] uppercase tracking-wider text-zinc-500">${t('sidebar.labels.padding')}</span>
@@ -427,12 +429,14 @@ function renderSharedSettings(state) {
       <input id="input-chatbg" type="file" accept="image/*"
         class="text-xs text-zinc-500 file:mr-3 file:rounded-xl file:border-0 file:bg-white/10 file:px-3 file:py-1.5 file:text-xs file:text-zinc-200 file:font-medium hover:file:bg-white/15 transition-colors" />
     </label>` : ''}
+    <div class="flex items-center gap-3 pt-3 border-t border-white/[6%] mt-4">
+      <a href="${prefix}/imprint" class="text-[10px] text-zinc-600 hover:text-zinc-400 transition-colors">${t('bottom.imprint')}</a>
+      <a href="${prefix}/privacy" class="text-[10px] text-zinc-600 hover:text-zinc-400 transition-colors">${t('bottom.privacy')}</a>
+    </div>
   `;
 }
 
 function renderBottomBar(state) {
-  const locale = currentLocale();
-  const prefix = locale === 'de' ? '/de' : '';
   const zoom = store.get('_zoom') || 0;
   return `
     <div id="bottom-bar" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20
@@ -451,11 +455,6 @@ function renderBottomBar(state) {
         ${SVG.zoomIn}
       </button>
       <span id="zoom-label" class="text-[10px] text-zinc-500 w-8 text-center">${zoom > 0 ? '+' : ''}${zoom}%</span>
-      <span class="w-px h-4 bg-white/[6%] mx-1"></span>
-      <span class="flex items-center gap-2 pl-1 text-[10px] text-zinc-600">
-        <a href="${prefix}/imprint" class="hover:text-zinc-400 transition-colors">${t('bottom.imprint')}</a>
-        <a href="${prefix}/privacy" class="hover:text-zinc-400 transition-colors">${t('bottom.privacy')}</a>
-      </span>
     </div>
   `;
 }

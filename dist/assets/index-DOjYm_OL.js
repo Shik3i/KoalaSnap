@@ -403,14 +403,14 @@
           ${l.canRedo()?"":"disabled"}>
           ${x.redo}
         </button>
-        <div class="relative" id="export-dropdown-container">
+        <div class="relative flex items-center" id="export-dropdown-container">
           <button id="btn-topbar-export" aria-label="${o("topbar.export")}"
-            class="flex items-center gap-1.5 rounded-full bg-[#f97316] px-4 py-1.5 text-xs font-semibold text-white hover:bg-[#ea580c] active:scale-[0.97] transition-all disabled:opacity-60 disabled:pointer-events-none">
+            class="flex items-center gap-1.5 rounded-l-full bg-[#f97316] pl-4 pr-2.5 py-1.5 text-xs font-semibold text-white hover:bg-[#ea580c] active:scale-[0.97] transition-all disabled:opacity-60 disabled:pointer-events-none">
             <span id="btn-export-icon">${x.download}</span>
             <span id="btn-export-label">${o("topbar.export")}</span>
           </button>
           <button id="btn-export-chevron" aria-label="${o("topbar.more")}"
-            class="rounded-full bg-[#f97316] px-1.5 py-1.5 text-xs font-semibold text-white hover:bg-[#ea580c] active:scale-[0.97] transition-all -ml-[1px]">
+            class="rounded-r-full bg-[#f97316] px-1.5 py-1.5 text-xs font-semibold text-white hover:bg-[#ea580c] active:scale-[0.97] transition-all">
             ${x.chevronDown}
           </button>
           <div id="export-dropdown" class="absolute right-0 top-full mt-1 z-50 hidden min-w-[200px] rounded-xl border border-white/10 bg-[#1a1714]/95 backdrop-blur-2xl py-1 shadow-2xl shadow-black/50">
@@ -593,7 +593,7 @@
         </button>
       </div>
     </div>
-  `}function Gn(e){return`
+  `}function Gn(e){const t=X()==="de"?"/de":"";return`
     <label class="flex flex-col gap-1.5">
       <span class="text-[10px] uppercase tracking-wider text-zinc-500">${o("sidebar.labels.padding")}</span>
       <div class="flex items-center gap-3">
@@ -605,10 +605,10 @@
     <label class="flex flex-col gap-1.5">
       <span class="text-[10px] uppercase tracking-wider text-zinc-500">${o("sidebar.labels.background")}</span>
       <div class="flex flex-wrap gap-1.5">
-        ${jn.map(n=>`
-          <button data-gradient="${n.value}" aria-label="${n.label}"
-            class="w-7 h-7 rounded-lg ${n.value} ring-1 ring-white/[8%] hover:ring-white/30 transition-all
-              ${e.bgGradient===n.value?"ring-2 ring-white scale-110":""}"></button>
+        ${jn.map(i=>`
+          <button data-gradient="${i.value}" aria-label="${i.label}"
+            class="w-7 h-7 rounded-lg ${i.value} ring-1 ring-white/[8%] hover:ring-white/30 transition-all
+              ${e.bgGradient===i.value?"ring-2 ring-white scale-110":""}"></button>
         `).join("")}
       </div>
     </label>
@@ -626,7 +626,11 @@
       <input id="input-chatbg" type="file" accept="image/*"
         class="text-xs text-zinc-500 file:mr-3 file:rounded-xl file:border-0 file:bg-white/10 file:px-3 file:py-1.5 file:text-xs file:text-zinc-200 file:font-medium hover:file:bg-white/15 transition-colors" />
     </label>`:""}
-  `}function Vn(e){const t=X()==="de"?"/de":"",i=l.get("_zoom")||0;return`
+    <div class="flex items-center gap-3 pt-3 border-t border-white/[6%] mt-4">
+      <a href="${t}/imprint" class="text-[10px] text-zinc-600 hover:text-zinc-400 transition-colors">${o("bottom.imprint")}</a>
+      <a href="${t}/privacy" class="text-[10px] text-zinc-600 hover:text-zinc-400 transition-colors">${o("bottom.privacy")}</a>
+    </div>
+  `}function Vn(e){const n=l.get("_zoom")||0;return`
     <div id="bottom-bar" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20
                 flex items-center gap-1 rounded-full bg-white/[6%] backdrop-blur-2xl
                 border border-white/[8%] px-2 py-1.5 shadow-2xl shadow-black/30">
@@ -637,17 +641,12 @@
       <button id="btn-zoom-out" aria-label="${o("bottom.zoomOut")}" class="rounded-full p-1.5 text-zinc-500 hover:text-zinc-200 hover:bg-white/10 transition-all" title="${o("bottom.zoomOut")}">
         ${x.zoomOut}
       </button>
-      <input id="zoom-slider" type="range" min="-50" max="100" value="${i}"
+      <input id="zoom-slider" type="range" min="-50" max="100" value="${n}"
         class="w-20 h-1 accent-[#f97316] cursor-pointer" />
       <button id="btn-zoom-in" aria-label="${o("bottom.zoomIn")}" class="rounded-full p-1.5 text-zinc-500 hover:text-zinc-200 hover:bg-white/10 transition-all" title="${o("bottom.zoomIn")}">
         ${x.zoomIn}
       </button>
-      <span id="zoom-label" class="text-[10px] text-zinc-500 w-8 text-center">${i>0?"+":""}${i}%</span>
-      <span class="w-px h-4 bg-white/[6%] mx-1"></span>
-      <span class="flex items-center gap-2 pl-1 text-[10px] text-zinc-600">
-        <a href="${t}/imprint" class="hover:text-zinc-400 transition-colors">${o("bottom.imprint")}</a>
-        <a href="${t}/privacy" class="hover:text-zinc-400 transition-colors">${o("bottom.privacy")}</a>
-      </span>
+      <span id="zoom-label" class="text-[10px] text-zinc-500 w-8 text-center">${n>0?"+":""}${n}%</span>
     </div>
   `}function Nn(){const e=document.getElementById("app");if(!e)return;const n=l.getState(),t=l.getSidebarOpen();e.innerHTML=`
     ${On()}
