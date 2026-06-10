@@ -415,7 +415,6 @@ function bindEvents() {
     btn.addEventListener('click', () => {
       const app = APPS.find((a) => a.id === btn.dataset.app);
       if (app) store.set('theme', app.theme);
-      _collapseAppLibrary();
     });
   });
 
