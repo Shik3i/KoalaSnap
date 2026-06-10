@@ -18,10 +18,6 @@ const CAMERA_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" 
 
 const MIC_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8696a0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>`;
 
-const DARK_DOT = `url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='2' fill='white' opacity='0.04'/%3E%3Ccircle cx='100' cy='60' r='1.5' fill='white' opacity='0.03'/%3E%3Ccircle cx='170' cy='30' r='1' fill='white' opacity='0.04'/%3E%3Ccircle cx='50' cy='120' r='1.5' fill='white' opacity='0.03'/%3E%3Ccircle cx='150' cy='150' r='2' fill='white' opacity='0.04'/%3E%3Ccircle cx='80' cy='180' r='1' fill='white' opacity='0.03'/%3E%3Ccircle cx='20' cy='170' r='1.5' fill='white' opacity='0.03'/%3E%3C/svg%3E")`;
-
-const LIGHT_DOT = `url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='2' fill='black' opacity='0.04'/%3E%3Ccircle cx='100' cy='60' r='1.5' fill='black' opacity='0.03'/%3E%3Ccircle cx='170' cy='30' r='1' fill='black' opacity='0.04'/%3E%3Ccircle cx='50' cy='120' r='1.5' fill='black' opacity='0.03'/%3E%3Ccircle cx='150' cy='150' r='2' fill='black' opacity='0.04'/%3E%3Ccircle cx='80' cy='180' r='1' fill='black' opacity='0.03'/%3E%3Ccircle cx='20' cy='170' r='1.5' fill='black' opacity='0.03'/%3E%3C/svg%3E")`;
-
 const CHECK_READ = `<svg width="14" height="14" viewBox="0 0 16 11" fill="none"><path d="M1 5.5L4.5 9L11 1" stroke="#53bdeb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 5.5L9.5 9L16 1" stroke="#53bdeb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/></svg>`;
 
 const CHECK_DELIVERED = `<svg width="14" height="14" viewBox="0 0 16 11" fill="none"><path d="M1 5.5L4.5 9L11 1" stroke="#8696a0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 5.5L9.5 9L16 1" stroke="#8696a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/></svg>`;
@@ -43,7 +39,6 @@ const L = {
   fieldBg: '#ffffff',
   fieldText: '#111b21',
   placeholder: '#8696a0',
-  dotPattern: LIGHT_DOT,
 };
 
 /* Dark-mode colours */
@@ -54,12 +49,11 @@ const D = {
   recvBg: '#202c33',
   sentText: '#e9edef',
   recvText: '#e9edef',
-  timeText: '#ffffffcc',
+  timeText: '#ffffff8c',
   inputBg: '#202c33',
   fieldBg: '#2a3942',
   fieldText: '#e9edef',
   placeholder: '#8696a0',
-  dotPattern: DARK_DOT,
 };
 
 function mode(state) {
@@ -72,7 +66,7 @@ export function render(state) {
   return `
     <div id="mockup-card" class="mx-auto" style="width:390px; height:844px;font-family:${state.fontFamily};">
       <div class="w-full h-full overflow-hidden rounded-[2.5rem] border-8 flex flex-col" style="border-color:${phoneBorder};background:${phoneBorder}">
-        ${renderStatusBar(m)}
+        ${renderStatusBar(state, m)}
         ${renderHeader(state, m)}
         ${renderChat(state, m)}
         ${renderFooter(m)}
@@ -81,10 +75,10 @@ export function render(state) {
   `;
 }
 
-function renderStatusBar(m) {
+function renderStatusBar(state, m) {
   return `
     <div class="flex items-center justify-between px-6 h-[44px] shrink-0 text-white" style="background:${m.barBg}">
-      <span class="text-[14px] font-semibold tracking-tight" style="font-family:-apple-system,system-ui,sans-serif">09:41</span>
+      <span id="wa-statusbar-time" class="text-[14px] font-semibold tracking-tight" style="font-family:-apple-system,system-ui,sans-serif">${escapeHtml(state.statusBarTime || '09:41')}</span>
       <div class="flex items-center gap-1.5">
         <span class="text-[11px]">${SIGNAL_SVG}</span>
         <span class="text-[11px]">${WIFI_SVG}</span>
@@ -106,7 +100,7 @@ function renderHeader(state, m) {
       </div>
       <div class="flex-1 min-w-0">
         <div id="wa-contact-name" class="text-white text-[15px] font-medium leading-tight truncate">${escapeHtml(state.username)}</div>
-        <div id="wa-status-text" class="text-[#8696a0] text-[11px] leading-tight">online</div>
+        <div id="wa-status-text" class="text-[#aebac1] text-[11px] leading-tight">${escapeHtml(state.statusText || 'online')}</div>
       </div>
       <div class="flex items-center gap-2 shrink-0">
         ${VIDEO_SVG}
@@ -117,26 +111,55 @@ function renderHeader(state, m) {
 }
 
 function renderChat(state, m) {
+  const bgImg = state.chatBg
+    ? `url(${state.chatBg})`
+    : (state.mockupTheme === 'light' ? 'url(/whatsapp-bg-light.png)' : 'url(/whatsapp-bg-dark.png)');
+  const bgSize = state.chatBg ? 'cover' : '360px';
+  const bgRepeat = state.chatBg ? 'no-repeat' : 'repeat';
+
   return `
-    <div class="flex-1 p-4 overflow-y-auto" style="background:var(--chat-bg, ${m.chatBg})${state.chatBg ? `;background-image:url(${state.chatBg});background-size:cover` : `;background-image:${m.dotPattern}`}">
-      <div id="wa-messages" class="flex flex-col gap-3">
-        ${state.messages.map(msg => renderBubble(msg, m)).join('')}
+    <div id="wa-chat-container" class="flex-1 p-4 overflow-y-auto" style="background:var(--chat-bg, ${m.chatBg});background-image:${bgImg};background-size:${bgSize};background-repeat:${bgRepeat}">
+      <div id="wa-messages" class="flex flex-col gap-0.5">
+        ${state.messages.map((msg, idx) => renderBubble(msg, idx, state, m)).join('')}
       </div>
     </div>
   `;
 }
 
-function renderBubble(msg, m) {
+function renderBubble(msg, idx, state, m) {
   const isSent = msg.type === 'sent';
+  const prevMsg = idx > 0 ? state.messages[idx - 1] : null;
+  const isFirstInBlock = !prevMsg || prevMsg.type !== msg.type;
+
   const bg = isSent ? m.sentBg : m.recvBg;
   const textColor = isSent ? m.sentText : m.recvText;
-  const tailColor = bg;
   const align = isSent ? 'justify-end' : 'justify-start';
   const status = msg.status || 'read';
 
-  const tail = isSent
-    ? `<div class="absolute -right-[7px] bottom-[6px] w-0 h-0 border-l-[8px] border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent" style="border-left-color:${tailColor}"></div>`
-    : `<div class="absolute -left-[7px] bottom-[6px] w-0 h-0 border-r-[8px] border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent" style="border-right-color:${tailColor}"></div>`;
+  let tail = '';
+  let borderRadiusClass = 'rounded-[7.5px]';
+  let paddingClass = 'pl-[9px] pr-[9px] py-[6px]';
+  let marginTopClass = isFirstInBlock ? 'mt-2.5' : 'mt-[2px]';
+
+  if (isFirstInBlock) {
+    if (isSent) {
+      borderRadiusClass = 'rounded-[7.5px] rounded-tr-none';
+      paddingClass = 'pl-[9px] pr-[12px] py-[6px]';
+      tail = `<span class="absolute top-0 -right-[8px] w-[8px] h-[13px]" style="color:${bg}">
+        <svg viewBox="0 0 8 13" width="8" height="13">
+          <path fill="currentColor" d="M6.467 3.568L0 12.193V1h5.188c1.77 0 2.338 1.156 1.279 2.568z"/>
+        </svg>
+      </span>`;
+    } else {
+      borderRadiusClass = 'rounded-[7.5px] rounded-tl-none';
+      paddingClass = 'pl-[12px] pr-[9px] py-[6px]';
+      tail = `<span class="absolute top-0 -left-[8px] w-[8px] h-[13px]" style="color:${bg}">
+        <svg viewBox="0 0 8 13" width="8" height="13">
+          <path fill="currentColor" d="M1.533 3.568L8 12.193V1H2.812C1.042 1 .474 2.156 1.533 3.568z"/>
+        </svg>
+      </span>`;
+    }
+  }
 
   let checkIcon = '';
   if (isSent) {
@@ -150,13 +173,12 @@ function renderBubble(msg, m) {
   const unreadDot = isUnread ? `<span class="inline-flex ml-1 -mb-0.5">${UNREAD_BADGE}</span>` : '';
 
   return `
-    <div class="flex ${align}">
-      ${isSent ? '' : '<div class="w-[34px] shrink-0"></div>'}
-      <div class="relative max-w-[80%]">
-        <div class="rounded-2xl px-3.5 py-2" style="background:${bg}">
-          <p class="text-[14.5px]/[1.4] whitespace-pre-wrap break-words ${boldClass}" style="color:${textColor}">${escapeHtml(msg.text)}</p>
-          <div class="flex items-center justify-end gap-1 mt-0.5">
-            <span class="text-[11px] leading-none" style="color:${m.timeText}">${escapeHtml(msg.time)}</span>
+    <div class="flex ${align} ${marginTopClass}">
+      <div class="relative max-w-[85%]">
+        <div class="${borderRadiusClass} ${paddingClass} shadow-[0_1px_0.5px_rgba(0,0,0,0.13)]" style="background:${bg}">
+          <p class="text-[14.2px]/[1.4] whitespace-pre-wrap break-words ${boldClass}" style="color:${textColor}">${escapeHtml(msg.text)}</p>
+          <div class="flex items-center justify-end gap-1 mt-0.5 select-none">
+            <span class="text-[10px] leading-none" style="color:${m.timeText}">${escapeHtml(msg.time)}</span>
             ${checkIcon ? `<span class="inline-flex -mb-0.5">${checkIcon}</span>` : ''}
             ${unreadDot}
           </div>
@@ -180,6 +202,8 @@ function renderFooter(m) {
 
 export function sync(state) {
   byId('wa-contact-name', (el) => { el.textContent = state.username; });
+  byId('wa-status-text', (el) => { el.textContent = state.statusText || 'online'; });
+  byId('wa-statusbar-time', (el) => { el.textContent = state.statusBarTime || '09:41'; });
 
   const slot = document.getElementById('wa-avatar');
   if (slot) {
@@ -202,7 +226,21 @@ export function sync(state) {
   const msgContainer = document.getElementById('wa-messages');
   if (msgContainer) {
     const m = mode(state);
-    msgContainer.innerHTML = state.messages.map(msg => renderBubble(msg, m)).join('');
+    msgContainer.innerHTML = state.messages.map((msg, idx) => renderBubble(msg, idx, state, m)).join('');
+  }
+
+  const chatContainer = document.getElementById('wa-chat-container');
+  if (chatContainer) {
+    const m = mode(state);
+    const bgImg = state.chatBg
+      ? `url(${state.chatBg})`
+      : (state.mockupTheme === 'light' ? 'url(/whatsapp-bg-light.png)' : 'url(/whatsapp-bg-dark.png)');
+    const bgSize = state.chatBg ? 'cover' : '360px';
+    const bgRepeat = state.chatBg ? 'no-repeat' : 'repeat';
+    chatContainer.style.background = `var(--chat-bg, ${m.chatBg})`;
+    chatContainer.style.backgroundImage = bgImg;
+    chatContainer.style.backgroundSize = bgSize;
+    chatContainer.style.backgroundRepeat = bgRepeat;
   }
 }
 

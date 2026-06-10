@@ -35,7 +35,9 @@
       "padding": "Padding",
       "background": "Background",
       "font": "Font",
-      "uploadBg": "Upload Background"
+      "uploadBg": "Upload Background",
+      "statusBarTime": "Status Bar Time",
+      "statusText": "Status Text"
     },
     "addMessage": "Add Message",
     "deleteMessage": "Delete",

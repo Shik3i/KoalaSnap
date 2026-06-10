@@ -200,6 +200,8 @@ const defaults = {
   username: 'Maya',
   roleColor: '#e81224',
   timestamp: '7:18 PM',
+  statusBarTime: '09:41',
+  statusText: 'online',
   message: 'Hey, are you coming online tonight?',
   avatar: null,
   bgGradient: 'from-slate-900 to-indigo-950',

@@ -35,7 +35,9 @@
       "padding": "Margen",
       "background": "Fondo",
       "font": "Fuente",
-      "uploadBg": "Subir fondo"
+      "uploadBg": "Subir fondo",
+      "statusBarTime": "Hora de la barra",
+      "statusText": "Texto de estado"
     },
     "addMessage": "Añadir mensaje",
     "deleteMessage": "Eliminar",

@@ -348,12 +348,18 @@ function renderSettingsFields(state) {
         <span class="text-[10px] uppercase tracking-wider text-zinc-500">${t('sidebar.labels.username')}</span>
         <input id="input-username" type="text" value="${state.username}"
           class="rounded-xl border border-white/[6%] bg-white/[4%] px-3 py-2 text-sm text-zinc-200 placeholder:text-zinc-600 outline-0 focus:border-zinc-600 transition-colors" />
-      </label>`;
-
-    /* WhatsApp: message list + type toggle */
-    if (currentTheme === 'whatsapp') {
-      fields += `
-      <div class="flex flex-col gap-2 mt-2">
+      </label>
+      <label class="flex flex-col gap-1.5 mt-4">
+        <span class="text-[10px] uppercase tracking-wider text-zinc-500">${t('sidebar.labels.statusText')}</span>
+        <input id="input-statusText" type="text" value="${state.statusText || 'online'}"
+          class="rounded-xl border border-white/[6%] bg-white/[4%] px-3 py-2 text-sm text-zinc-200 placeholder:text-zinc-600 outline-0 focus:border-zinc-600 transition-colors" />
+      </label>
+      <label class="flex flex-col gap-1.5 mt-4">
+        <span class="text-[10px] uppercase tracking-wider text-zinc-500">${t('sidebar.labels.statusBarTime')}</span>
+        <input id="input-statusBarTime" type="text" value="${state.statusBarTime || '09:41'}"
+          class="rounded-xl border border-white/[6%] bg-white/[4%] px-3 py-2 text-sm text-zinc-200 placeholder:text-zinc-600 outline-0 focus:border-zinc-600 transition-colors" />
+      </label>
+      <div class="flex flex-col gap-2 mt-4">
         <span class="text-[10px] uppercase tracking-wider text-zinc-500">${t('sidebar.labels.message')}</span>
         <div id="wa-message-list" class="flex flex-col gap-2">
           ${state.messages.map((msg, idx) => renderMessageRow(msg, idx)).join('')}
@@ -361,14 +367,6 @@ function renderSettingsFields(state) {
         <button id="btn-add-message"
           class="w-full rounded-xl border border-dashed border-white/[8%] py-2 text-xs text-zinc-500 hover:text-zinc-300 hover:border-white/20 transition-all">+ ${t('sidebar.addMessage')}</button>
       </div>`;
-    } else {
-      fields += `
-      <label class="flex flex-col gap-1.5 mt-4">
-        <span class="text-[10px] uppercase tracking-wider text-zinc-500">${t('sidebar.labels.timestamp')}</span>
-        <input id="input-timestamp" type="text" value="${state.timestamp}"
-          class="rounded-xl border border-white/[6%] bg-white/[4%] px-3 py-2 text-sm text-zinc-200 placeholder:text-zinc-600 outline-0 focus:border-zinc-600 transition-colors" />
-      </label>`;
-    }
   } else {
     /* Social Post (default) */
     fields = `
@@ -388,7 +386,7 @@ function renderSettingsFields(state) {
     <div id="settings-fields">
       ${fields}
 
-      ${currentTheme !== 'whatsapp' ? `
+      ${!isMessenger && currentTheme !== 'discord' ? `
       <label class="flex flex-col gap-1.5 mt-4">
         <span class="text-[10px] uppercase tracking-wider text-zinc-500">${t('sidebar.labels.message')}</span>
         <textarea id="input-message" rows="3"
@@ -429,6 +427,7 @@ function renderMessageRow(msg, idx) {
           class="flex-1 py-1 rounded-lg text-[10px] font-medium transition-all ${sentActive}">${t('sidebar.sent')}</button>
         <button data-msg-idx="${idx}" data-msg-type="received"
           class="flex-1 py-1 rounded-lg text-[10px] font-medium transition-all ${recvActive}">${t('sidebar.received')}</button>
+        ${isSent ? `
         <div class="flex gap-0.5 ml-1">
           ${MSG_STATUS.map(s => `
             <button data-msg-idx="${idx}" data-msg-status="${s.id}"
@@ -436,6 +435,7 @@ function renderMessageRow(msg, idx) {
               title="${s.title}">${s.svg}</button>
           `).join('')}
         </div>
+        ` : ''}
         <input type="text" data-msg-idx="${idx}" data-msg-field="time" value="${escapeHtml(msg.time)}"
           class="w-14 rounded-lg border border-white/[6%] bg-white/[4%] px-2 py-1 text-[10px] text-zinc-200 text-center outline-0 focus:border-zinc-600 transition-colors" placeholder="${t('sidebar.timePlaceholder')}" />
         <button data-msg-idx="${idx}" data-msg-action="delete"
@@ -740,12 +740,9 @@ function bindSettingsEvents() {
     bind('input-timestamp', 'input', (e) => store.set('timestamp', e.target.value));
   } else if (['whatsapp', 'telegram', 'signal', 'imessage'].includes(currentTheme)) {
     bind('input-username', 'input', (e) => store.set('username', e.target.value));
-
-    if (currentTheme === 'whatsapp') {
-      bindMessageEvents();
-    } else {
-      bind('input-timestamp', 'input', (e) => store.set('timestamp', e.target.value));
-    }
+    bind('input-statusText', 'input', (e) => store.set('statusText', e.target.value));
+    bind('input-statusBarTime', 'input', (e) => store.set('statusBarTime', e.target.value));
+    bindMessageEvents();
   }
 
 }

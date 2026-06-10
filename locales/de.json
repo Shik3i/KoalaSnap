@@ -35,7 +35,9 @@
       "padding": "Abstand",
       "background": "Hintergrund",
       "font": "Schriftart",
-      "uploadBg": "Hintergrund hochladen"
+      "uploadBg": "Hintergrund hochladen",
+      "statusBarTime": "Statusleistenzeit",
+      "statusText": "Statustext"
     },
     "addMessage": "Nachricht hinzufügen",
     "deleteMessage": "Löschen",

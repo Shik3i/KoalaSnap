@@ -13,7 +13,10 @@ const BATTERY_SVG = `<svg width="24" height="12" viewBox="0 0 26 12" fill="none"
 const L = {
   barBg: '#f8f8f8',
   chatBg: '#ffffff',
-  sentBg: '#34c759',
+  sentBg: '#007aff', // Signature iOS blue
+  recvBg: '#e5e5ea',
+  sentText: '#ffffff',
+  recvText: '#000000',
   timeText: '#8e8e93',
   inputBg: '#f8f8f8',
   fieldBg: '#e5e5ea',
@@ -25,7 +28,10 @@ const L = {
 const D = {
   barBg: '#1c1c1e',
   chatBg: '#000000',
-  sentBg: '#34c759',
+  sentBg: '#0a84ff',
+  recvBg: '#262629',
+  sentText: '#ffffff',
+  recvText: '#ffffff',
   timeText: '#8e8e93',
   inputBg: '#1c1c1e',
   fieldBg: '#2c2c2e',
@@ -44,7 +50,7 @@ export function render(state) {
   return `
     <div id="mockup-card" class="mx-auto" style="width:390px; height:844px;font-family:${state.fontFamily};">
       <div class="w-full h-full overflow-hidden rounded-[2.5rem] border-8 flex flex-col" style="border-color:${phoneBorder};background:${phoneBorder}">
-        ${renderStatusBar(m)}
+        ${renderStatusBar(state, m)}
         ${renderNavBar(state, m)}
         ${renderChat(state, m)}
         ${renderInputBar(m)}
@@ -53,11 +59,11 @@ export function render(state) {
   `;
 }
 
-function renderStatusBar(m) {
+function renderStatusBar(state, m) {
   return `
     <div class="flex items-center justify-between px-7 h-[44px] shrink-0" style="background:${m.barBg};color:${m.statusColor}">
       <div class="w-[72px]"></div>
-      <span class="text-[14px] font-semibold tracking-tight" style="font-family:-apple-system,system-ui,sans-serif">9:41</span>
+      <span id="im-statusbar-time" class="text-[14px] font-semibold tracking-tight" style="font-family:-apple-system,system-ui,sans-serif">${escapeHtml(state.statusBarTime || '09:41')}</span>
       <div class="flex items-center gap-1.5 w-[72px] justify-end">
         <span class="text-[11px]">${SIGNAL_SVG}</span>
         <span class="text-[11px]">${WIFI_SVG}</span>
@@ -69,7 +75,7 @@ function renderStatusBar(m) {
 
 function renderNavBar(state, m) {
   return `
-    <div class="flex items-center gap-1 px-2 py-1.5 shrink-0" style="background:${m.barBg};color:${m.navColor}">
+    <div class="flex items-center gap-1 px-2 py-1.5 shrink-0 border-b border-black/[5%] relative z-10" style="background:${m.barBg};color:${m.navColor}">
       <span class="shrink-0 px-1">${BACK_SVG}</span>
       <div class="w-[34px] h-[34px] rounded-full overflow-hidden shrink-0 ml-1">
         ${state.avatar
@@ -78,7 +84,7 @@ function renderNavBar(state, m) {
         }
       </div>
       <div class="flex-1 min-w-0">
-        <div id="im-contact-name" class="text-[15px] font-semibold leading-tight truncate" style="color:${m.statusColor}">${escapeHtml(state.username)}</div>
+        <div id="im-contact-name" class="text-[15px] font-semibold leading-tight truncate ml-2" style="color:${m.statusColor}">${escapeHtml(state.username)}</div>
       </div>
       <div class="flex items-center gap-2 shrink-0 px-1">
         <span style="color:${m.navColor}">${DOWN_ARROW_SVG}</span>
@@ -89,34 +95,88 @@ function renderNavBar(state, m) {
 
 function renderChat(state, m) {
   return `
-    <div class="flex-1 p-3 flex flex-col" style="background:var(--chat-bg, ${m.chatBg})${state.chatBg ? `;background-image:url(${state.chatBg});background-size:cover` : ''}">
-      <div class="flex justify-end">
-        <div class="relative max-w-[80%]">
-          <div class="rounded-2xl px-3.5 py-2" style="background:${m.sentBg}">
-            <p id="im-message" class="text-[#ffffff] text-[16px]/[1.4] whitespace-pre-wrap break-words">${escapeHtml(state.message)}</p>
-          </div>
-          <div class="flex items-center justify-end gap-1 mt-1 pr-1">
-            <span id="im-timestamp" class="text-[11px] leading-none" style="color:${m.timeText}">${escapeHtml(state.timestamp)}</span>
-          </div>
-        </div>
+    <div id="im-chat-container" class="flex-1 p-3 overflow-y-auto" style="background:var(--chat-bg, ${m.chatBg})${state.chatBg ? `;background-image:url(${state.chatBg});background-size:cover` : ''}">
+      <div id="im-messages" class="flex flex-col gap-0.5">
+        ${state.messages.map((msg, idx) => renderBubble(msg, idx, state, m)).join('')}
       </div>
+    </div>
+  `;
+}
+
+function renderBubble(msg, idx, state, m) {
+  const isSent = msg.type === 'sent';
+  const prevMsg = idx > 0 ? state.messages[idx - 1] : null;
+  const nextMsg = idx < state.messages.length - 1 ? state.messages[idx + 1] : null;
+  const isFirstInBlock = !prevMsg || prevMsg.type !== msg.type;
+  const isLastInBlock = !nextMsg || nextMsg.type !== msg.type;
+
+  const bg = isSent ? m.sentBg : m.recvBg;
+  const textColor = isSent ? m.sentText : m.recvText;
+  const align = isSent ? 'justify-end' : 'justify-start';
+
+  let tail = '';
+  let borderRadiusClass = 'rounded-[18px]';
+  let marginTopClass = isFirstInBlock ? 'mt-2.5' : 'mt-[2px]';
+
+  if (isLastInBlock) {
+    if (isSent) {
+      borderRadiusClass = 'rounded-[18px] rounded-br-[4px]';
+      tail = `<span class="absolute bottom-0 -right-[5px] w-[10px] h-[15px]" style="color:${bg}">
+        <svg viewBox="0 0 10 15" width="10" height="15" fill="none">
+          <path fill="currentColor" d="M0 15h10V0C10 6 7 11 0 15z"/>
+        </svg>
+      </span>`;
+    } else {
+      borderRadiusClass = 'rounded-[18px] rounded-bl-[4px]';
+      tail = `<span class="absolute bottom-0 -left-[5px] w-[10px] h-[15px]" style="color:${bg}">
+        <svg viewBox="0 0 10 15" width="10" height="15" fill="none">
+          <path fill="currentColor" d="M10 15H0V0C0 6 3 11 10 15z"/>
+        </svg>
+      </span>`;
+    }
+  }
+
+  // Under iMessage bubbles, the status/time displays as text under the last bubble of the block if it is sent
+  let statusTextElement = '';
+  if (isLastInBlock && isSent && msg.time) {
+    statusTextElement = `
+      <div class="text-[10px] text-right text-zinc-400 mt-1 select-none pr-1.5">
+        ${escapeHtml(msg.time)}
+      </div>
+    `;
+  } else if (isLastInBlock && !isSent && msg.time) {
+    statusTextElement = `
+      <div class="text-[10px] text-left text-zinc-400 mt-1 select-none pl-1.5">
+        ${escapeHtml(msg.time)}
+      </div>
+    `;
+  }
+
+  return `
+    <div class="flex flex-col ${align} ${marginTopClass}">
+      <div class="relative max-w-[75%]">
+        <div class="${borderRadiusClass} px-3.5 py-2" style="background:${bg}">
+          <p class="text-[15.5px]/[1.35] whitespace-pre-wrap break-words" style="color:${textColor}">${escapeHtml(msg.text)}</p>
+        </div>
+        ${tail}
+      </div>
+      ${statusTextElement}
     </div>
   `;
 }
 
 function renderInputBar(m) {
   return `
-    <div class="flex items-center gap-2 px-3 py-2 shrink-0" style="background:${m.inputBg}">
-      <div class="flex-1 rounded-2xl px-4 py-2 text-[16px] leading-none" style="background:${m.fieldBg};color:${m.fieldText}">iMessage</div>
+    <div class="flex items-center gap-2 px-3 py-2 shrink-0 border-t border-black/[5%]" style="background:${m.inputBg}">
+      <div class="flex-1 rounded-2xl px-4 py-2 text-[15px] leading-none" style="background:${m.fieldBg};color:${m.fieldText}">iMessage</div>
       <svg width="24" height="24" viewBox="0 0 24 24" fill="#007aff"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
     </div>
   `;
 }
 
 export function sync(state) {
-  byId('im-message', (el) => { el.textContent = state.message; });
-  byId('im-timestamp', (el) => { el.textContent = state.timestamp; });
   byId('im-contact-name', (el) => { el.textContent = state.username; });
+  byId('im-statusbar-time', (el) => { el.textContent = state.statusBarTime || '09:41'; });
 
   const slot = document.getElementById('im-avatar');
   if (slot) {
@@ -133,6 +193,24 @@ export function sync(state) {
       div.className = 'w-full h-full rounded-full bg-[#2c2c2c] flex items-center justify-center';
       div.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="#8e8e93"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
       slot.replaceWith(div);
+    }
+  }
+
+  const msgContainer = document.getElementById('im-messages');
+  if (msgContainer) {
+    const m = mode(state);
+    msgContainer.innerHTML = state.messages.map((msg, idx) => renderBubble(msg, idx, state, m)).join('');
+  }
+
+  const chatContainer = document.getElementById('im-chat-container');
+  if (chatContainer) {
+    const m = mode(state);
+    chatContainer.style.background = `var(--chat-bg, ${m.chatBg})`;
+    if (state.chatBg) {
+      chatContainer.style.backgroundImage = `url(${state.chatBg})`;
+      chatContainer.style.backgroundSize = 'cover';
+    } else {
+      chatContainer.style.backgroundImage = '';
     }
   }
 }

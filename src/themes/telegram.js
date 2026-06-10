@@ -16,7 +16,9 @@ const WIFI_SVG = `<svg width="16" height="12" viewBox="0 0 18 12" fill="none"><p
 
 const BATTERY_SVG = `<svg width="24" height="12" viewBox="0 0 26 12" fill="none"><rect x="0.5" y="0.5" width="22" height="11" rx="2" stroke="currentColor" fill="none"/><rect x="2" y="2" width="19.5" height="8" rx="1.5" fill="currentColor"/><rect x="24" y="3.5" width="2" height="5" rx="0.75" fill="currentColor"/></svg>`;
 
-const CHECK_SVG = `<svg width="14" height="14" viewBox="0 0 16 11" fill="none"><path d="M1 5.5L4.5 9L11 1" stroke="#ffffffcc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const CHECK_READ = `<svg width="14" height="14" viewBox="0 0 16 11" fill="none"><path d="M1 5.5L4.5 9L11 1" stroke="#ffffffd0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 5.5L9.5 9L16 1" stroke="#ffffffd0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.75"/></svg>`;
+
+const CHECK_SENT = `<svg width="14" height="14" viewBox="0 0 16 11" fill="none"><path d="M1 5.5L4.5 9L11 1" stroke="#ffffffd0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 const DARK_DOT = `url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='2' fill='white' opacity='0.04'/%3E%3Ccircle cx='100' cy='60' r='1.5' fill='white' opacity='0.03'/%3E%3Ccircle cx='170' cy='30' r='1' fill='white' opacity='0.04'/%3E%3Ccircle cx='50' cy='120' r='1.5' fill='white' opacity='0.03'/%3E%3Ccircle cx='150' cy='150' r='2' fill='white' opacity='0.04'/%3E%3Ccircle cx='80' cy='180' r='1' fill='white' opacity='0.03'/%3E%3Ccircle cx='20' cy='170' r='1.5' fill='white' opacity='0.03'/%3E%3C/svg%3E")`;
 
@@ -26,7 +28,11 @@ const L = {
   barBg: '#4e8ad4',
   chatBg: '#eef2f6',
   sentBg: '#8774e1',
+  recvBg: '#ffffff',
+  sentText: '#ffffff',
+  recvText: '#000000',
   timeText: '#00000080',
+  sentTimeText: '#ffffffb3',
   inputBg: '#ffffff',
   fieldBg: '#eef2f6',
   dotPattern: LIGHT_DOT,
@@ -36,7 +42,11 @@ const D = {
   barBg: '#2f6ea5',
   chatBg: '#0f0f0f',
   sentBg: '#8774e1',
-  timeText: '#ffffffcc',
+  recvBg: '#181818',
+  sentText: '#ffffff',
+  recvText: '#ffffff',
+  timeText: '#ffffff8c',
+  sentTimeText: '#ffffffb3',
   inputBg: '#1c1c1e',
   fieldBg: '#2a2a2e',
   dotPattern: DARK_DOT,
@@ -46,10 +56,25 @@ function mode(state) {
   return state.mockupTheme === 'light' ? L : D;
 }
 
-function renderStatusBar(m) {
+export function render(state) {
+  const m = mode(state);
+  const phoneBorder = state.mockupTheme === 'light' ? '#ffffff' : '#121212';
+  return `
+    <div id="mockup-card" class="mx-auto" style="width:390px; height:844px;font-family:${state.fontFamily};">
+      <div class="w-full h-full overflow-hidden rounded-[2.5rem] border-8 flex flex-col" style="border-color:${phoneBorder};background:${phoneBorder}">
+        ${renderStatusBar(state, m)}
+        ${renderHeader(state, m)}
+        ${renderChat(state, m)}
+        ${renderFooter(m)}
+      </div>
+    </div>
+  `;
+}
+
+function renderStatusBar(state, m) {
   return `
     <div class="flex items-center justify-between px-6 h-[44px] shrink-0" style="background:${m.barBg};color:#e9edef">
-      <span class="text-[14px] font-semibold tracking-tight" style="font-family:-apple-system,system-ui,sans-serif">09:41</span>
+      <span id="tg-statusbar-time" class="text-[14px] font-semibold tracking-tight" style="font-family:-apple-system,system-ui,sans-serif">${escapeHtml(state.statusBarTime || '09:41')}</span>
       <div class="flex items-center gap-1.5">
         <span class="text-[11px]">${SIGNAL_SVG}</span>
         <span class="text-[11px]">${WIFI_SVG}</span>
@@ -71,7 +96,7 @@ function renderHeader(state, m) {
       </div>
       <div class="flex-1 min-w-0">
         <div id="tg-contact-name" class="text-white text-[15px] font-medium leading-tight truncate">${escapeHtml(state.username)}</div>
-        <div class="text-[#ffffffcc] text-[11px] leading-tight">online</div>
+        <div id="tg-status-text" class="text-[#ffffffcc] text-[11px] leading-tight">${escapeHtml(state.statusText || 'online')}</div>
       </div>
       <div class="shrink-0">${SEARCH_SVG}</div>
     </div>
@@ -80,18 +105,59 @@ function renderHeader(state, m) {
 
 function renderChat(state, m) {
   return `
-    <div class="flex-1 p-4 overflow-y-auto" style="background:var(--chat-bg, ${m.chatBg})${state.chatBg ? `;background-image:url(${state.chatBg});background-size:cover` : `;background-image:${m.dotPattern}`}">
-      <div class="flex justify-end">
-        <div class="relative max-w-[80%]">
-          <div class="rounded-2xl px-3.5 py-2" style="background:${m.sentBg}">
-            <p id="tg-message" class="text-white text-[15px]/[1.4] whitespace-pre-wrap break-words">${escapeHtml(state.message)}</p>
-            <div class="flex items-center justify-end gap-1 mt-0.5">
-              <span id="tg-time" class="text-[11px] leading-none" style="color:${m.timeText}">${escapeHtml(state.timestamp)}</span>
-              <span class="inline-flex -mb-0.5">${CHECK_SVG}</span>
-            </div>
+    <div id="tg-chat-container" class="flex-1 p-4 overflow-y-auto" style="background:var(--chat-bg, ${m.chatBg})${state.chatBg ? `;background-image:url(${state.chatBg});background-size:cover` : `;background-image:${m.dotPattern}`}">
+      <div id="tg-messages" class="flex flex-col gap-0.5">
+        ${state.messages.map((msg, idx) => renderBubble(msg, idx, state, m)).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderBubble(msg, idx, state, m) {
+  const isSent = msg.type === 'sent';
+  const nextMsg = idx < state.messages.length - 1 ? state.messages[idx + 1] : null;
+  const prevMsg = idx > 0 ? state.messages[idx - 1] : null;
+  const isFirstInBlock = !prevMsg || prevMsg.type !== msg.type;
+  const isLastInBlock = !nextMsg || nextMsg.type !== msg.type;
+
+  const bg = isSent ? m.sentBg : m.recvBg;
+  const textColor = isSent ? m.sentText : m.recvText;
+  const timeColor = isSent ? m.sentTimeText : m.timeText;
+  const align = isSent ? 'justify-end' : 'justify-start';
+  const status = msg.status || 'read';
+
+  let tail = '';
+  let borderRadiusClass = 'rounded-[12px]';
+  let paddingClass = 'px-3.5 py-1.5';
+  let marginTopClass = isFirstInBlock ? 'mt-2.5' : 'mt-[2px]';
+
+  if (isLastInBlock) {
+    if (isSent) {
+      borderRadiusClass = 'rounded-[12px] rounded-br-none';
+      tail = `<div class="absolute -right-[7px] bottom-[5px] w-0 h-0 border-l-[8px] border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent" style="border-left-color:${bg}"></div>`;
+    } else {
+      borderRadiusClass = 'rounded-[12px] rounded-bl-none';
+      tail = `<div class="absolute -left-[7px] bottom-[5px] w-0 h-0 border-r-[8px] border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent" style="border-right-color:${bg}"></div>`;
+    }
+  }
+
+  let checkIcon = '';
+  if (isSent) {
+    if (status === 'read' || status === 'delivered') checkIcon = CHECK_READ;
+    else if (status === 'sent') checkIcon = CHECK_SENT;
+  }
+
+  return `
+    <div class="flex ${align} ${marginTopClass}">
+      <div class="relative max-w-[80%]">
+        <div class="${borderRadiusClass} ${paddingClass} shadow-[0_1px_1px_rgba(0,0,0,0.1)]" style="background:${bg}">
+          <p class="text-[14.5px]/[1.4] whitespace-pre-wrap break-words" style="color:${textColor}">${escapeHtml(msg.text)}</p>
+          <div class="flex items-center justify-end gap-1 mt-0.5 select-none">
+            <span class="text-[10px] leading-none" style="color:${timeColor}">${escapeHtml(msg.time)}</span>
+            ${checkIcon ? `<span class="inline-flex -mb-0.5">${checkIcon}</span>` : ''}
           </div>
-          <div class="absolute -right-[7px] bottom-[6px] w-0 h-0 border-l-[8px] border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent" style="border-left-color:${m.sentBg}"></div>
         </div>
+        ${tail}
       </div>
     </div>
   `;
@@ -108,25 +174,10 @@ function renderFooter(m) {
   `;
 }
 
-export function render(state) {
-  const m = mode(state);
-  const phoneBorder = state.mockupTheme === 'light' ? '#ffffff' : '#121212';
-  return `
-    <div id="mockup-card" class="mx-auto" style="width:390px; height:844px;font-family:${state.fontFamily};">
-      <div class="w-full h-full overflow-hidden rounded-[2.5rem] border-8 flex flex-col" style="border-color:${phoneBorder};background:${phoneBorder}">
-        ${renderStatusBar(m)}
-        ${renderHeader(state, m)}
-        ${renderChat(state, m)}
-        ${renderFooter(m)}
-      </div>
-    </div>
-  `;
-}
-
 export function sync(state) {
   byId('tg-contact-name', (el) => { el.textContent = state.username; });
-  byId('tg-message', (el) => { el.textContent = state.message; });
-  byId('tg-time', (el) => { el.textContent = state.timestamp; });
+  byId('tg-status-text', (el) => { el.textContent = state.statusText || 'online'; });
+  byId('tg-statusbar-time', (el) => { el.textContent = state.statusBarTime || '09:41'; });
 
   const slot = document.getElementById('tg-avatar');
   if (slot) {
@@ -143,6 +194,25 @@ export function sync(state) {
       div.className = 'w-full h-full rounded-full bg-[#527da3] flex items-center justify-center';
       div.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="#e9edef"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
       slot.replaceWith(div);
+    }
+  }
+
+  const msgContainer = document.getElementById('tg-messages');
+  if (msgContainer) {
+    const m = mode(state);
+    msgContainer.innerHTML = state.messages.map((msg, idx) => renderBubble(msg, idx, state, m)).join('');
+  }
+
+  const chatContainer = document.getElementById('tg-chat-container');
+  if (chatContainer) {
+    const m = mode(state);
+    chatContainer.style.background = `var(--chat-bg, ${m.chatBg})`;
+    if (state.chatBg) {
+      chatContainer.style.backgroundImage = `url(${state.chatBg})`;
+      chatContainer.style.backgroundSize = 'cover';
+    } else {
+      chatContainer.style.backgroundImage = m.dotPattern;
+      chatContainer.style.backgroundSize = '';
     }
   }
 }

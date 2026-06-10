@@ -18,14 +18,19 @@ const ATTACH_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" 
 
 const MIC_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8696a0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>`;
 
-const CHECK_SENT = `<svg width="14" height="14" viewBox="0 0 16 11" fill="none"><path d="M1 5.5L4.5 9L11 1" stroke="#ffffffcc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const CHECK_READ = `<svg width="14" height="14" viewBox="0 0 16 11" fill="none"><path d="M1 5.5L4.5 9L11 1" stroke="#ffffffd0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 5.5L9.5 9L16 1" stroke="#ffffffd0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.75"/></svg>`;
+
+const CHECK_SENT = `<svg width="14" height="14" viewBox="0 0 16 11" fill="none"><path d="M1 5.5L4.5 9L11 1" stroke="#ffffffb3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 const L = {
   barBg: '#3b82f6',
   chatBg: '#f0f2f5',
   sentBg: '#3b82f6',
+  recvBg: '#ffffff',
   sentText: '#ffffff',
+  recvText: '#111b21',
   timeText: '#00000080',
+  sentTimeText: '#ffffffb3',
   inputBg: '#f0f2f5',
   fieldBg: '#ffffff',
   fieldText: '#111b21',
@@ -36,8 +41,11 @@ const D = {
   barBg: '#1e1f22',
   chatBg: '#101214',
   sentBg: '#3b82f6',
+  recvBg: '#2b2d30',
   sentText: '#ffffff',
-  timeText: '#ffffffcc',
+  recvText: '#e9edef',
+  timeText: '#ffffff8c',
+  sentTimeText: '#ffffffb3',
   inputBg: '#1e1f22',
   fieldBg: '#2b2d30',
   fieldText: '#e9edef',
@@ -54,7 +62,7 @@ export function render(state) {
   return `
     <div id="mockup-card" class="mx-auto" style="width:390px; height:844px;font-family:${state.fontFamily};">
       <div class="w-full h-full overflow-hidden rounded-[2.5rem] border-8 flex flex-col" style="border-color:${phoneBorder};background:${phoneBorder}">
-        ${renderStatusBar(m)}
+        ${renderStatusBar(state, m)}
         ${renderHeader(state, m)}
         ${renderChat(state, m)}
         ${renderFooter(m)}
@@ -63,10 +71,10 @@ export function render(state) {
   `;
 }
 
-function renderStatusBar(m) {
+function renderStatusBar(state, m) {
   return `
     <div class="flex items-center justify-between px-6 h-[44px] shrink-0 text-white" style="background:${m.barBg}">
-      <span class="text-[14px] font-semibold tracking-tight" style="font-family:-apple-system,system-ui,sans-serif">09:41</span>
+      <span id="sg-statusbar-time" class="text-[14px] font-semibold tracking-tight" style="font-family:-apple-system,system-ui,sans-serif">${escapeHtml(state.statusBarTime || '09:41')}</span>
       <div class="flex items-center gap-1.5">
         <span class="text-[11px]">${SIGNAL_SVG}</span>
         <span class="text-[11px]">${WIFI_SVG}</span>
@@ -88,7 +96,7 @@ function renderHeader(state, m) {
       </div>
       <div class="flex-1 min-w-0">
         <div id="sg-contact-name" class="text-white text-[15px] font-medium leading-tight truncate">${escapeHtml(state.username)}</div>
-        <div class="text-[#ffffffcc] text-[11px] leading-tight">online</div>
+        <div id="sg-status-text" class="text-[#ffffffcc] text-[11px] leading-tight">${escapeHtml(state.statusText || 'online')}</div>
       </div>
       <div class="flex items-center gap-2 shrink-0">
         ${VIDEO_SVG}
@@ -100,17 +108,66 @@ function renderHeader(state, m) {
 
 function renderChat(state, m) {
   return `
-    <div class="flex-1 p-4 overflow-y-auto" style="background:var(--chat-bg, ${m.chatBg})${state.chatBg ? `;background-image:url(${state.chatBg});background-size:cover` : ''}">
-      <div class="flex flex-col items-end gap-3">
-        <div class="flex justify-end">
-          <div class="relative max-w-[80%]">
-            <div class="rounded-2xl px-3.5 py-2" style="background:${m.sentBg}">
-              <p id="sg-message" class="text-[14.5px]/[1.4] whitespace-pre-wrap break-words" style="color:${m.sentText}">${escapeHtml(state.message)}</p>
-              <div class="flex items-center justify-end gap-1 mt-0.5">
-                <span id="sg-time" class="text-[11px] leading-none" style="color:${m.timeText}">${escapeHtml(state.timestamp)}</span>
-                <span class="inline-flex -mb-0.5">${CHECK_SENT}</span>
-              </div>
-            </div>
+    <div id="sg-chat-container" class="flex-1 p-4 overflow-y-auto" style="background:var(--chat-bg, ${m.chatBg})${state.chatBg ? `;background-image:url(${state.chatBg});background-size:cover` : ''}">
+      <div id="sg-messages" class="flex flex-col gap-0.5">
+        ${state.messages.map((msg, idx) => renderBubble(msg, idx, state, m)).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderBubble(msg, idx, state, m) {
+  const isSent = msg.type === 'sent';
+  const prevMsg = idx > 0 ? state.messages[idx - 1] : null;
+  const nextMsg = idx < state.messages.length - 1 ? state.messages[idx + 1] : null;
+  const isFirstInBlock = !prevMsg || prevMsg.type !== msg.type;
+  const isLastInBlock = !nextMsg || nextMsg.type !== msg.type;
+
+  const bg = isSent ? m.sentBg : m.recvBg;
+  const textColor = isSent ? m.sentText : m.recvText;
+  const timeColor = isSent ? m.sentTimeText : m.timeText;
+  const align = isSent ? 'justify-end' : 'justify-start';
+  const status = msg.status || 'read';
+
+  let borderRadiusClass = 'rounded-[16px]';
+  let marginTopClass = isFirstInBlock ? 'mt-2.5' : 'mt-[2px]';
+
+  if (isSent) {
+    if (isFirstInBlock && isLastInBlock) {
+      borderRadiusClass = 'rounded-[16px] rounded-br-[4px]';
+    } else if (isFirstInBlock) {
+      borderRadiusClass = 'rounded-[16px] rounded-tr-[16px] rounded-br-[4px]';
+    } else if (isLastInBlock) {
+      borderRadiusClass = 'rounded-[16px] rounded-br-[4px]';
+    } else {
+      borderRadiusClass = 'rounded-[16px] rounded-tr-[16px] rounded-br-[4px]';
+    }
+  } else {
+    if (isFirstInBlock && isLastInBlock) {
+      borderRadiusClass = 'rounded-[16px] rounded-bl-[4px]';
+    } else if (isFirstInBlock) {
+      borderRadiusClass = 'rounded-[16px] rounded-tl-[16px] rounded-bl-[4px]';
+    } else if (isLastInBlock) {
+      borderRadiusClass = 'rounded-[16px] rounded-bl-[4px]';
+    } else {
+      borderRadiusClass = 'rounded-[16px] rounded-tl-[16px] rounded-bl-[4px]';
+    }
+  }
+
+  let checkIcon = '';
+  if (isSent) {
+    if (status === 'read' || status === 'delivered') checkIcon = CHECK_READ;
+    else if (status === 'sent') checkIcon = CHECK_SENT;
+  }
+
+  return `
+    <div class="flex ${align} ${marginTopClass}">
+      <div class="relative max-w-[80%]">
+        <div class="${borderRadiusClass} px-3.5 py-1.5 shadow-[0_1px_1px_rgba(0,0,0,0.08)]" style="background:${bg}">
+          <p class="text-[14.5px]/[1.4] whitespace-pre-wrap break-words" style="color:${textColor}">${escapeHtml(msg.text)}</p>
+          <div class="flex items-center justify-end gap-1 mt-0.5 select-none">
+            <span class="text-[10px] leading-none" style="color:${timeColor}">${escapeHtml(msg.time)}</span>
+            ${checkIcon ? `<span class="inline-flex -mb-0.5">${checkIcon}</span>` : ''}
           </div>
         </div>
       </div>
@@ -131,8 +188,8 @@ function renderFooter(m) {
 
 export function sync(state) {
   byId('sg-contact-name', (el) => { el.textContent = state.username; });
-  byId('sg-message', (el) => { el.textContent = state.message; });
-  byId('sg-time', (el) => { el.textContent = state.timestamp; });
+  byId('sg-status-text', (el) => { el.textContent = state.statusText || 'online'; });
+  byId('sg-statusbar-time', (el) => { el.textContent = state.statusBarTime || '09:41'; });
 
   const slot = document.getElementById('sg-avatar');
   if (slot) {
@@ -149,6 +206,24 @@ export function sync(state) {
       div.className = 'w-full h-full rounded-full bg-[#2c2c2c] flex items-center justify-center';
       div.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="#8696a0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
       slot.replaceWith(div);
+    }
+  }
+
+  const msgContainer = document.getElementById('sg-messages');
+  if (msgContainer) {
+    const m = mode(state);
+    msgContainer.innerHTML = state.messages.map((msg, idx) => renderBubble(msg, idx, state, m)).join('');
+  }
+
+  const chatContainer = document.getElementById('sg-chat-container');
+  if (chatContainer) {
+    const m = mode(state);
+    chatContainer.style.background = `var(--chat-bg, ${m.chatBg})`;
+    if (state.chatBg) {
+      chatContainer.style.backgroundImage = `url(${state.chatBg})`;
+      chatContainer.style.backgroundSize = 'cover';
+    } else {
+      chatContainer.style.backgroundImage = '';
     }
   }
 }
