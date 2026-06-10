@@ -2,10 +2,37 @@ const STORAGE_KEY = 'koalasnap_state';
 const TEMPLATES_KEY = 'koalasnap_templates';
 const SIDEBAR_KEY = 'koalasnap_sidebar';
 
+const STATE_VERSION = 2;
+
+const OLD_DEFAULTS = {
+  bgGradient: 'from-sky-400 to-indigo-600',
+};
+
+const MIGRATIONS = {
+  1: (state) => {
+    if (state.bgGradient === OLD_DEFAULTS.bgGradient) {
+      state.bgGradient = 'from-slate-900 to-indigo-950';
+    }
+    return state;
+  },
+};
+
 function loadPersisted(defaults) {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return { ...defaults, ...JSON.parse(raw) };
+    if (raw) {
+      const stored = JSON.parse(raw);
+      const ver = stored._version || 1;
+      if (ver < STATE_VERSION) {
+        for (let v = ver; v < STATE_VERSION; v++) {
+          if (MIGRATIONS[v]) MIGRATIONS[v](stored);
+        }
+        stored._version = STATE_VERSION;
+        const { avatar: _, ...rest } = stored;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(rest));
+      }
+      return { ...defaults, ...stored };
+    }
   } catch { /* ignore */ }
   return { ...defaults };
 }
@@ -166,6 +193,7 @@ function createStore(defaults) {
 }
 
 const defaults = {
+  _version: STATE_VERSION,
   theme: 'whatsapp',
   author: 'Maya',
   handle: '@maya_99',
