@@ -7,7 +7,6 @@ export function t(key) {
 
 export function currentLocale() {
   const path = window.location.pathname;
-  if (path.startsWith('/en/')) return 'en';
-  if (path.startsWith('/de/')) return 'de';
-  return 'de';
+  if (path.startsWith('/de/') || path === '/de') return 'de';
+  return 'en';
 }

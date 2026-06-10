@@ -386,7 +386,8 @@ function bindEvents() {
     store.set('mockupTheme', next);
   });
   bind('lang-select', 'change', (e) => {
-    window.location.href = `/${e.target.value}/`;
+    const val = e.target.value;
+    window.location.href = val === 'en' ? '/' : `/${val}/`;
   });
   bind('btn-start-tour', 'click', () => startTutorial());
 
