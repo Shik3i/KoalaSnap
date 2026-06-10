@@ -188,6 +188,8 @@ function renderTopbar(state) {
 
 function renderSidebar(state) {
   const sidebarOpen = store.getSidebarOpen();
+  const locale = currentLocale();
+  const prefix = locale === 'de' ? '/de' : '';
   if (!sidebarOpen) return '<aside id="sidebar" class="w-0 shrink-0 overflow-hidden transition-all duration-300"></aside>';
   return `
     <aside id="sidebar" class="w-[340px] shrink-0 h-full overflow-y-auto p-4 flex flex-col gap-4 transition-all duration-300">
@@ -230,6 +232,11 @@ function renderSidebar(state) {
       </div>
 
       ${renderTemplateSection()}
+
+      <div class="flex items-center gap-4 mt-auto pt-4 border-t border-white/[6%]">
+        <a href="${prefix}/imprint" class="text-[10px] text-zinc-600 hover:text-zinc-200 transition-colors">${t('bottom.imprint')}</a>
+        <a href="${prefix}/privacy" class="text-[10px] text-zinc-600 hover:text-zinc-200 transition-colors">${t('bottom.privacy')}</a>
+      </div>
     </aside>
   `;
 }
@@ -394,8 +401,6 @@ function renderMessageRow(msg, idx) {
 }
 
 function renderSharedSettings(state) {
-  const locale = currentLocale();
-  const prefix = locale === 'de' ? '/de' : '';
   return `
     <label class="flex flex-col gap-1.5">
       <span class="text-[10px] uppercase tracking-wider text-zinc-500">${t('sidebar.labels.padding')}</span>
@@ -429,10 +434,6 @@ function renderSharedSettings(state) {
       <input id="input-chatbg" type="file" accept="image/*"
         class="text-xs text-zinc-500 file:mr-3 file:rounded-xl file:border-0 file:bg-white/10 file:px-3 file:py-1.5 file:text-xs file:text-zinc-200 file:font-medium hover:file:bg-white/15 transition-colors" />
     </label>` : ''}
-    <div class="flex items-center gap-3 pt-3 border-t border-white/[6%] mt-4">
-      <a href="${prefix}/imprint" class="text-[10px] text-zinc-600 hover:text-zinc-400 transition-colors">${t('bottom.imprint')}</a>
-      <a href="${prefix}/privacy" class="text-[10px] text-zinc-600 hover:text-zinc-400 transition-colors">${t('bottom.privacy')}</a>
-    </div>
   `;
 }
 

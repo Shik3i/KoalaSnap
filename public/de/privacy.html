@@ -16,8 +16,7 @@
     h2 { color: #d4d4d8; font-size: 1.1rem; margin-top: 2rem; margin-bottom: 0.5rem; }
     p, li { color: #a1a1aa; font-size: 0.9rem; margin-bottom: 0.5rem; }
     ul { padding-left: 1.5rem; margin-bottom: 1rem; }
-    a { color: #f97316; text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    a { color: #f97316; }
     hr { border: none; border-top: 1px solid #27272a; margin: 2rem 0; }
     .back { display: inline-block; margin-bottom: 1.5rem; font-size: 0.85rem; }
     .lang { float: right; font-size: 0.85rem; }
@@ -26,22 +25,51 @@
 <body>
   <a href="/de/" class="back">&larr; Zurück zu KoalaSnap</a>
   <a href="/privacy" class="lang">English</a>
+
   <h1>Datenschutzerklärung</h1>
 
-  <h2>Keine Cookies</h2>
-  <p>Diese Website verwendet keine Cookies, Tracking-Pixel oder andere Formen der clientseitigen Speicherung. Einzig der localStorage dient ausschließlich dazu, Ihre Editor-Einstellungen (Theme, Texte, Konfiguration) lokal zu speichern. Keine Daten aus localStorage werden an einen Server übertragen.</p>
+  <section>
+    <h2>1. Hosting & Logfiles</h2>
+    <p>
+      Diese Seite wird auf einem privaten Server gehostet. Standard-Serverlogs (angefragte URL, Uhrzeit, IP-Adresse, User-Agent) werden aus Betriebssicherheitsgründen erfasst und nach 7 Tagen automatisch gelöscht.
+    </p>
+  </section>
 
-  <h2>Kein Tracking</h2>
-  <p>Wir verwenden keine Analysedienste, Tracking-Skripte oder Fingerprinting. Wir haben kein Interesse daran, wer Sie sind oder was Sie auf dieser Website tun.</p>
+  <section>
+    <h2>2. Keine Cookies & kein Tracking</h2>
+    <p>
+      Diese Website verwendet keine Cookies, Tracking-Pixel, Analysedienste, Fingerprinting oder andere Formen der Datenerfassung durch Dritte. Wir haben kein Interesse daran, wer Sie sind oder was Sie auf dieser Website tun.
+    </p>
+  </section>
 
-  <h2>Server-Logs</h2>
-  <p>Wie jeder Webserver zeichnet auch Caddy grundlegende Zugriffslogs auf (angefragte URL, Uhrzeit, IP-Adresse, User-Agent) für Betriebssicherheit und Fehleranalyse. Diese Logs werden maximal 7 Tage aufbewahrt und nicht an Dritte weitergegeben.</p>
+  <section>
+    <h2>3. Ausschließlich Local Storage</h2>
+    <p>
+      Der Editor verwendet ausschließlich den <strong>localStorage</strong> Ihres Browsers, um Ihre Einstellungen (Theme, Texte, Konfiguration) zu speichern. Keine Daten aus localStorage werden an einen Server übertragen – sie verlassen niemals Ihr Gerät.
+    </p>
+  </section>
 
-  <h2>Externe Dienste</h2>
-  <p>Diese Website ist vollständig eigenständig. Es werden keine externen Schriftarten, Skripte oder Ressourcen von Drittanbietern geladen.</p>
+  <section>
+    <h2>4. Volle Client-Seite</h2>
+    <p>
+      KoalaSnap läuft vollständig in Ihrem Browser. Sämtliches Rendering, die Bildverarbeitung und der PNG-Export erfolgen clientseitig. Es gibt kein Backend, keine Datenbank und kein Benutzerkonto. Es werden keine Daten auf einen Server hochgeladen, gespeichert oder verarbeitet.
+    </p>
+  </section>
 
-  <h2>Ihre Rechte</h2>
-  <p>Sie haben das Recht, Auskunft über, Berichtigung oder Löschung aller personenbezogenen Daten zu verlangen, die wir möglicherweise speichern. Zur Ausübung dieser Rechte kontaktieren Sie uns unter <a href="mailto:koalasnap@koalastuff.net">koalasnap@koalastuff.net</a>.</p>
+  <section>
+    <h2>5. Open Source</h2>
+    <p>
+      KoalaSnap ist 100 % Open Source. Jede Zeile Code kann öffentlich auf <a href="https://github.com/Shik3i/KoalaSnap" target="_blank" rel="noopener">GitHub</a> eingesehen und geprüft werden.
+    </p>
+  </section>
+
+  <section>
+    <h2>6. Ihre Rechte</h2>
+    <p>
+      Sie haben das Recht auf Auskunft, Berichtigung oder Löschung Ihrer Daten. Da der Editor sämtliche Daten ausschließlich im localStorage Ihres Browsers speichert, können Sie diese jederzeit über die Browser-Einstellungen oder die "Reset"-Funktion im Editor löschen.
+    </p>
+    <p style="margin-top:0.5rem">Kontakt: <a href="mailto:koalasnap@koalastuff.net">koalasnap@koalastuff.net</a></p>
+  </section>
 
   <hr>
   <p><a href="/de/imprint">Impressum</a></p>

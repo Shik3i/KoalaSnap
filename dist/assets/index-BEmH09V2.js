@@ -443,7 +443,7 @@
         </div>
       </div>
     </header>
-  `}function Pn(e){return l.getSidebarOpen()?`
+  `}function Pn(e){const n=l.getSidebarOpen(),i=X()==="de"?"/de":"";return n?`
     <aside id="sidebar" class="w-[340px] shrink-0 h-full overflow-y-auto p-4 flex flex-col gap-4 transition-all duration-300">
       <div id="app-library" class="rounded-2xl border border-white/[6%] bg-[#1a1714] p-4 flex flex-col gap-3">
         <div class="flex items-center justify-between cursor-pointer select-none" id="app-library-toggle">
@@ -460,13 +460,13 @@
               class="w-full rounded-xl border border-white/[6%] bg-white/[4%] pl-9 pr-3 py-2 text-xs text-zinc-300 placeholder:text-zinc-600 outline-0 focus:border-zinc-600 transition-colors" />
           </div>
           <div class="flex flex-col gap-1.5">
-            ${H.map(t=>{const i=t.theme===b;return`
-                <button data-app="${t.id}" aria-label="${t.id}"
+            ${H.map(r=>{const a=r.theme===b;return`
+                <button data-app="${r.id}" aria-label="${r.id}"
                   class="flex items-center gap-3 rounded-xl border p-2.5 transition-all text-left
-                    ${i?"border-white/15 bg-white/[8%]":"border-white/[4%] bg-white/[3%] hover:bg-white/[7%] hover:border-white/[8%]"}">
-                <div class="w-7 h-7 rounded-lg bg-white/[8%] flex items-center justify-center shrink-0 text-zinc-300">${t.svg}</div>
-                  <span class="flex-1 text-xs font-medium text-white">${t.name}</span>
-                  <span class="text-[9px] text-zinc-600 uppercase tracking-wider">${t.tag==="chat"?o("canvas.chat"):o("canvas.social")}</span>
+                    ${a?"border-white/15 bg-white/[8%]":"border-white/[4%] bg-white/[3%] hover:bg-white/[7%] hover:border-white/[8%]"}">
+                <div class="w-7 h-7 rounded-lg bg-white/[8%] flex items-center justify-center shrink-0 text-zinc-300">${r.svg}</div>
+                  <span class="flex-1 text-xs font-medium text-white">${r.name}</span>
+                  <span class="text-[9px] text-zinc-600 uppercase tracking-wider">${r.tag==="chat"?o("canvas.chat"):o("canvas.social")}</span>
                 </button>
               `}).join("")}
           </div>
@@ -479,6 +479,11 @@
       </div>
 
       ${we()}
+
+      <div class="flex items-center gap-4 mt-auto pt-4 border-t border-white/[6%]">
+        <a href="${i}/imprint" class="text-[10px] text-zinc-600 hover:text-zinc-200 transition-colors">${o("bottom.imprint")}</a>
+        <a href="${i}/privacy" class="text-[10px] text-zinc-600 hover:text-zinc-200 transition-colors">${o("bottom.privacy")}</a>
+      </div>
     </aside>
   `:'<aside id="sidebar" class="w-0 shrink-0 overflow-hidden transition-all duration-300"></aside>'}function we(){const e=l.listTemplates();return`
     <div id="templates-section" class="rounded-2xl border border-white/[6%] bg-[#1a1714] p-4 flex flex-col gap-3">
@@ -593,7 +598,7 @@
         </button>
       </div>
     </div>
-  `}function Gn(e){const t=X()==="de"?"/de":"";return`
+  `}function Gn(e){return`
     <label class="flex flex-col gap-1.5">
       <span class="text-[10px] uppercase tracking-wider text-zinc-500">${o("sidebar.labels.padding")}</span>
       <div class="flex items-center gap-3">
@@ -605,10 +610,10 @@
     <label class="flex flex-col gap-1.5">
       <span class="text-[10px] uppercase tracking-wider text-zinc-500">${o("sidebar.labels.background")}</span>
       <div class="flex flex-wrap gap-1.5">
-        ${jn.map(i=>`
-          <button data-gradient="${i.value}" aria-label="${i.label}"
-            class="w-7 h-7 rounded-lg ${i.value} ring-1 ring-white/[8%] hover:ring-white/30 transition-all
-              ${e.bgGradient===i.value?"ring-2 ring-white scale-110":""}"></button>
+        ${jn.map(n=>`
+          <button data-gradient="${n.value}" aria-label="${n.label}"
+            class="w-7 h-7 rounded-lg ${n.value} ring-1 ring-white/[8%] hover:ring-white/30 transition-all
+              ${e.bgGradient===n.value?"ring-2 ring-white scale-110":""}"></button>
         `).join("")}
       </div>
     </label>
@@ -626,10 +631,6 @@
       <input id="input-chatbg" type="file" accept="image/*"
         class="text-xs text-zinc-500 file:mr-3 file:rounded-xl file:border-0 file:bg-white/10 file:px-3 file:py-1.5 file:text-xs file:text-zinc-200 file:font-medium hover:file:bg-white/15 transition-colors" />
     </label>`:""}
-    <div class="flex items-center gap-3 pt-3 border-t border-white/[6%] mt-4">
-      <a href="${t}/imprint" class="text-[10px] text-zinc-600 hover:text-zinc-400 transition-colors">${o("bottom.imprint")}</a>
-      <a href="${t}/privacy" class="text-[10px] text-zinc-600 hover:text-zinc-400 transition-colors">${o("bottom.privacy")}</a>
-    </div>
   `}function Vn(e){const n=l.get("_zoom")||0;return`
     <div id="bottom-bar" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20
                 flex items-center gap-1 rounded-full bg-white/[6%] backdrop-blur-2xl

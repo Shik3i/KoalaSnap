@@ -16,8 +16,7 @@
     h2 { color: #d4d4d8; font-size: 1.1rem; margin-top: 2rem; margin-bottom: 0.5rem; }
     p, li { color: #a1a1aa; font-size: 0.9rem; margin-bottom: 0.5rem; }
     ul { padding-left: 1.5rem; margin-bottom: 1rem; }
-    a { color: #f97316; text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    a { color: #f97316; }
     hr { border: none; border-top: 1px solid #27272a; margin: 2rem 0; }
     .back { display: inline-block; margin-bottom: 1.5rem; font-size: 0.85rem; }
     .lang { float: right; font-size: 0.85rem; }
@@ -26,22 +25,51 @@
 <body>
   <a href="/" class="back">&larr; Back to KoalaSnap</a>
   <a href="/de/privacy" class="lang">Deutsch</a>
+
   <h1>Privacy Policy</h1>
 
-  <h2>No Cookies</h2>
-  <p>This website does not use cookies, tracking pixels, or any form of client-side storage other than localStorage, which is used exclusively to save your editor preferences (theme, text, settings). No data from localStorage is transmitted to any server.</p>
+  <section>
+    <h2>1. Hosting & Logfiles</h2>
+    <p>
+      This site is hosted on a private server. Standard server logs (requested URL, timestamp, IP address, user agent) are collected for operational security and are automatically deleted after 7 days.
+    </p>
+  </section>
 
-  <h2>No Tracking</h2>
-  <p>We do not use analytics services, tracking scripts, or fingerprinting. We have no interest in who you are or what you do on this site.</p>
+  <section>
+    <h2>2. No Cookies & No Tracking</h2>
+    <p>
+      This website does not use cookies, tracking pixels, analytics services, fingerprinting, or any form of third-party data collection. We have no interest in who you are or what you do on this site.
+    </p>
+  </section>
 
-  <h2>Server Logs</h2>
-  <p>Like every web server, Caddy records basic access logs (requested URL, timestamp, IP address, user agent) for operational security and debugging. These logs are retained for a maximum of 7 days and are not shared with third parties.</p>
+  <section>
+    <h2>3. Local Storage Only</h2>
+    <p>
+      The editor uses your browser's <strong>localStorage</strong> exclusively to save your preferences (theme, text, configuration). No data from localStorage is transmitted to any server – it never leaves your device.
+    </p>
+  </section>
 
-  <h2>External Services</h2>
-  <p>This site is fully self-contained. No external fonts, scripts, or resources are loaded from third-party servers.</p>
+  <section>
+    <h2>4. Fully Client-Side</h2>
+    <p>
+      KoalaSnap runs entirely in your browser. All rendering, image processing, and PNG export happen client-side. There is no backend, no database, and no user account. No data is uploaded, stored, or processed on any server.
+    </p>
+  </section>
 
-  <h2>Your Rights</h2>
-  <p>You have the right to request access to, correction of, or deletion of any personal data we may hold. To exercise these rights, contact us at <a href="mailto:koalasnap@koalastuff.net">koalasnap@koalastuff.net</a>.</p>
+  <section>
+    <h2>5. Open Source</h2>
+    <p>
+      KoalaSnap is 100% open source. Every line of code can be publicly viewed and audited on <a href="https://github.com/Shik3i/KoalaSnap" target="_blank" rel="noopener">GitHub</a>.
+    </p>
+  </section>
+
+  <section>
+    <h2>6. Your Rights</h2>
+    <p>
+      You have the right to information, correction, or deletion of your data. Since the editor stores all data exclusively in your browser's localStorage, you can clear it at any time via your browser settings or by simply using the "Reset" function in the editor.
+    </p>
+    <p style="margin-top:0.5rem">Contact: <a href="mailto:koalasnap@koalastuff.net">koalasnap@koalastuff.net</a></p>
+  </section>
 
   <hr>
   <p><a href="/imprint">Imprint</a></p>
