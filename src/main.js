@@ -616,7 +616,7 @@ function updateAppLibrary(activeTheme) {
   document.querySelectorAll('[data-app]').forEach((btn) => {
     const app = APPS.find((a) => a.id === btn.dataset.app);
     const isActive = app && app.theme === activeTheme;
-    btn.className = `flex flex-col items-center gap-1.5 rounded-xl border p-2.5 transition-all text-center ${
+    btn.className = `flex items-center gap-3 rounded-xl border p-2.5 transition-all text-left ${
       isActive
         ? 'border-white/15 bg-white/[8%]'
         : 'border-white/[4%] bg-white/[3%] hover:bg-white/[7%] hover:border-white/[8%]'
