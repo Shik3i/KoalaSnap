@@ -49,6 +49,7 @@ function themeLabel() {
 }
 
 const GRADIENT_PRESETS = [
+  { label: 'Midnight', value: 'from-slate-900 to-indigo-950' },
   { label: 'Sky',      value: 'from-sky-400 to-indigo-600' },
   { label: 'Rose',     value: 'from-rose-400 to-orange-600' },
   { label: 'Emerald',  value: 'from-emerald-400 to-cyan-600' },
@@ -57,6 +58,7 @@ const GRADIENT_PRESETS = [
   { label: 'Charcoal', value: 'from-zinc-800 to-zinc-950' },
 ];
 const GRADIENT_COLORS = {
+  'from-slate-900 to-indigo-950':   ['#0f172a', '#1e1b4b'],
   'from-sky-400 to-indigo-600':     ['#38bdf8', '#4f46e5'],
   'from-rose-400 to-orange-600':    ['#fb7185', '#ea580c'],
   'from-emerald-400 to-cyan-600':   ['#34d399', '#0891b2'],
@@ -879,12 +881,13 @@ function updateAppLibrary(activeTheme) {
 function updateBackground(state) {
   const canvas = document.getElementById('canvas');
   if (!canvas) return;
-  const colors = GRADIENT_COLORS[state.bgGradient] || ['#38bdf8', '#4f46e5'];
+  const colors = GRADIENT_COLORS[state.bgGradient] || ['#0f172a', '#1e1b4b'];
   canvas.style.background = `
     radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
     linear-gradient(135deg, ${colors[0]}, ${colors[1]})
   `;
-  canvas.style.backgroundSize = '40px 40px, 100% 100%';
+  canvas.style.backgroundSize = '40px 40px, 200% 200%';
+  canvas.style.animation = 'bg-shift 20s ease-in-out infinite alternate';
 }
 
 /* ------------------------------------------------------------------ */

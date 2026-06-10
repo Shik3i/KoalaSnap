@@ -27,6 +27,11 @@
   animation: fade-in 0.25s ease-out both;
 }
 
+@keyframes bg-shift {
+  0%   { background-position: 0% 0%, 0% 0%; }
+  100% { background-position: 100% 100%, 100% 100%; }
+}
+
 @media (max-width: 767px) {
   #sidebar {
     position: fixed !important;

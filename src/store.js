@@ -174,7 +174,7 @@ const defaults = {
   timestamp: '7:18 PM',
   message: 'Hey, are you coming online tonight?',
   avatar: null,
-  bgGradient: 'from-sky-400 to-indigo-600',
+  bgGradient: 'from-slate-900 to-indigo-950',
   padding: 48,
   mockupTheme: 'light',
   waMode: 'sent',
