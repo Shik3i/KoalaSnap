@@ -60,11 +60,16 @@ for (const lang of LOCALES) {
     .join('\n') +
     `\n    <link rel="alternate" hreflang="x-default" href="${SITE_URL}/" />`;
 
+  /* External locale JS file (avoids CSP 'script-src' blocking inline scripts) */
+  const localeScript = `window.__LOCALE__=${localeJson}`;
+  const localeFileName = `locale.${lang}.js`;
+  writeFileSync(join(DIST, localeFileName), localeScript);
+
   const outHtml = html
     .replace('<html lang="de"', `<html lang="${lang}"`)
     .replace(
       '</head>',
-      `  ${hreflangLinks}\n    <script>window.__LOCALE__=${localeJson}</script>\n  </head>`,
+      `  ${hreflangLinks}\n    <script src="/${localeFileName}"></script>\n  </head>`,
     );
 
   if (lang === 'en') {

@@ -1,7 +1,24 @@
 import avatarFallback from './assets/avatar-fallback.svg';
 
-function createStore(initial) {
-  const state = { ...initial };
+const STORAGE_KEY = 'koalasnap_state';
+
+function loadPersisted(defaults) {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return { ...defaults, ...JSON.parse(raw) };
+  } catch { /* ignore */ }
+  return { ...defaults };
+}
+
+function savePersisted(state) {
+  try {
+    const { avatar: _, ...rest } = state;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(rest));
+  } catch { /* ignore */ }
+}
+
+function createStore(defaults) {
+  const state = loadPersisted(defaults);
   const listeners = new Set();
 
   return {
@@ -13,23 +30,31 @@ function createStore(initial) {
     },
     set(key, value) {
       state[key] = value;
+      savePersisted(state);
       listeners.forEach((fn) => fn(key, value, state));
     },
     setAll(patch) {
       Object.assign(state, patch);
+      savePersisted(state);
       listeners.forEach((fn) => fn(null, null, state));
     },
     mutate(patch) {
       Object.assign(state, patch);
+      savePersisted(state);
     },
     subscribe(fn) {
       listeners.add(fn);
       return () => listeners.delete(fn);
     },
+    reset() {
+      Object.assign(state, defaults);
+      savePersisted(state);
+      listeners.forEach((fn) => fn(null, null, state));
+    },
   };
 }
 
-export const store = createStore({
+const defaults = {
   theme: 'whatsapp',
   author: 'Maya',
   handle: '@maya_99',
@@ -48,4 +73,6 @@ export const store = createStore({
     { id: 2, text: 'Ja, bin in 5 Minuten da!', type: 'received', time: '19:20', status: 'read' },
     { id: 3, text: 'Lass uns raiden gehen 🎮', type: 'sent', time: '19:22', status: 'delivered' },
   ],
-});
+};
+
+export const store = createStore(defaults);
