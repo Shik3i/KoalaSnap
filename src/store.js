@@ -28,6 +28,9 @@ function loadPersisted(defaults) {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const stored = JSON.parse(raw);
+      if (stored.bgGradient === 'from-sky-400 to-indigo-600') {
+        stored.bgGradient = 'from-slate-900 to-indigo-950';
+      }
       const ver = stored._version || 1;
       if (ver < STATE_VERSION) {
         for (let v = ver; v < STATE_VERSION; v++) {

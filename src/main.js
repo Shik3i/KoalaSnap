@@ -58,7 +58,7 @@ const GRADIENT_PRESETS = [
   { label: 'Charcoal', value: 'from-zinc-800 to-zinc-950' },
 ];
 const GRADIENT_COLORS = {
-  'from-slate-900 to-indigo-950':   ['#0f172a', '#1e1b4b'],
+  'from-slate-900 to-indigo-950':   ['#050508', '#121020'],
   'from-sky-400 to-indigo-600':     ['#38bdf8', '#4f46e5'],
   'from-rose-400 to-orange-600':    ['#fb7185', '#ea580c'],
   'from-emerald-400 to-cyan-600':   ['#34d399', '#0891b2'],
@@ -222,8 +222,11 @@ function renderSidebar(state) {
   const locale = currentLocale();
   const prefix = locale === 'de' ? '/de' : '';
   return `
-    <aside id="sidebar" class="w-[340px] shrink-0 h-full overflow-y-auto p-4 flex flex-col gap-4 transition-all duration-300 bg-[#0d0a07] fixed left-0 top-14 bottom-0 z-40 border-r border-white/[6%]
-      ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}">
+    <aside id="sidebar" class="shrink-0 h-full overflow-y-auto flex flex-col gap-4 transition-all duration-300 bg-[#0d0a07] border-white/[6%] z-40 fixed left-0 top-14 bottom-0 border-r md:relative md:top-0 md:translate-x-0
+      ${sidebarOpen 
+        ? 'w-[340px] p-4 opacity-100 translate-x-0' 
+        : 'w-[340px] p-4 -translate-x-full md:w-0 md:p-0 md:border-r-0 md:opacity-0 md:overflow-hidden md:gap-0'
+      }">
       <div id="app-library" class="rounded-2xl border border-white/[6%] bg-[#1a1714] p-4 flex flex-col gap-3">
         <div class="flex items-center justify-between cursor-pointer select-none" id="app-library-toggle">
           <span class="text-xs font-semibold text-zinc-300 tracking-wide">${t('sidebar.appLibrary')}</span>
@@ -601,7 +604,12 @@ function renderApp() {
         class="${sidebarOpen ? 'hidden' : ''} absolute left-0 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-5 h-20 bg-[#1a1714] hover:bg-[#25211e] border border-white/10 border-l-0 rounded-r-lg transition-all cursor-pointer group">
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-400 group-hover:text-zinc-200 transition-colors"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
-      <main id="canvas" class="flex-1 relative overflow-hidden">
+      <main id="canvas" class="flex-1 relative overflow-hidden bg-[#050508]">
+        <!-- Ambient animated blobs -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none z-0 select-none">
+          <div class="absolute -top-[30%] -left-[20%] w-[70%] h-[70%] rounded-full bg-indigo-950/20 blur-[120px] animate-blob-1"></div>
+          <div class="absolute -bottom-[30%] -right-[20%] w-[70%] h-[70%] rounded-full bg-purple-950/15 blur-[120px] animate-blob-2"></div>
+        </div>
         <div id="canvas-area" class="absolute inset-0 overflow-hidden z-10">
           <div id="mockup" class="absolute top-1/2 left-1/2 origin-center"></div>
         </div>
@@ -611,6 +619,7 @@ function renderApp() {
   `;
   bindEvents();
   renderCurrentTheme();
+  setupResizeObserver();
   const zoom = store.get('_zoom') || 0;
   applyZoom(zoom);
 }
@@ -1095,6 +1104,18 @@ function updateBackground(state) {
     document.documentElement.style.setProperty('--chat-bg', state.chatBgGradient);
   } else {
     document.documentElement.style.removeProperty('--chat-bg');
+  }
+}
+
+let resizeObserver = null;
+function setupResizeObserver() {
+  if (resizeObserver) resizeObserver.disconnect();
+  const canvas = document.getElementById('canvas');
+  if (canvas) {
+    resizeObserver = new ResizeObserver(() => {
+      fitMockupToScreen();
+    });
+    resizeObserver.observe(canvas);
   }
 }
 
