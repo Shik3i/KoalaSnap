@@ -1141,6 +1141,17 @@ function updateBackground(state) {
   } else {
     document.documentElement.style.removeProperty('--chat-bg');
   }
+
+  // Fix: Inline --chat-bg on the mockup card itself so that html-to-image
+  // clones the CSS variable correctly inside its export iframe.
+  const card = document.getElementById('mockup-card');
+  if (card) {
+    if (state.chatBgGradient) {
+      card.style.setProperty('--chat-bg', state.chatBgGradient);
+    } else {
+      card.style.removeProperty('--chat-bg');
+    }
+  }
 }
 
 let resizeObserver = null;
