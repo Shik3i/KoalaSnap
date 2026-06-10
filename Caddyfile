@@ -10,7 +10,7 @@ koalasnap.net {
     X-Frame-Options "DENY"
     Frame-Options "DENY"
     Referrer-Policy "strict-origin-when-cross-origin"
-    Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https://www.google.com; font-src 'self'; connect-src 'self'; manifest-src 'self'; frame-ancestors 'none'"
+    Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; frame-ancestors 'none'"
     Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
   }
 

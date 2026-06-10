@@ -59,15 +59,24 @@ const GRADIENT_COLORS = {
 /*  Brand SVG-Icons                                                    */
 /* ------------------------------------------------------------------ */
 const APPS = [
-  { id: 'whatsapp',  theme: 'whatsapp',  domain: 'whatsapp.com',    name: 'WhatsApp',  tag: 'chat' },
-  { id: 'telegram',  theme: 'telegram',  domain: 'telegram.org',    name: 'Telegram',  tag: 'chat' },
-  { id: 'signal',    theme: 'signal',    domain: 'signal.org',      name: 'Signal',    tag: 'chat' },
-  { id: 'messenger', theme: 'social-post', domain: 'messenger.com',   name: 'Messenger', tag: 'chat' },
-  { id: 'imessage',  theme: 'imessage',  domain: 'apple.com',       name: 'iMessage',  tag: 'chat' },
-  { id: 'instagram', theme: 'social-post', domain: 'instagram.com',   name: 'Instagram', tag: 'social' },
-  { id: 'twitter',   theme: 'social-post', domain: 'x.com',           name: 'X',         tag: 'social' },
-  { id: 'tiktok',    theme: 'social-post', domain: 'tiktok.com',      name: 'TikTok',    tag: 'social' },
-  { id: 'discord',   theme: 'discord',   domain: 'discord.com',     name: 'Discord',   tag: 'chat' },
+  { id: 'whatsapp',  theme: 'whatsapp',  name: 'WhatsApp',  tag: 'chat',
+    svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741 1.205 1.176-3.427-.207-.37a9.86 9.86 0 0 1-1.506-5.26c.001-5.447 4.431-9.876 9.88-9.876 5.446 0 9.873 4.43 9.873 9.877 0 5.446-4.427 9.874-9.873 9.874"/></svg>` },
+  { id: 'telegram',  theme: 'telegram',  name: 'Telegram',  tag: 'chat',
+    svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2l1 7z"/></svg>` },
+  { id: 'signal',    theme: 'signal',    name: 'Signal',    tag: 'chat',
+    svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.75.47 3.38 1.28 4.79L2.23 22l5.39-1.21C9.01 21.56 10.48 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18.5c-1.47 0-2.87-.4-4.06-1.09l-.29-.18-3.17.73.77-3.05-.18-.31C4.69 15.3 4.28 13.95 4.28 12.5c0-4.26 3.47-7.72 7.72-7.72s7.72 3.46 7.72 7.72-3.47 7.72-7.72 7.72z"/></svg>` },
+  { id: 'messenger', theme: 'social-post', name: 'Messenger', tag: 'chat',
+    svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.55 1.36 4.83 3.5 6.3L5 22l5.33-3.08c.54.14 1.1.22 1.67.22 5.52 0 10-3.58 10-8S17.52 2 12 2zm-1 11l-2.5-3L5 13l3-4 2.5 3L15 9l-2.5 4H11z"/></svg>` },
+  { id: 'imessage',  theme: 'imessage',  name: 'iMessage',  tag: 'chat',
+    svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2z"/></svg>` },
+  { id: 'instagram', theme: 'social-post', name: 'Instagram', tag: 'social',
+    svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-2.4 0-4.5.16-6.36.44C4.06 2.68 3 3.92 3 5.36V18.64c0 1.44 1.06 2.68 2.64 2.92 1.86.28 3.96.44 6.36.44s4.5-.16 6.36-.44c1.58-.24 2.64-1.48 2.64-2.92V5.36c0-1.44-1.06-2.68-2.64-2.92C16.5 2.16 14.4 2 12 2zm0 2.4c2.5 0 4.3.1 5.9.4.7.1 1.1.5 1.2 1.1.2 1.4.3 3.2.3 6.1s-.1 4.7-.3 6.1c-.1.6-.5 1-1.2 1.1-1.5.2-3.3.3-5.9.3s-4.3-.1-5.9-.3c-.7-.1-1.1-.5-1.2-1.1-.2-1.4-.3-3.2-.3-6.1s.1-4.7.3-6.1c.1-.6.5-1 1.2-1.1 1.6-.3 3.4-.4 5.9-.4z"/><circle cx="12" cy="12" r="3.2"/><circle cx="16.8" cy="7.2" r="1"/></svg>` },
+  { id: 'twitter',   theme: 'social-post', name: 'X',         tag: 'social',
+    svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>` },
+  { id: 'tiktok',    theme: 'social-post', name: 'TikTok',    tag: 'social',
+    svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 3v2.5c0 1.4-1.1 2.6-2.5 2.9-1.2.3-2.5-.1-3.4-1 .2-1.2.5-2.4.9-3.5 0-.1.1-.3.1-.5V3h-8v12.5c0 1.7-1.3 3-3 3s-3-1.3-3-3 1.3-3 3-3c.6 0 1.1.2 1.5.5V7.5h7v6.3c0 1.7-1.3 3-3 3s-3-1.3-3-3c0-.3 0-.6.1-.9V5h10z"/></svg>` },
+  { id: 'discord',   theme: 'discord',   name: 'Discord',   tag: 'chat',
+    svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.8 19.8 0 0 0-4.885-1.515.07.07 0 0 0-.079.037c-.21.375-.444.865-.608 1.25a18.3 18.3 0 0 0-5.487 0 12.6 12.6 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.74 19.74 0 0 0 3.677 4.37a.07.07 0 0 0-.032.028C.533 9.046-.319 13.58.099 18.058a.082.082 0 0 0 .031.056c2.053 1.508 4.041 2.423 5.993 3.03a.078.078 0 0 0 .084-.028c.462-.63.873-1.295 1.226-1.994a.076.076 0 0 0-.042-.106 13.2 13.2 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .078-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .079.01c.12.099.246.198.373.292a.077.077 0 0 1-.007.127 12.3 12.3 0 0 1-1.873.891.077.077 0 0 0-.041.107c.36.698.772 1.363 1.225 1.993a.076.076 0 0 0 .084.029c1.961-.607 3.95-1.522 6.002-3.03a.077.077 0 0 0 .032-.055c.5-5.177-.838-9.674-3.549-13.66a.07.07 0 0 0-.031-.029zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.955 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>` },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -166,8 +175,7 @@ function renderSidebar(state) {
                     ${active
                       ? 'border-white/15 bg-white/[8%]'
                       : 'border-white/[4%] bg-white/[3%] hover:bg-white/[7%] hover:border-white/[8%]'}">
-                  <img src="https://www.google.com/s2/favicons?domain=${app.domain}&sz=128"
-                    alt="${app.name}" class="w-7 h-7 rounded-lg shrink-0" loading="lazy" />
+                <div class="w-7 h-7 rounded-lg bg-white/[8%] flex items-center justify-center shrink-0 text-zinc-300">${app.svg}</div>
                   <span class="flex-1 text-xs font-medium text-white">${app.name}</span>
                   <span class="text-[9px] text-zinc-600 uppercase tracking-wider">${app.tag === 'chat' ? t('canvas.chat') : t('canvas.social')}</span>
                 </button>
