@@ -359,6 +359,35 @@ function renderSettingsFields(state) {
         <input id="input-statusBarTime" type="text" value="${state.statusBarTime || '09:41'}"
           class="rounded-xl border border-white/[6%] bg-white/[4%] px-3 py-2 text-sm text-zinc-200 placeholder:text-zinc-600 outline-0 focus:border-zinc-600 transition-colors" />
       </label>
+      
+      ${currentTheme === 'imessage' ? `
+      <label class="flex flex-col gap-1.5 mt-4">
+        <span class="text-[10px] uppercase tracking-wider text-zinc-500">iMessage Type</span>
+        <select id="input-imessageMode" class="rounded-xl border border-white/[6%] bg-white/[4%] px-3 py-2 text-sm text-zinc-200 outline-0 focus:border-zinc-600 transition-colors">
+          <option value="imessage" ${state.imessageMode === 'imessage' ? 'selected' : ''}>iMessage (Blue)</option>
+          <option value="sms" ${state.imessageMode === 'sms' ? 'selected' : ''}>SMS (Green)</option>
+        </select>
+      </label>` : ''}
+
+      <div class="mt-4 pt-4 border-t border-white/[6%] space-y-4">
+        <label class="flex flex-col gap-1.5">
+          <span class="text-[10px] uppercase tracking-wider text-zinc-500">Battery Level (${state.statusBarBattery || 100}%)</span>
+          <input id="input-statusBarBattery" type="range" min="0" max="100" value="${state.statusBarBattery || 100}" class="accent-zinc-400 h-1 cursor-pointer" />
+        </label>
+        <label class="flex flex-col gap-1.5">
+          <span class="text-[10px] uppercase tracking-wider text-zinc-500">Signal Strength (${state.statusBarSignal || 4} Bars)</span>
+          <input id="input-statusBarSignal" type="range" min="1" max="4" value="${state.statusBarSignal || 4}" class="accent-zinc-400 h-1 cursor-pointer" />
+        </label>
+        <label class="flex items-center justify-between mt-2">
+          <span class="text-xs text-zinc-300">Show WiFi</span>
+          <input id="input-statusBarWifi" type="checkbox" ${state.statusBarWifi !== false ? 'checked' : ''} class="w-4 h-4 rounded border-white/[10%] bg-white/[5%]" />
+        </label>
+        <label class="flex items-center justify-between mt-2">
+          <span class="text-xs text-zinc-300">Group Chat Mode</span>
+          <input id="input-isGroup" type="checkbox" ${state.isGroup ? 'checked' : ''} class="w-4 h-4 rounded border-white/[10%] bg-white/[5%]" />
+        </label>
+      </div>
+
       <div class="flex flex-col gap-2 mt-4">
         <span class="text-[10px] uppercase tracking-wider text-zinc-500">${t('sidebar.labels.message')}</span>
         <div id="wa-message-list" class="flex flex-col gap-2">
@@ -413,16 +442,63 @@ const MSG_STATUS = [
 ];
 
 function renderMessageRow(msg, idx) {
+  const state = store.getState();
   const isSent = msg.type === 'sent';
   const sentActive = isSent ? 'bg-white text-zinc-900' : 'bg-white/[4%] text-zinc-500 hover:text-zinc-300';
   const recvActive = !isSent ? 'bg-white text-zinc-900' : 'bg-white/[4%] text-zinc-500 hover:text-zinc-300';
   const status = msg.status || 'read';
+
+  // Group chat sender name
+  const groupSenderField = state.isGroup && !isSent ? `
+    <input type="text" data-msg-idx="${idx}" data-msg-field="senderName" value="${escapeHtml(msg.senderName || '')}"
+      class="w-full rounded-lg border border-white/[6%] bg-white/[4%] px-2.5 py-1.5 text-xs text-zinc-200 outline-0 focus:border-zinc-600 transition-colors mt-1.5" placeholder="Sender Name" />
+  ` : '';
+
+  // Emoji reactions
+  const currentReaction = msg.reactions?.[0] || '';
+  const emojis = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
+  const reactionsHtml = `
+    <div class="flex gap-1 items-center mt-1.5 select-none">
+      <span class="text-[9px] text-zinc-500 uppercase tracking-wider">React:</span>
+      <div class="flex flex-wrap gap-0.5">
+        ${emojis.map(e => `
+          <button data-msg-idx="${idx}" data-msg-reaction="${e}"
+            class="w-5.5 h-5.5 flex items-center justify-center rounded-md text-xs transition-all ${currentReaction === e ? 'bg-white/20 ring-1 ring-white/30 text-white' : 'text-zinc-500 hover:text-zinc-200 hover:bg-white/5'}">${e}</button>
+        `).join('')}
+      </div>
+      ${currentReaction ? `
+        <button data-msg-idx="${idx}" data-msg-reaction-clear="true"
+          class="text-[9px] text-red-400 hover:text-red-300 ml-1 px-1 rounded hover:bg-red-500/10 transition-all">Clear</button>
+      ` : ''}
+    </div>
+  `;
+
+  // Image upload
+  const imageHtml = `
+    <div class="flex items-center justify-between mt-2 pt-2 border-t border-white/[4%]">
+      <span class="text-[9px] text-zinc-500 uppercase tracking-wider">Image Bubble:</span>
+      <div class="flex items-center gap-2">
+        ${msg.image ? `
+          <span class="text-[10px] text-emerald-400 font-medium">Image attached</span>
+          <button data-msg-idx="${idx}" data-msg-image-clear="true"
+            class="text-[9px] text-red-400 hover:text-red-300 px-1.5 py-0.5 rounded bg-red-500/10 hover:bg-red-500/20 transition-all">Remove</button>
+        ` : `
+          <input type="file" accept="image/*" data-msg-idx="${idx}" data-msg-field="imageUpload" class="hidden" id="msg-img-upload-${idx}" />
+          <label for="msg-img-upload-${idx}" class="text-[9.5px] text-zinc-300 hover:text-zinc-100 bg-white/5 border border-white/10 px-2 py-1 rounded-lg cursor-pointer transition-all">Upload Photo</label>
+        `}
+      </div>
+    </div>
+  `;
+
   return `
     <div draggable="true" data-msg-idx="${idx}"
-      class="rounded-xl border border-white/[6%] bg-white/[3%] p-2.5 flex flex-col gap-1.5 cursor-grab active:cursor-grabbing">
+      class="rounded-xl border border-white/[6%] bg-white/[3%] p-2.5 flex flex-col gap-1 cursor-grab active:cursor-grabbing">
       <textarea data-msg-idx="${idx}" rows="2"
         class="w-full rounded-lg border border-white/[6%] bg-white/[4%] px-2.5 py-1.5 text-xs text-zinc-200 placeholder:text-zinc-600 outline-0 focus:border-zinc-600 transition-colors resize-none" placeholder="${t('sidebar.messagePlaceholder')}">${escapeHtml(msg.text)}</textarea>
-      <div class="flex items-center gap-1.5">
+      ${groupSenderField}
+      ${reactionsHtml}
+      ${imageHtml}
+      <div class="flex items-center gap-1.5 mt-1.5">
         <button data-msg-idx="${idx}" data-msg-type="sent"
           class="flex-1 py-1 rounded-lg text-[10px] font-medium transition-all ${sentActive}">${t('sidebar.sent')}</button>
         <button data-msg-idx="${idx}" data-msg-type="received"
@@ -526,8 +602,8 @@ function renderApp() {
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-400 group-hover:text-zinc-200 transition-colors"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
       <main id="canvas" class="flex-1 relative overflow-hidden">
-        <div id="canvas-area" class="absolute inset-0 flex items-center justify-center overflow-hidden z-10">
-          <div id="mockup"></div>
+        <div id="canvas-area" class="absolute inset-0 overflow-hidden z-10">
+          <div id="mockup" class="absolute top-1/2 left-1/2 origin-center"></div>
         </div>
         ${renderBottomBar(state)}
       </main>
@@ -742,6 +818,20 @@ function bindSettingsEvents() {
     bind('input-username', 'input', (e) => store.set('username', e.target.value));
     bind('input-statusText', 'input', (e) => store.set('statusText', e.target.value));
     bind('input-statusBarTime', 'input', (e) => store.set('statusBarTime', e.target.value));
+    bind('input-imessageMode', 'change', (e) => store.set('imessageMode', e.target.value));
+    bind('input-statusBarBattery', 'input', (e) => {
+      store.set('statusBarBattery', Number(e.target.value));
+      renderCurrentTheme();
+    });
+    bind('input-statusBarSignal', 'input', (e) => {
+      store.set('statusBarSignal', Number(e.target.value));
+      renderCurrentTheme();
+    });
+    bind('input-statusBarWifi', 'change', (e) => store.set('statusBarWifi', e.target.checked));
+    bind('input-isGroup', 'change', (e) => {
+      store.set('isGroup', e.target.checked);
+      renderApp();
+    });
     bindMessageEvents();
   }
 
@@ -774,11 +864,37 @@ function bindMessageEvents() {
       const msgs = [...store.get('messages')];
       if (msgs[idx]) msgs[idx] = { ...msgs[idx], time: el.value };
       store.set('messages', msgs);
+    } else if (el.dataset.msgField === 'senderName') {
+      const msgs = [...store.get('messages')];
+      if (msgs[idx]) msgs[idx] = { ...msgs[idx], senderName: el.value };
+      store.set('messages', msgs);
+    }
+  });
+
+  list.addEventListener('change', async (e) => {
+    const el = e.target;
+    if (el.dataset.msgField === 'imageUpload') {
+      const idx = parseInt(el.dataset.msgIdx);
+      if (isNaN(idx)) return;
+      const file = el.files?.[0];
+      if (!file) return;
+      try {
+        const url = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        const msgs = [...store.get('messages')];
+        if (msgs[idx]) msgs[idx] = { ...msgs[idx], image: url };
+        store.set('messages', msgs);
+        updateMessageList(store.getState());
+      } catch { /* ignore */ }
     }
   });
 
   list.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-msg-type], [data-msg-status], [data-msg-action]');
+    const btn = e.target.closest('[data-msg-type], [data-msg-status], [data-msg-action], [data-msg-reaction], [data-msg-reaction-clear], [data-msg-image-clear]');
     if (!btn) return;
     const idx = parseInt(btn.dataset.msgIdx);
     if (isNaN(idx)) return;
@@ -791,6 +907,21 @@ function bindMessageEvents() {
     } else if (btn.dataset.msgStatus) {
       const msgs = [...store.get('messages')];
       if (msgs[idx]) msgs[idx] = { ...msgs[idx], status: btn.dataset.msgStatus };
+      store.set('messages', msgs);
+      updateMessageList(store.getState());
+    } else if (btn.dataset.msgReaction) {
+      const msgs = [...store.get('messages')];
+      if (msgs[idx]) msgs[idx] = { ...msgs[idx], reactions: [btn.dataset.msgReaction] };
+      store.set('messages', msgs);
+      updateMessageList(store.getState());
+    } else if (btn.dataset.msgReactionClear) {
+      const msgs = [...store.get('messages')];
+      if (msgs[idx]) msgs[idx] = { ...msgs[idx], reactions: [] };
+      store.set('messages', msgs);
+      updateMessageList(store.getState());
+    } else if (btn.dataset.msgImageClear) {
+      const msgs = [...store.get('messages')];
+      if (msgs[idx]) msgs[idx] = { ...msgs[idx], image: null };
       store.set('messages', msgs);
       updateMessageList(store.getState());
     } else if (btn.dataset.msgAction === 'delete') {
@@ -973,15 +1104,14 @@ function updateBackground(state) {
 function fitMockupToScreen() {
   if (_isExporting) return;
   const canvas = document.getElementById('canvas');
-  const card = document.getElementById('mockup-card');
-  if (!canvas || !card) return;
+  const mockup = document.getElementById('mockup');
+  if (!canvas || !mockup) return;
   const rect = canvas.getBoundingClientRect();
   const baseScale = Math.min(rect.width / 390, rect.height / 844) * 0.9;
   const zoom = store.get('_zoom') || 0;
   const zoomScale = 1 + (zoom / 100);
   const combinedScale = baseScale * zoomScale;
-  card.style.transform = `scale(${combinedScale})`;
-  card.style.transformOrigin = 'center center';
+  mockup.style.transform = `translate(-50%, -50%) scale(${combinedScale})`;
 }
 
 window.addEventListener('resize', fitMockupToScreen);

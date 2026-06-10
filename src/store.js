@@ -2,7 +2,7 @@ const STORAGE_KEY = 'koalasnap_state';
 const TEMPLATES_KEY = 'koalasnap_templates';
 const SIDEBAR_KEY = 'koalasnap_sidebar';
 
-const STATE_VERSION = 2;
+const STATE_VERSION = 3;
 
 const OLD_DEFAULTS = {
   bgGradient: 'from-sky-400 to-indigo-600',
@@ -10,6 +10,12 @@ const OLD_DEFAULTS = {
 
 const MIGRATIONS = {
   1: (state) => {
+    if (state.bgGradient === OLD_DEFAULTS.bgGradient) {
+      state.bgGradient = 'from-slate-900 to-indigo-950';
+    }
+    return state;
+  },
+  2: (state) => {
     if (state.bgGradient === OLD_DEFAULTS.bgGradient) {
       state.bgGradient = 'from-slate-900 to-indigo-950';
     }
@@ -202,6 +208,11 @@ const defaults = {
   timestamp: '7:18 PM',
   statusBarTime: '09:41',
   statusText: 'online',
+  imessageMode: 'imessage',
+  statusBarBattery: 100,
+  statusBarSignal: 4,
+  statusBarWifi: true,
+  isGroup: false,
   message: 'Hey, are you coming online tonight?',
   avatar: null,
   bgGradient: 'from-slate-900 to-indigo-950',

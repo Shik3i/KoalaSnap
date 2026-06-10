@@ -6,11 +6,7 @@ const VIDEO_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" s
 
 const PHONE_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aebac1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
 
-const SIGNAL_SVG = `<svg width="16" height="12" viewBox="0 0 18 12" fill="none"><rect x="1" y="8" width="2" height="3" rx="0.4" fill="currentColor"/><rect x="5" y="5" width="2" height="6" rx="0.4" fill="currentColor"/><rect x="9" y="2.5" width="2" height="8.5" rx="0.4" fill="currentColor"/><rect x="13" y="0.5" width="2" height="10.5" rx="0.4" fill="currentColor"/></svg>`;
-
 const WIFI_SVG = `<svg width="16" height="12" viewBox="0 0 18 12" fill="none"><path d="M9 11.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm-3.3-3.3a4.5 4.5 0 0 1 6.6 0l-1.1 1.1a3 3 0 0 0-4.4 0L5.7 8.2zM2.9 5.1a8 8 0 0 1 12.2 0l-1.1 1.1a6.5 6.5 0 0 0-10 0L2.9 5.1z" fill="currentColor"/></svg>`;
-
-const BATTERY_SVG = `<svg width="24" height="12" viewBox="0 0 26 12" fill="none"><rect x="0.5" y="0.5" width="22" height="11" rx="2" stroke="currentColor" fill="none"/><rect x="2" y="2" width="19.5" height="8" rx="1.5" fill="currentColor"/><rect x="24" y="3.5" width="2" height="5" rx="0.75" fill="currentColor"/></svg>`;
 
 const PLUS_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8696a0" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
 
@@ -60,6 +56,19 @@ function mode(state) {
   return state.mockupTheme === 'light' ? L : D;
 }
 
+function renderBattery(level) {
+  const width = Math.max(1, Math.min(19.5, (level / 100) * 19.5));
+  return `<svg width="24" height="12" viewBox="0 0 26 12" fill="none" class="opacity-90"><rect x="0.5" y="0.5" width="22" height="11" rx="2" stroke="currentColor" fill="none"/><rect x="2" y="2" width="${width}" height="8" rx="1.5" fill="currentColor"/><rect x="24" y="3.5" width="2" height="5" rx="0.75" fill="currentColor"/></svg>`;
+}
+
+function renderSignal(bars) {
+  const op1 = bars >= 1 ? '1' : '0.3';
+  const op2 = bars >= 2 ? '1' : '0.3';
+  const op3 = bars >= 3 ? '1' : '0.3';
+  const op4 = bars >= 4 ? '1' : '0.3';
+  return `<svg width="16" height="12" viewBox="0 0 18 12" fill="none"><rect x="1" y="8" width="2" height="3" rx="0.4" fill="currentColor" opacity="${op1}"/><rect x="5" y="5" width="2" height="6" rx="0.4" fill="currentColor" opacity="${op2}"/><rect x="9" y="2.5" width="2" height="8.5" rx="0.4" fill="currentColor" opacity="${op3}"/><rect x="13" y="0.5" width="2" height="10.5" rx="0.4" fill="currentColor" opacity="${op4}"/></svg>`;
+}
+
 export function render(state) {
   const m = mode(state);
   const phoneBorder = state.mockupTheme === 'light' ? '#ffffff' : '#121212';
@@ -76,13 +85,17 @@ export function render(state) {
 }
 
 function renderStatusBar(state, m) {
+  const wifiHtml = state.statusBarWifi !== false ? `<span class="text-[11px]">${WIFI_SVG}</span>` : '';
+  const signalHtml = renderSignal(state.statusBarSignal || 4);
+  const batteryHtml = renderBattery(state.statusBarBattery !== undefined ? state.statusBarBattery : 100);
+
   return `
-    <div class="flex items-center justify-between px-6 h-[44px] shrink-0 text-white" style="background:${m.barBg}">
+    <div id="wa-statusbar" class="flex items-center justify-between px-6 h-[44px] shrink-0 text-white" style="background:${m.barBg}">
       <span id="wa-statusbar-time" class="text-[14px] font-semibold tracking-tight" style="font-family:-apple-system,system-ui,sans-serif">${escapeHtml(state.statusBarTime || '09:41')}</span>
       <div class="flex items-center gap-1.5">
-        <span class="text-[11px]">${SIGNAL_SVG}</span>
-        <span class="text-[11px]">${WIFI_SVG}</span>
-        <span class="text-[11px]">${BATTERY_SVG}</span>
+        <span class="text-[11px]">${signalHtml}</span>
+        ${wifiHtml}
+        <span class="text-[11px]">${batteryHtml}</span>
       </div>
     </div>
   `;
@@ -119,7 +132,7 @@ function renderChat(state, m) {
 
   return `
     <div id="wa-chat-container" class="flex-1 p-4 overflow-y-auto" style="background:var(--chat-bg, ${m.chatBg});background-image:${bgImg};background-size:${bgSize};background-repeat:${bgRepeat}">
-      <div id="wa-messages" class="flex flex-col gap-0.5">
+      <div id="wa-messages" class="flex flex-col gap-0.5 relative">
         ${state.messages.map((msg, idx) => renderBubble(msg, idx, state, m)).join('')}
       </div>
     </div>
@@ -141,6 +154,17 @@ function renderBubble(msg, idx, state, m) {
   let paddingClass = 'pl-[9px] pr-[9px] py-[6px]';
   let marginTopClass = isFirstInBlock ? 'mt-2.5' : 'mt-[2px]';
 
+  // Deterministic name coloring
+  const nameColors = ['#007acc', '#00bfa5', '#ff9f00', '#d32f2f', '#7b1fa2', '#388e3c'];
+  const colorIndex = (msg.senderName || '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) % nameColors.length;
+  const nameColor = nameColors[colorIndex];
+
+  const senderNameHtml = state.isGroup && !isSent && isFirstInBlock && msg.senderName ? `
+    <div class="text-[11.5px] font-semibold mb-0.5 leading-tight select-none" style="color:${nameColor}">
+      ${escapeHtml(msg.senderName)}
+    </div>
+  ` : '';
+
   if (isFirstInBlock) {
     if (isSent) {
       borderRadiusClass = 'rounded-[7.5px] rounded-tr-none';
@@ -161,6 +185,21 @@ function renderBubble(msg, idx, state, m) {
     }
   }
 
+  // Reactions badge
+  const reactionBadge = msg.reactions?.[0] ? `
+    <div class="absolute -bottom-[8px] right-[12px] flex items-center justify-center bg-white dark:bg-[#202c33] border border-[#e9edef] dark:border-[#3b4a54] rounded-full px-1.5 py-[2px] shadow-[0_1.5px_2px_rgba(0,0,0,0.15)] select-none z-10 scale-[0.88] origin-bottom-right">
+      <span class="text-[11px] leading-none">${msg.reactions[0]}</span>
+    </div>
+  ` : '';
+
+  if (msg.reactions?.[0]) {
+    // add extra padding bottom to accommodate the overlapping badge
+    paddingClass += ' pb-[11px]';
+  }
+
+  // Image attachment
+  const imageElement = msg.image ? `<img src="${msg.image}" class="w-full max-w-[280px] rounded-lg mb-1 object-cover shadow-[inset_0_0_1px_rgba(0,0,0,0.15)]" style="max-height: 200px" />` : '';
+
   let checkIcon = '';
   if (isSent) {
     if (status === 'read') checkIcon = CHECK_READ;
@@ -173,10 +212,12 @@ function renderBubble(msg, idx, state, m) {
   const unreadDot = isUnread ? `<span class="inline-flex ml-1 -mb-0.5">${UNREAD_BADGE}</span>` : '';
 
   return `
-    <div class="flex ${align} ${marginTopClass}">
+    <div class="flex ${align} ${marginTopClass} relative">
       <div class="relative max-w-[85%]">
         <div class="${borderRadiusClass} ${paddingClass} shadow-[0_1px_0.5px_rgba(0,0,0,0.13)]" style="background:${bg}">
-          <p class="text-[14.2px]/[1.4] whitespace-pre-wrap break-words ${boldClass}" style="color:${textColor}">${escapeHtml(msg.text)}</p>
+          ${senderNameHtml}
+          ${imageElement}
+          ${msg.text ? `<p class="text-[14.2px]/[1.4] whitespace-pre-wrap break-words ${boldClass}" style="color:${textColor}">${escapeHtml(msg.text)}</p>` : ''}
           <div class="flex items-center justify-end gap-1 mt-0.5 select-none">
             <span class="text-[10px] leading-none" style="color:${m.timeText}">${escapeHtml(msg.time)}</span>
             ${checkIcon ? `<span class="inline-flex -mb-0.5">${checkIcon}</span>` : ''}
@@ -184,6 +225,7 @@ function renderBubble(msg, idx, state, m) {
           </div>
         </div>
         ${tail}
+        ${reactionBadge}
       </div>
     </div>
   `;
@@ -201,6 +243,11 @@ function renderFooter(m) {
 }
 
 export function sync(state) {
+  const m = mode(state);
+  const statusBar = document.getElementById('wa-statusbar');
+  if (statusBar) {
+    statusBar.outerHTML = renderStatusBar(state, m);
+  }
   byId('wa-contact-name', (el) => { el.textContent = state.username; });
   byId('wa-status-text', (el) => { el.textContent = state.statusText || 'online'; });
   byId('wa-statusbar-time', (el) => { el.textContent = state.statusBarTime || '09:41'; });
