@@ -211,7 +211,7 @@ function renderSidebar(state) {
   const prefix = locale === 'de' ? '/de' : '';
   if (!sidebarOpen) return '<aside id="sidebar" class="w-0 shrink-0 overflow-hidden transition-all duration-300 bg-[#0d0a07] relative z-10"></aside>';
   return `
-    <aside id="sidebar" class="w-[340px] shrink-0 h-full overflow-y-auto p-4 flex flex-col gap-4 transition-all duration-300 bg-[#0d0a07] relative z-10">
+    <aside id="sidebar" class="w-[340px] shrink-0 h-full overflow-x-hidden overflow-y-auto p-4 flex flex-col gap-4 transition-all duration-300 bg-[#0d0a07] relative z-10">
       <div id="app-library" class="rounded-2xl border border-white/[6%] bg-[#1a1714] p-4 flex flex-col gap-3">
         <div class="flex items-center justify-between cursor-pointer select-none" id="app-library-toggle">
           <span class="text-xs font-semibold text-zinc-300 tracking-wide">${t('sidebar.appLibrary')}</span>
@@ -492,6 +492,10 @@ function renderApp() {
     <div id="main-area" class="flex-1 flex overflow-hidden relative">
       <div id="sidebar-overlay" class="hidden fixed inset-0 z-30 bg-black/40"></div>
       ${renderSidebar(state)}
+      <button id="btn-sidebar-open"
+        class="${sidebarOpen ? 'hidden' : ''} absolute left-0 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-5 h-20 bg-[#1a1714] hover:bg-[#25211e] border border-white/10 border-l-0 rounded-r-lg transition-all cursor-pointer group">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-400 group-hover:text-zinc-200 transition-colors"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
       <main id="canvas" class="flex-1 relative overflow-hidden">
         <div id="canvas-area" class="absolute inset-0 flex items-center justify-center overflow-hidden z-10">
           <div id="mockup"></div>
@@ -532,6 +536,7 @@ function bindEvents() {
   bind('btn-topbar-export', 'click', () => downloadPng());
   bind('btn-export-chevron', 'click', toggleExportDropdown);
   bind('btn-sidebar-toggle', 'click', toggleSidebar);
+  bind('btn-sidebar-open', 'click', toggleSidebar);
   bind('sidebar-overlay', 'click', toggleSidebar);
   bind('btn-undo', 'click', () => store.undo());
   bind('btn-redo', 'click', () => store.redo());
@@ -905,15 +910,37 @@ function updateAppLibrary(activeTheme) {
 /* ------------------------------------------------------------------ */
 /*  Canvas-Hintergrund                                                 */
 /* ------------------------------------------------------------------ */
+let _bgAnimId = 0;
+let _bgAngle = 0;
+
+function animateBackground() {
+  const canvas = document.getElementById('canvas');
+  if (!canvas) return;
+  const state = store.getState();
+  const colors = GRADIENT_COLORS[state.bgGradient] || ['#0f172a', '#1e1b4b'];
+  const dots = `radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px)`;
+  _bgAngle = (_bgAngle + 0.15) % 360;
+  const a1 = (_bgAngle - 20) % 360;
+  const a2 = (_bgAngle + 20) % 360;
+  const grad = `linear-gradient(${_bgAngle}deg, ${colors[0]}, ${colors[1]} 50%, ${colors[0]} 100%), linear-gradient(${a1}deg, ${colors[1]}, ${colors[0]} 50%, ${colors[1]} 100%)`;
+  canvas.style.background = `${dots}, ${grad}`;
+  canvas.style.backgroundSize = '40px 40px, 200% 200%';
+  canvas.style.backgroundBlendMode = 'normal, normal';
+  _bgAnimId = requestAnimationFrame(animateBackground);
+}
+
 function updateBackground(state) {
   const canvas = document.getElementById('canvas');
   if (!canvas) return;
+  cancelAnimationFrame(_bgAnimId);
   const colors = GRADIENT_COLORS[state.bgGradient] || ['#0f172a', '#1e1b4b'];
   const dots = `radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px)`;
   const grad = `linear-gradient(135deg, ${colors[0]}, ${colors[1]})`;
-  canvas.style.background = dots;
-  canvas.style.backgroundSize = '40px 40px';
-  canvas.style.setProperty('--bg-grad', grad);
+  canvas.style.background = `${dots}, ${grad}`;
+  canvas.style.backgroundSize = '40px 40px, 100% 100%';
+  canvas.style.backgroundBlendMode = 'normal';
+  _bgAngle = 135;
+  _bgAnimId = requestAnimationFrame(animateBackground);
 }
 
 /* ------------------------------------------------------------------ */
@@ -1009,7 +1036,7 @@ async function downloadPng() {
     el.style.transformOrigin = origOrigin;
     bgEls.forEach((bgEl, i) => { bgEl.style.backgroundImage = savedBg[i]; });
     imgs.forEach((img, i) => { if (savedSrc[i]) img.src = savedSrc[i]; });
-    console.error('Export failed:', err);
+    console.error('Export failed:', err?.message || err, err?.stack || '');
     if (icon) icon.innerHTML = SVG.download;
     if (label) label.textContent = t('topbar.exportFailed');
     btn.disabled = false;

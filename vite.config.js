@@ -14,13 +14,32 @@ function devLocalePlugin() {
     config(_, env) {
       isDev = env.command === 'serve';
     },
-    transformIndexHtml() {
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const match = req.url.match(/^\/locale\.([a-z]{2})\.js$/);
+        if (match) {
+          try {
+            const raw = JSON.parse(readFileSync(join(__dirname, 'locales', `${match[1]}.json`), 'utf-8'));
+            res.setHeader('Content-Type', 'application/javascript');
+            res.setHeader('Cache-Control', 'no-cache');
+            res.end(`window.__LOCALE__=${JSON.stringify(raw).replace(/</g, '\\u003C')}`);
+          } catch {
+            res.statusCode = 404;
+            res.end();
+          }
+          return;
+        }
+        next();
+      });
+    },
+    transformIndexHtml(_, ctx) {
       if (!isDev) return;
-      const raw = JSON.parse(readFileSync(join(__dirname, 'locales', 'en.json'), 'utf-8'));
+      const m = ctx?.originalUrl?.match(/^\/([a-z]{2})\//);
+      const lang = m ? m[1] : 'en';
       return [
         {
           tag: 'script',
-          children: `window.__LOCALE__=${JSON.stringify(raw).replace(/</g, '\\u003C')}`,
+          attrs: { src: `/locale.${lang}.js` },
           injectTo: 'head',
         },
       ];

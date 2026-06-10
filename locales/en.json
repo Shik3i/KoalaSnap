@@ -33,7 +33,7 @@
       "message": "Message",
       "avatar": "Avatar",
       "padding": "Padding",
-      "background": "Background",
+      "background": "Canvas",
       "font": "Font",
       "uploadBg": "Upload Background"
     },
