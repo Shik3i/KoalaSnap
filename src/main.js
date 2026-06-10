@@ -118,6 +118,14 @@ const SVG = {
 };
 
 const LANG = currentLocale();
+const LANG_LABELS = { de: 'Deutsch', en: 'English', es: 'Español' };
+
+function flagSvg(locale) {
+  if (locale === 'de') return '<svg viewBox="0 0 640 480"><path fill="#FFCC00" d="M0 320h640v160H0z"/><path fill="#000001" d="M0 0h640v160H0z"/><path fill="red" d="M0 160h640v160H0z"/></svg>';
+  if (locale === 'en') return '<svg viewBox="0 0 640 480"><path fill="#bd3d44" d="M0 0h640v480H0"/><path fill="#fff" d="M0 55.3h640m0 73.7H0m0 74h640m0 73.7H0m0 74h640"/><path fill="#192f5d" d="M0 0h364.8v258.5H0"/></svg>';
+  if (locale === 'es') return '<svg viewBox="0 0 640 480"><path fill="#AD1519" d="M0 0h640v480H0"/><path fill="#F1BF00" d="M0 120h640v240H0z"/></svg>';
+  return '';
+}
 
 /* ------------------------------------------------------------------ */
 /*  Layout-Komponenten                                                 */
@@ -174,14 +182,23 @@ function renderTopbar(state) {
           aria-label="GitHub">
           ${SVG.github}
         </a>
-        <div class="relative flex">
-          <select id="lang-select" aria-label="Language"
-            class="appearance-none bg-white/5 border border-white/10 rounded-full pl-2.5 pr-6 py-1.5 text-xs
+        <div class="relative flex" id="lang-switcher">
+          <button id="lang-btn"
+            class="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-full px-2.5 py-1.5 text-xs
                    text-zinc-400 hover:text-zinc-200 hover:border-white/20 outline-0 transition-all cursor-pointer">
-            <option value="de" ${LANG === 'de' ? 'selected' : ''}>DE</option>
-            <option value="en" ${LANG === 'en' ? 'selected' : ''}>EN</option>
-          </select>
-          <span class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500">${SVG.chevronDown}</span>
+            <span class="w-4 h-3 shrink-0 rounded-[2px] overflow-hidden">${flagSvg(LANG)}</span>
+            <span class="text-[10px] font-semibold leading-none">${LANG.toUpperCase()}</span>
+            <span class="text-zinc-500">${SVG.chevronDown}</span>
+          </button>
+          <div id="lang-dropdown" class="hidden absolute right-0 top-full mt-1.5 z-50 min-w-[130px] rounded-xl border border-white/10 bg-[#1a1714]/95 backdrop-blur-2xl py-1 shadow-2xl shadow-black/50">
+            ${['de', 'en', 'es'].map(code => `
+              <button data-lang="${code}"
+                class="flex items-center gap-2 w-full px-3 py-2 text-xs text-zinc-300 hover:text-white hover:bg-white/5 transition-all text-left">
+                <span class="w-5 h-4 shrink-0 rounded-[2px] overflow-hidden">${flagSvg(code)}</span>
+                ${LANG_LABELS[code]}
+              </button>
+            `).join('')}
+          </div>
         </div>
       </div>
     </header>
@@ -522,9 +539,19 @@ function bindEvents() {
     const next = store.get('mockupTheme') === 'light' ? 'dark' : 'light';
     store.set('mockupTheme', next);
   });
-  bind('lang-select', 'change', (e) => {
-    const val = e.target.value;
-    window.location.href = val === 'en' ? '/' : `/${val}/`;
+  bind('lang-btn', 'click', (e) => {
+    e.stopPropagation();
+    document.getElementById('lang-dropdown').classList.toggle('hidden');
+  });
+  document.addEventListener('click', () => {
+    const dd = document.getElementById('lang-dropdown');
+    if (dd && !dd.classList.contains('hidden')) dd.classList.add('hidden');
+  });
+  document.querySelectorAll('[data-lang]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const val = btn.dataset.lang;
+      window.location.href = val === 'en' ? '/' : `/${val}/`;
+    });
   });
   bind('btn-start-tour', 'click', () => startTutorial());
   bind('btn-template-save', 'click', saveTemplate);

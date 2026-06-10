@@ -1,0 +1,149 @@
+{
+  "app": {
+    "name": "KoalaSnap"
+  },
+  "topbar": {
+    "export": "Exportar",
+    "rendering": "Renderizando…",
+    "exported": "¡Exportado!",
+    "exportFailed": "Error",
+    "toggleSidebar": "Alternar barra lateral",
+    "undo": "Deshacer",
+    "redo": "Rehacer",
+    "more": "Más",
+    "exportPng": "Guardar como PNG",
+    "exportClipboard": "Copiar al portapapeles",
+    "exportShare": "Copiar enlace",
+    "copied": "¡Copiado!",
+    "linkCopied": "¡Enlace copiado!"
+  },
+  "sidebar": {
+    "appLibrary": "Biblioteca",
+    "apps": "apps",
+    "search": "Buscar apps…",
+    "settings": "Ajustes",
+    "discord": "Discord",
+    "socialPost": "Publicación",
+    "labels": {
+      "author": "Autor",
+      "handle": "Usuario",
+      "username": "Nombre",
+      "roleColor": "Color de rol",
+      "timestamp": "Hora",
+      "message": "Mensaje",
+      "avatar": "Avatar",
+      "padding": "Margen",
+      "background": "Fondo",
+      "font": "Fuente",
+      "uploadBg": "Subir fondo"
+    },
+    "addMessage": "Añadir mensaje",
+    "deleteMessage": "Eliminar",
+    "sent": "Enviado",
+    "received": "Recibido",
+    "messagePlaceholder": "Escribe un mensaje…",
+    "timePlaceholder": "00:00"
+  },
+  "canvas": {
+    "chat": "Chat",
+    "social": "Social"
+  },
+  "bottom": {
+    "toggleTheme": "Cambiar tema",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "imprint": "Aviso legal",
+    "privacy": "Privacidad"
+  },
+  "templates": {
+    "title": "Plantillas",
+    "save": "Guardar",
+    "load": "Cargar",
+    "delete": "Eliminar",
+    "saved": "¡Plantilla guardada!",
+    "namePlaceholder": "Nombre…",
+    "empty": "Sin plantillas"
+  },
+  "tutorial": {
+    "step1": "Elige el messenger que quieras simular.",
+    "step2": "Personaliza nombres, textos, avatares y colores en tiempo real.",
+    "step3": "Mira la vista previa en vivo renderizada al detalle.",
+    "step4": "Cambia entre modo claro y oscuro para la vista previa.",
+    "step5": "¿Listo? ¡Haz clic aquí para descargar tu PNG Retina!",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "done": "Listo",
+    "skip": "Saltar",
+    "restart": "Iniciar tour",
+    "of": "de"
+  },
+  "dummySets": [
+    {
+      "author": "María",
+      "handle": "@maria_99",
+      "username": "María",
+      "message": "¿Oye, te conectas esta noche?",
+      "time": "19:18",
+      "roleColor": "#e81224",
+      "messages": [
+        { "text": "¿Oye, te conectas esta noche?", "type": "sent", "time": "19:18" },
+        { "text": "Sí, dame 5 minutos", "type": "received", "time": "19:20" },
+        { "text": "Claro, tómate tu tiempo 🐨", "type": "sent", "time": "19:22" }
+      ]
+    },
+    {
+      "author": "Carlos",
+      "handle": "@carlos_dev",
+      "username": "Carlos",
+      "message": "Mi VPS acaba de caer. ¿Tienes un minuto?",
+      "time": "2:44",
+      "roleColor": "#5865F2",
+      "messages": [
+        { "text": "Mi VPS acaba de caer. ¿Tienes un minuto?", "type": "sent", "time": "2:44" },
+        { "text": "Voy, reviso los logs", "type": "received", "time": "2:46" },
+        { "text": "¡Gracias! Te invito un café ☕", "type": "sent", "time": "2:47" },
+        { "text": "Sin problema, en 10 vuelve a estar online", "type": "received", "time": "2:49" }
+      ]
+    },
+    {
+      "author": "GM del Raid",
+      "handle": "@gm_raid",
+      "username": "GM del Raid",
+      "message": "¿Otra run rápida de transmog?",
+      "time": "20:15",
+      "roleColor": "#f1c40f",
+      "messages": [
+        { "text": "¿Otra run rápida de transmog?", "type": "sent", "time": "20:15" },
+        { "text": "Sí, dame 2 min para terminar esto", "type": "received", "time": "20:16" },
+        { "text": "Vale, te invito", "type": "sent", "time": "20:17" },
+        { "text": "¡Listo!", "type": "received", "time": "20:19" }
+      ]
+    },
+    {
+      "author": "Elena",
+      "handle": "@elena_m",
+      "username": "Elena",
+      "message": "¿Ya probaste esa receta? ¡Está buenísima!",
+      "time": "12:37",
+      "roleColor": "#ed4245",
+      "messages": [
+        { "text": "¿Ya probaste esa receta? ¡Está buenísima!", "type": "sent", "time": "12:37" },
+        { "text": "Todavía no, ¡pásame el enlace!", "type": "received", "time": "12:39" },
+        { "text": "¡Aquí tienes! 🍝", "type": "sent", "time": "12:40" }
+      ]
+    },
+    {
+      "author": "Tomás",
+      "handle": "@tomas_dev",
+      "username": "Tomás",
+      "message": "El PR está fusionado. ¿Puedes revisarlo?",
+      "time": "15:02",
+      "roleColor": "#57f287",
+      "messages": [
+        { "text": "El PR está fusionado. ¿Puedes revisarlo?", "type": "received", "time": "15:02" },
+        { "text": "Ahora mismo", "type": "sent", "time": "15:05" },
+        { "text": "Se ve bien, ¡aprobado! ✅", "type": "sent", "time": "15:10" }
+      ]
+    }
+  ]
+}

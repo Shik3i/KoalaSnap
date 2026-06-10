@@ -6,9 +6,8 @@ export function t(key) {
 }
 
 export function currentLocale() {
-  const path = window.location.pathname;
-  if (path.startsWith('/de/') || path === '/de') return 'de';
-  return 'en';
+  const m = window.location.pathname.match(/^\/([a-z]{2})\//);
+  return m ? m[1] : 'en';
 }
 
 export function escapeHtml(str) {
