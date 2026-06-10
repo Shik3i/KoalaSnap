@@ -67,6 +67,18 @@ const GRADIENT_COLORS = {
   'from-zinc-800 to-zinc-950':      ['#27272a', '#09090b'],
 };
 
+const CHAT_BG_PRESETS = [
+  { label: 'Default',  value: '',                    colors: null },
+  { label: 'Warm',     value: '#efeae2',              colors: null },
+  { label: 'Cool',     value: '#eef2f6',              colors: null },
+  { label: 'Dark',     value: '#0b141a',              colors: null },
+  { label: 'Deep',     value: '#101214',              colors: null },
+  { label: 'Rose',     value: 'linear-gradient(135deg,#fce4ec,#f8bbd0)', colors: null },
+  { label: 'Sky',      value: 'linear-gradient(135deg,#e3f2fd,#bbdefb)', colors: null },
+  { label: 'Mint',     value: 'linear-gradient(135deg,#e8f5e9,#c8e6c9)', colors: null },
+  { label: 'Lavender', value: 'linear-gradient(135deg,#f3e5f5,#e1bee7)', colors: null },
+];
+
 /* ------------------------------------------------------------------ */
 /*  Brand SVG-Icons                                                    */
 /* ------------------------------------------------------------------ */
@@ -209,9 +221,9 @@ function renderSidebar(state) {
   const sidebarOpen = store.getSidebarOpen();
   const locale = currentLocale();
   const prefix = locale === 'de' ? '/de' : '';
-  if (!sidebarOpen) return '<aside id="sidebar" class="w-0 shrink-0 overflow-hidden transition-all duration-300 bg-[#0d0a07] relative z-10"></aside>';
   return `
-    <aside id="sidebar" class="w-[340px] shrink-0 h-full overflow-x-hidden overflow-y-auto p-4 flex flex-col gap-4 transition-all duration-300 bg-[#0d0a07] relative z-10">
+    <aside id="sidebar" class="w-[340px] shrink-0 h-full overflow-y-auto p-4 flex flex-col gap-4 transition-all duration-300 bg-[#0d0a07] fixed left-0 top-14 bottom-0 z-40 border-r border-white/[6%]
+      ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}">
       <div id="app-library" class="rounded-2xl border border-white/[6%] bg-[#1a1714] p-4 flex flex-col gap-3">
         <div class="flex items-center justify-between cursor-pointer select-none" id="app-library-toggle">
           <span class="text-xs font-semibold text-zinc-300 tracking-wide">${t('sidebar.appLibrary')}</span>
@@ -241,6 +253,22 @@ function renderSidebar(state) {
                 </button>
               `;
             }).join('')}
+          </div>
+        </div>
+      </div>
+
+      <div id="design-panel" class="rounded-2xl border border-white/[6%] bg-[#1a1714] p-4 flex flex-col gap-3">
+        <div class="flex items-center justify-between cursor-pointer select-none" id="design-toggle">
+          <span class="text-xs font-semibold text-zinc-300 tracking-wide">Design</span>
+          <span id="design-chevron" class="text-zinc-500 transition-transform">${SVG.chevronDown}</span>
+        </div>
+        <div id="design-body">
+          <div class="flex flex-wrap gap-1.5">
+            ${GRADIENT_PRESETS.map((g) => `
+              <button data-gradient="${g.value}" aria-label="${g.label}"
+                class="w-7 h-7 rounded-lg ${g.value} ring-1 ring-white/[8%] hover:ring-white/30 transition-all
+                  ${state.bgGradient === g.value ? 'ring-2 ring-white scale-110' : ''}"></button>
+            `).join('')}
           </div>
         </div>
       </div>
@@ -432,10 +460,11 @@ function renderSharedSettings(state) {
     <label class="flex flex-col gap-1.5">
       <span class="text-[10px] uppercase tracking-wider text-zinc-500">${t('sidebar.labels.background')}</span>
       <div class="flex flex-wrap gap-1.5">
-        ${GRADIENT_PRESETS.map((g) => `
-          <button data-gradient="${g.value}" aria-label="${g.label}"
-            class="w-7 h-7 rounded-lg ${g.value} ring-1 ring-white/[8%] hover:ring-white/30 transition-all
-              ${state.bgGradient === g.value ? 'ring-2 ring-white scale-110' : ''}"></button>
+        ${CHAT_BG_PRESETS.map((g) => `
+          <button data-chat-bg="${g.value}" aria-label="${g.label}"
+            class="w-7 h-7 rounded-lg ring-1 ring-white/[8%] hover:ring-white/30 transition-all
+              ${state.chatBgGradient === g.value ? 'ring-2 ring-white scale-110' : ''}"
+            style="background:${g.value || CHAT_BG_PRESETS[1].value}"></button>
         `).join('')}
       </div>
     </label>
@@ -490,7 +519,7 @@ function renderApp() {
   app.innerHTML = `
     ${renderTopbar(state)}
     <div id="main-area" class="flex-1 flex overflow-hidden relative">
-      <div id="sidebar-overlay" class="hidden fixed inset-0 z-30 bg-black/40"></div>
+      <div id="sidebar-overlay" class="${sidebarOpen && window.innerWidth < 768 ? 'block' : 'hidden'} fixed inset-0 z-30 bg-black/40"></div>
       ${renderSidebar(state)}
       <button id="btn-sidebar-open"
         class="${sidebarOpen ? 'hidden' : ''} absolute left-0 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-5 h-20 bg-[#1a1714] hover:bg-[#25211e] border border-white/10 border-l-0 rounded-r-lg transition-all cursor-pointer group">
@@ -506,8 +535,6 @@ function renderApp() {
   `;
   bindEvents();
   renderCurrentTheme();
-  const sidebar = document.getElementById('sidebar');
-  if (sidebar) sidebar.style.width = sidebarOpen ? '340px' : '0px';
   const zoom = store.get('_zoom') || 0;
   applyZoom(zoom);
 }
@@ -568,6 +595,10 @@ function bindEvents() {
     btn.addEventListener('click', () => store.set('bgGradient', btn.dataset.gradient));
   });
 
+  document.querySelectorAll('[data-chat-bg]').forEach((btn) => {
+    btn.addEventListener('click', () => store.set('chatBgGradient', btn.dataset.chatBg));
+  });
+
   document.querySelectorAll('[data-app]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const app = APPS.find((a) => a.id === btn.dataset.app);
@@ -600,6 +631,18 @@ function bindEvents() {
     toggleBtn.addEventListener('click', () => {
       const body = document.getElementById('app-library-body');
       const chevron = document.getElementById('app-library-chevron');
+      if (!body) return;
+      const isHidden = body.style.display === 'none';
+      body.style.display = isHidden ? '' : 'none';
+      if (chevron) chevron.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
+    });
+  }
+
+  const designToggle = document.getElementById('design-toggle');
+  if (designToggle) {
+    designToggle.addEventListener('click', () => {
+      const body = document.getElementById('design-body');
+      const chevron = document.getElementById('design-chevron');
       if (!body) return;
       const isHidden = body.style.display === 'none';
       body.style.display = isHidden ? '' : 'none';
@@ -908,12 +951,23 @@ function updateAppLibrary(activeTheme) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Mockup-Hintergrund (per CSS-Variable auf :root)                   */
+/*  Canvas-Hintergrund (Design) + Chat-Hintergrund (Settings)         */
 /* ------------------------------------------------------------------ */
 
 function updateBackground(state) {
-  const colors = GRADIENT_COLORS[state.bgGradient] || ['#0f172a', '#1e1b4b'];
-  document.documentElement.style.setProperty('--chat-bg', `linear-gradient(135deg, ${colors[0]}, ${colors[1]})`);
+  const canvas = document.getElementById('canvas');
+  if (canvas) {
+    const colors = GRADIENT_COLORS[state.bgGradient] || ['#0f172a', '#1e1b4b'];
+    const dots = `radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px)`;
+    const grad = `linear-gradient(135deg, ${colors[0]}, ${colors[1]})`;
+    canvas.style.background = `${dots}, ${grad}`;
+    canvas.style.backgroundSize = '40px 40px, 100% 100%';
+  }
+  if (state.chatBgGradient) {
+    document.documentElement.style.setProperty('--chat-bg', state.chatBgGradient);
+  } else {
+    document.documentElement.style.removeProperty('--chat-bg');
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -1094,19 +1148,7 @@ function toggleSidebar() {
   const current = store.getSidebarOpen();
   const next = !current;
   store.setSidebarOpen(next);
-  const sidebar = document.getElementById('sidebar');
-  if (sidebar) {
-    sidebar.style.width = next ? '340px' : '0px';
-  }
-  const overlay = document.getElementById('sidebar-overlay');
-  if (overlay) {
-    if (next && window.innerWidth < 768) {
-      overlay.classList.remove('hidden');
-    } else {
-      overlay.classList.add('hidden');
-    }
-  }
-  requestAnimationFrame(fitMockupToScreen);
+  reRenderApp();
 }
 
 /* ------------------------------------------------------------------ */
