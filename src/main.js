@@ -644,7 +644,7 @@ async function downloadPng() {
   if (icon) icon.innerHTML = SVG.spinner;
   if (label) label.textContent = t('topbar.rendering');
 
-  const el = document.querySelector('#mockup > div');
+  const el = document.getElementById('mockup-card');
   if (!el) { resetExportButton(); return; }
 
   /* Temporarily remove CSS transform so html-to-image captures at native size */
@@ -653,9 +653,12 @@ async function downloadPng() {
   el.style.transform = '';
   el.style.transformOrigin = '';
 
+  /* Wait for browser reflow after removing transform */
+  await new Promise(r => requestAnimationFrame(r));
+
   try {
     const { toPng } = await import('html-to-image');
-    const dataUrl = await toPng(el, { pixelRatio: 2, cacheBust: true, useCORS: true });
+    const dataUrl = await toPng(el, { pixelRatio: 2, cacheBust: true });
 
     el.style.transform = origTransform;
     el.style.transformOrigin = origOrigin;
