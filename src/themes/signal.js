@@ -100,7 +100,7 @@ function renderHeader(state, m) {
 
 function renderChat(state, m) {
   return `
-    <div class="flex-1 p-4 overflow-y-auto" style="background:${m.chatBg}${state.chatBg ? `;background-image:url(${state.chatBg});background-size:cover` : ''}">
+    <div class="flex-1 p-4 overflow-y-auto" style="background:var(--chat-bg, ${m.chatBg})${state.chatBg ? `;background-image:url(${state.chatBg});background-size:cover` : ''}">
       <div class="flex flex-col items-end gap-3">
         <div class="flex justify-end">
           <div class="relative max-w-[80%]">

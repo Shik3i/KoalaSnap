@@ -33,7 +33,7 @@
       "message": "Nachricht",
       "avatar": "Avatar",
       "padding": "Abstand",
-      "background": "Hintergrund (Canvas)",
+      "background": "Hintergrund",
       "font": "Schriftart",
       "uploadBg": "Hintergrund hochladen"
     },

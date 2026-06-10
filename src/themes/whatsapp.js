@@ -118,7 +118,7 @@ function renderHeader(state, m) {
 
 function renderChat(state, m) {
   return `
-    <div class="flex-1 p-4 overflow-y-auto" style="background:${m.chatBg}${state.chatBg ? `;background-image:url(${state.chatBg});background-size:cover` : `;background-image:${m.dotPattern}`}">
+    <div class="flex-1 p-4 overflow-y-auto" style="background:var(--chat-bg, ${m.chatBg})${state.chatBg ? `;background-image:url(${state.chatBg});background-size:cover` : `;background-image:${m.dotPattern}`}">
       <div id="wa-messages" class="flex flex-col gap-3">
         ${state.messages.map(msg => renderBubble(msg, m)).join('')}
       </div>

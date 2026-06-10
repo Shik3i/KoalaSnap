@@ -908,39 +908,12 @@ function updateAppLibrary(activeTheme) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Canvas-Hintergrund                                                 */
+/*  Mockup-Hintergrund (per CSS-Variable auf :root)                   */
 /* ------------------------------------------------------------------ */
-let _bgAnimId = 0;
-let _bgAngle = 0;
-
-function animateBackground() {
-  const canvas = document.getElementById('canvas');
-  if (!canvas) return;
-  const state = store.getState();
-  const colors = GRADIENT_COLORS[state.bgGradient] || ['#0f172a', '#1e1b4b'];
-  const dots = `radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px)`;
-  _bgAngle = (_bgAngle + 0.15) % 360;
-  const a1 = (_bgAngle - 20) % 360;
-  const a2 = (_bgAngle + 20) % 360;
-  const grad = `linear-gradient(${_bgAngle}deg, ${colors[0]}, ${colors[1]} 50%, ${colors[0]} 100%), linear-gradient(${a1}deg, ${colors[1]}, ${colors[0]} 50%, ${colors[1]} 100%)`;
-  canvas.style.background = `${dots}, ${grad}`;
-  canvas.style.backgroundSize = '40px 40px, 200% 200%';
-  canvas.style.backgroundBlendMode = 'normal, normal';
-  _bgAnimId = requestAnimationFrame(animateBackground);
-}
 
 function updateBackground(state) {
-  const canvas = document.getElementById('canvas');
-  if (!canvas) return;
-  cancelAnimationFrame(_bgAnimId);
   const colors = GRADIENT_COLORS[state.bgGradient] || ['#0f172a', '#1e1b4b'];
-  const dots = `radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px)`;
-  const grad = `linear-gradient(135deg, ${colors[0]}, ${colors[1]})`;
-  canvas.style.background = `${dots}, ${grad}`;
-  canvas.style.backgroundSize = '40px 40px, 100% 100%';
-  canvas.style.backgroundBlendMode = 'normal';
-  _bgAngle = 135;
-  _bgAnimId = requestAnimationFrame(animateBackground);
+  document.documentElement.style.setProperty('--chat-bg', `linear-gradient(135deg, ${colors[0]}, ${colors[1]})`);
 }
 
 /* ------------------------------------------------------------------ */
@@ -979,33 +952,11 @@ async function downloadPng() {
   const el = document.getElementById('mockup-card');
   if (!el) { resetExportButton(); return; }
 
-  /* Temporarily remove CSS transform so html-to-image captures at native size */
   const origTransform = el.style.transform;
   const origOrigin = el.style.transformOrigin;
   el.style.transform = '';
   el.style.transformOrigin = '';
 
-  /* Html-to-image embedImages erzeugt neue Image()-Elemente für alle
-     url()-Referenzen in CSS. SVG-data-URIs (WhatsApp-Dot-Pattern) können
-     dabei als img scheitern → alle data-URI backgrounds vorher neutralisieren. */
-  const bgEls = el.querySelectorAll('[style*="background-image"]');
-  const savedBg = [];
-  bgEls.forEach((bgEl, i) => {
-    savedBg[i] = bgEl.style.backgroundImage;
-    bgEl.style.backgroundImage = 'none';
-  });
-
-  /* Neutralize avatar images with blob URLs */
-  const imgs = el.querySelectorAll('img');
-  const savedSrc = [];
-  imgs.forEach((img, i) => {
-    savedSrc[i] = img.src;
-    if (img.src.startsWith('blob:')) {
-      img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-    }
-  });
-
-  /* Wait for browser reflow after removing transform */
   await new Promise(r => requestAnimationFrame(r));
 
   try {
@@ -1014,8 +965,6 @@ async function downloadPng() {
 
     el.style.transform = origTransform;
     el.style.transformOrigin = origOrigin;
-    bgEls.forEach((bgEl, i) => { bgEl.style.backgroundImage = savedBg[i]; });
-    imgs.forEach((img, i) => { if (savedSrc[i]) img.src = savedSrc[i]; });
 
     const now = new Date();
     const ts = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
@@ -1034,8 +983,6 @@ async function downloadPng() {
   } catch (err) {
     el.style.transform = origTransform;
     el.style.transformOrigin = origOrigin;
-    bgEls.forEach((bgEl, i) => { bgEl.style.backgroundImage = savedBg[i]; });
-    imgs.forEach((img, i) => { if (savedSrc[i]) img.src = savedSrc[i]; });
     console.error('Export failed:', err?.message || err, err?.stack || '');
     if (icon) icon.innerHTML = SVG.download;
     if (label) label.textContent = t('topbar.exportFailed');

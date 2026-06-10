@@ -52,7 +52,7 @@ export function render(state) {
             <span>${MEMBER_SVG}</span>
           </div>
         </div>
-        <div class="flex-1 flex flex-col overflow-y-auto" style="background:${m.chatBg}${state.chatBg ? `;background-image:url(${state.chatBg});background-size:cover` : `;background-image:${m.dotPattern}`}">
+        <div class="flex-1 flex flex-col overflow-y-auto" style="background:var(--chat-bg, ${m.chatBg})${state.chatBg ? `;background-image:url(${state.chatBg});background-size:cover` : `;background-image:${m.dotPattern}`}">
           <div class="p-4">
             <div class="flex items-start gap-4">
               <div class="w-10 h-10 rounded-full overflow-hidden shrink-0 mt-0.5">
@@ -71,7 +71,7 @@ export function render(state) {
             </div>
           </div>
         </div>
-        <div class="shrink-0 px-4 py-3" style="background:${m.chatBg}">
+        <div class="shrink-0 px-4 py-3" style="background:var(--chat-bg, ${m.chatBg})">
           <div class="flex items-center gap-2 rounded-lg px-4 py-2.5" style="background:${m.inputBg}">
             <span>${PLUS_SVG}</span>
             <span class="flex-1 text-[15px]" style="color:${m.placeholder}">Message #general</span>

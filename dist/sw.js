@@ -1,32 +1,12 @@
-const CACHE = 'koalasnap-v1';
+const CACHE = 'koalasnap-v2';
 
-const PRECACHE = [
-  '/',
-  '/src/style.css',
-  '/src/main.js',
-  '/src/store.js',
-  '/src/i18n.js',
-  '/src/avatar.js',
-  '/src/tutorial.js',
-  '/src/themes/social-post.js',
-  '/src/themes/discord.js',
-  '/src/themes/whatsapp.js',
-  '/src/themes/telegram.js',
-  '/src/themes/signal.js',
-  '/src/themes/imessage.js',
-  '/manifest.json',
-  '/fonts/Inter-Variable.woff2',
-];
-
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll(PRECACHE)).then(() => self.skipWaiting()),
-  );
-});
+self.addEventListener('install', () => self.skipWaiting());
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))),
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))
+    )
   );
   self.clients.claim();
 });
@@ -34,6 +14,15 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request)),
+    caches.match(event.request).then((cached) => {
+      const fetchPromise = fetch(event.request).then((res) => {
+        if (res.ok) {
+          const clone = res.clone();
+          caches.open(CACHE).then((cache) => cache.put(event.request, clone));
+        }
+        return res;
+      }).catch(() => cached);
+      return cached || fetchPromise;
+    })
   );
 });
