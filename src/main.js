@@ -145,15 +145,15 @@ function renderTopbar(state) {
           ${store.canRedo() ? '' : 'disabled'}>
           ${SVG.redo}
         </button>
-        <div class="relative flex items-center" id="export-dropdown-container">
+        <div class="relative flex" id="export-dropdown-container">
           <button id="btn-topbar-export" aria-label="${t('topbar.export')}"
-            class="flex items-center gap-1.5 rounded-l-full bg-[#f97316] pl-4 pr-2.5 py-1.5 text-xs font-semibold text-white hover:bg-[#ea580c] active:scale-[0.97] transition-all disabled:opacity-60 disabled:pointer-events-none">
+            class="flex items-center gap-1.5 bg-[#f97316] pl-3 pr-1.5 h-7 text-xs font-semibold text-white hover:bg-[#ea580c] active:scale-[0.97] transition-all disabled:opacity-60 disabled:pointer-events-none rounded-l-full">
             <span id="btn-export-icon">${SVG.download}</span>
             <span id="btn-export-label">${t('topbar.export')}</span>
           </button>
           <button id="btn-export-chevron" aria-label="${t('topbar.more')}"
-            class="rounded-r-full bg-[#f97316] px-1.5 py-1.5 text-xs font-semibold text-white hover:bg-[#ea580c] active:scale-[0.97] transition-all">
-            ${SVG.chevronDown}
+            class="flex items-center bg-[#f97316] pl-1.5 pr-2.5 h-7 text-white hover:bg-[#ea580c] active:scale-[0.97] transition-all rounded-r-full border-l border-orange-500/30">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div id="export-dropdown" class="absolute right-0 top-full mt-1 z-50 hidden min-w-[200px] rounded-xl border border-white/10 bg-[#1a1714]/95 backdrop-blur-2xl py-1 shadow-2xl shadow-black/50">
             <button data-export-action="png" class="flex items-center gap-2.5 w-full px-3 py-2 text-xs text-zinc-300 hover:bg-white/5 hover:text-white transition-all text-left">
@@ -882,12 +882,11 @@ function updateBackground(state) {
   const canvas = document.getElementById('canvas');
   if (!canvas) return;
   const colors = GRADIENT_COLORS[state.bgGradient] || ['#0f172a', '#1e1b4b'];
-  canvas.style.background = `
-    radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
-    linear-gradient(135deg, ${colors[0]}, ${colors[1]})
-  `;
-  canvas.style.backgroundSize = '40px 40px, 200% 200%';
-  canvas.style.animation = 'bg-shift 20s ease-in-out infinite alternate';
+  const dots = `radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px)`;
+  const grad = `linear-gradient(135deg, ${colors[0]}, ${colors[1]})`;
+  canvas.style.background = `${dots}, ${grad}`;
+  canvas.style.backgroundSize = '40px 40px, 100% 100%';
+  canvas.style.setProperty('--bg-grad', grad);
 }
 
 /* ------------------------------------------------------------------ */

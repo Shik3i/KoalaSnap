@@ -28,8 +28,21 @@
 }
 
 @keyframes bg-shift {
-  0%   { background-position: 0% 0%, 0% 0%; }
-  100% { background-position: 100% 100%, 100% 100%; }
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+#canvas::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--bg-grad);
+  background-size: 400% 400%;
+  animation: bg-shift 30s ease infinite;
+  pointer-events: none;
+  opacity: 0.85;
 }
 
 @media (max-width: 767px) {
