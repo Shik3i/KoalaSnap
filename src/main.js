@@ -541,12 +541,11 @@ function renderSharedSettings(state) {
         <option value="Inter" ${state.fontFamily === 'Inter' ? 'selected' : ''}>Inter</option>
       </select>
     </label>
-    ${currentTheme !== 'social-post' && !['messenger', 'instagram', 'twitter', 'tiktok'].includes(currentTheme) ? `
     <label class="flex flex-col gap-1.5 mt-4">
       <span class="text-[10px] uppercase tracking-wider text-zinc-500">${t('sidebar.labels.uploadBg')}</span>
       <input id="input-chatbg" type="file" accept="image/*"
         class="text-xs text-zinc-500 file:mr-3 file:rounded-xl file:border-0 file:bg-white/10 file:px-3 file:py-1.5 file:text-xs file:text-zinc-200 file:font-medium hover:file:bg-white/15 transition-colors" />
-    </label>` : ''}
+    </label>
   `;
 }
 
@@ -1037,6 +1036,11 @@ function syncMockup(key, value, state) {
 
   if (key === 'bgGradient') {
     updateBackground(state);
+  }
+
+  if (key === 'chatBgGradient') {
+    updateBackground(state);
+    return;
   }
 
   if (key === 'mockupTheme') {
