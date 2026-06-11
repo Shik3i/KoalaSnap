@@ -193,9 +193,14 @@ function renderSidebar(state) {
         </div>
       </div>
 
-      <div id="settings-panel" class="rounded-2xl border border-white/[6%] bg-[#1a1714] p-4 flex flex-col gap-4">
-        <span class="text-xs font-semibold text-zinc-300 tracking-wide">${t('sidebar.settings')} · <span class="text-zinc-500 font-normal normal-case">${themeLabel()}</span></span>
-        ${renderSettingsFields(state)}
+      <div id="settings-panel" class="rounded-2xl border border-white/[6%] bg-[#1a1714] p-4 flex flex-col gap-3">
+        <div class="flex items-center justify-between cursor-pointer select-none" id="settings-toggle">
+          <span id="settings-toggle-title" class="text-xs font-semibold text-zinc-300 tracking-wide">${t('sidebar.settings')} · <span class="text-zinc-500 font-normal normal-case">${themeLabel()}</span></span>
+          <span id="settings-chevron" class="text-zinc-500 transition-transform" style="transform: rotate(180deg)">${SVG.chevronDown}</span>
+        </div>
+        <div id="settings-body" class="flex flex-col gap-4" style="display: none;">
+          ${renderSettingsFields(state)}
+        </div>
       </div>
 
       ${renderTemplateSection()}
@@ -649,12 +654,13 @@ function updateUndoRedoButtons() {
 }
 
 function updateSettingsPanel(state) {
-  const panel = document.getElementById('settings-panel');
-  if (!panel) return;
-  panel.innerHTML = `
-    <span class="text-xs font-semibold text-zinc-300 tracking-wide">${t('sidebar.settings')} · <span class="text-zinc-500 font-normal normal-case">${themeLabel()}</span></span>
-    ${renderSettingsFields(state)}
-  `;
+  const toggleTitle = document.getElementById('settings-toggle-title');
+  if (toggleTitle) {
+    toggleTitle.innerHTML = `${t('sidebar.settings')} · <span class="text-zinc-500 font-normal normal-case">${themeLabel()}</span>`;
+  }
+  const body = document.getElementById('settings-body');
+  if (!body) return;
+  body.innerHTML = renderSettingsFields(state);
   bindSettingsEvents();
 }
 
@@ -744,15 +750,29 @@ function bindEvents() {
       const isHidden = body.style.display === 'none';
       body.style.display = isHidden ? '' : 'none';
       if (chevron) chevron.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
+      
+      // Feature: When app library is closed, automatically open settings
+      if (!isHidden) {
+        const settingsBody = document.getElementById('settings-body');
+        const settingsChevron = document.getElementById('settings-chevron');
+        if (settingsBody && settingsBody.style.display === 'none') {
+          settingsBody.style.display = '';
+          if (settingsChevron) settingsChevron.style.transform = 'rotate(0deg)';
+        }
+      }
     });
   }
 
-  /* Close export dropdown on outside click */
-  document.addEventListener('click', (e) => {
-    const container = document.getElementById('export-dropdown-container');
-    if (container && !container.contains(e.target)) {
-      closeExportDropdown();
-    }
+  const settingsToggle = document.getElementById('settings-toggle');
+  if (settingsToggle) {
+    settingsToggle.addEventListener('click', () => {
+      const body = document.getElementById('settings-body');
+      const chevron = document.getElementById('settings-chevron');
+      if (!body) return;
+      const isHidden = body.style.display === 'none';
+      body.style.display = isHidden ? '' : 'none';
+      if (chevron) chevron.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
+    });
   });
 
   /* Keyboard shortcuts */
