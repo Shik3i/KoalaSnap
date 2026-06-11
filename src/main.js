@@ -750,7 +750,7 @@ function bindEvents() {
       const isHidden = body.style.display === 'none';
       body.style.display = isHidden ? '' : 'none';
       if (chevron) chevron.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
-      
+
       // Feature: When app library is closed, automatically open settings
       if (!isHidden) {
         const settingsBody = document.getElementById('settings-body');
@@ -773,7 +773,7 @@ function bindEvents() {
       body.style.display = isHidden ? '' : 'none';
       if (chevron) chevron.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
     });
-  });
+  }
 
   /* Keyboard shortcuts */
   document.addEventListener('keydown', (e) => {
