@@ -1,4 +1,4 @@
-﻿export const GRADIENT_PRESETS = [
+export const GRADIENT_PRESETS = [
   { label: 'Midnight', value: 'from-slate-900 to-indigo-950' },
   { label: 'Sky', value: 'from-sky-400 to-indigo-600' },
   { label: 'Rose', value: 'from-rose-400 to-orange-600' },

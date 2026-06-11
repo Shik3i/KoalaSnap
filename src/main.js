@@ -1,4 +1,4 @@
-﻿import { store } from './store.js';
+import { store } from './store.js';
 import { t, currentLocale, escapeHtml } from './i18n.js';
 import { compressAvatar, releaseAvatar } from './avatar.js';
 import { startTutorial, isCompleted, isTutorialActive, reapplyStep } from './tutorial.js';
@@ -29,7 +29,7 @@ let _syncing = false;
 let _isExporting = false;
 
 /* ------------------------------------------------------------------ */
-/*  App-liste fÃ¼r die Library                                          */
+/*  App-liste für die Library                                          */
 /* ------------------------------------------------------------------ */
 
 function themeLabel() {
@@ -56,12 +56,12 @@ import { GRADIENT_PRESETS, GRADIENT_COLORS, CHAT_BG_PRESETS, APPS } from './cons
 /* ------------------------------------------------------------------ */
 
 const LANG = currentLocale();
-const LANG_LABELS = { de: 'Deutsch', en: 'English', es: 'EspaÃ±ol' };
+const LANG_LABELS = { de: 'Deutsch', en: 'English', es: 'Español' };
 
 function flagEmoji(locale) {
-  if (locale === 'de') return 'ðŸ‡©ðŸ‡ª';
-  if (locale === 'en') return 'ðŸ‡¬ðŸ‡§';
-  if (locale === 'es') return 'ðŸ‡ªðŸ‡¸';
+  if (locale === 'de') return '🇩🇪';
+  if (locale === 'en') return '🇬🇧';
+  if (locale === 'es') return '🇪🇸';
   return '';
 }
 
@@ -194,7 +194,7 @@ function renderSidebar(state) {
       </div>
 
       <div id="settings-panel" class="rounded-2xl border border-white/[6%] bg-[#1a1714] p-4 flex flex-col gap-4">
-        <span class="text-xs font-semibold text-zinc-300 tracking-wide">${t('sidebar.settings')} Â· <span class="text-zinc-500 font-normal normal-case">${themeLabel()}</span></span>
+        <span class="text-xs font-semibold text-zinc-300 tracking-wide">${t('sidebar.settings')} · <span class="text-zinc-500 font-normal normal-case">${themeLabel()}</span></span>
         ${renderSettingsFields(state)}
       </div>
 
@@ -409,7 +409,7 @@ function renderMessageRow(msg, idx) {
 
   // Emoji reactions
   const currentReaction = msg.reactions?.[0] || '';
-  const emojis = ['ðŸ‘', 'â¤ï¸', 'ðŸ˜‚', 'ðŸ˜®', 'ðŸ˜¢', 'ðŸ™'];
+  const emojis = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
   const reactionsHtml = `
     <div class="flex gap-1 items-center mt-1.5 select-none">
       <span class="text-[9px] text-zinc-500 uppercase tracking-wider">React:</span>
@@ -652,7 +652,7 @@ function updateSettingsPanel(state) {
   const panel = document.getElementById('settings-panel');
   if (!panel) return;
   panel.innerHTML = `
-    <span class="text-xs font-semibold text-zinc-300 tracking-wide">${t('sidebar.settings')} Â· <span class="text-zinc-500 font-normal normal-case">${themeLabel()}</span></span>
+    <span class="text-xs font-semibold text-zinc-300 tracking-wide">${t('sidebar.settings')} · <span class="text-zinc-500 font-normal normal-case">${themeLabel()}</span></span>
     ${renderSettingsFields(state)}
   `;
   bindSettingsEvents();
@@ -1501,7 +1501,7 @@ function getRandomDummySet() {
       messages: [
         { text: 'Hey, are you coming online tonight?', type: 'sent', time: '7:18 PM' },
         { text: 'Yeah, give me 5!', type: 'received', time: '7:20 PM' },
-        { text: 'Sure, take your time ðŸ¨', type: 'sent', time: '7:21 PM' },
+        { text: 'Sure, take your time 🐨', type: 'sent', time: '7:21 PM' },
       ],
     },
   ];
