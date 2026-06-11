@@ -21,7 +21,10 @@ export function compressAvatar(file) {
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
-        if (!ctx) { reject(new Error('Canvas 2D not supported')); return; }
+        if (!ctx) {
+          reject(new Error('Canvas 2D not supported'));
+          return;
+        }
 
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
@@ -29,7 +32,10 @@ export function compressAvatar(file) {
 
         canvas.toBlob(
           (blob) => {
-            if (!blob) { reject(new Error('WebP encoding failed')); return; }
+            if (!blob) {
+              reject(new Error('WebP encoding failed'));
+              return;
+            }
             resolve(URL.createObjectURL(blob));
           },
           'image/webp',

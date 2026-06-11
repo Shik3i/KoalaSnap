@@ -192,9 +192,10 @@ function renderNavBar(state, m) {
     <div id="im-navbar" class="flex items-center gap-1 px-2 py-1.5 shrink-0 border-b border-black/[5%] relative z-10" style="background:${m.barBg};color:${m.navColor}">
       <span class="shrink-0 px-1">${BACK_SVG}</span>
       <div class="w-[34px] h-[34px] rounded-full overflow-hidden shrink-0 ml-1">
-        ${state.avatar
-          ? `<img id="im-avatar" src="${state.avatar}" class="w-full h-full rounded-full object-cover" />`
-          : `<div id="im-avatar" class="w-full h-full rounded-full bg-[#2c2c2c] flex items-center justify-center"><svg width="16" height="16" viewBox="0 0 24 24" fill="#8e8e93"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>`
+        ${
+          state.avatar
+            ? `<img id="im-avatar" src="${state.avatar}" class="w-full h-full rounded-full object-cover" />`
+            : `<div id="im-avatar" class="w-full h-full rounded-full bg-[#2c2c2c] flex items-center justify-center"><svg width="16" height="16" viewBox="0 0 24 24" fill="#8e8e93"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>`
         }
       </div>
       <div class="flex-1 min-w-0">
@@ -266,18 +267,23 @@ function renderBubble(msg, idx, state, m) {
     `;
   }
 
-  const senderNameHtml = state.isGroup && !isSent && isFirstInBlock && msg.senderName ? `
+  const senderNameHtml =
+    state.isGroup && !isSent && isFirstInBlock && msg.senderName
+      ? `
     <div class="text-[10px] text-zinc-400 dark:text-zinc-500 mb-0.5 leading-tight select-none pl-2.5">
       ${escapeHtml(msg.senderName)}
     </div>
-  ` : '';
+  `
+      : '';
 
   // Reactions badge
-  const reactionBadge = msg.reactions?.[0] ? `
+  const reactionBadge = msg.reactions?.[0]
+    ? `
     <div class="absolute -top-[10px] ${isSent ? '-left-[6px]' : '-right-[6px]'} flex items-center justify-center bg-[#e5e5ea] dark:bg-[#2c2c2e] border border-black/10 dark:border-white/10 rounded-full px-1.5 py-[2px] shadow-[0_1.5px_2px_rgba(0,0,0,0.15)] select-none z-10 scale-[0.88] ${isSent ? 'origin-top-left' : 'origin-top-right'}">
       <span class="text-[11px] leading-none">${msg.reactions[0]}</span>
     </div>
-  ` : '';
+  `
+    : '';
 
   if (msg.reactions?.[0]) {
     if (!isFirstInBlock) {
@@ -288,7 +294,9 @@ function renderBubble(msg, idx, state, m) {
   }
 
   // Image attachment
-  const imageElement = msg.image ? `<img src="${msg.image}" class="w-full max-w-[280px] rounded-lg mb-1 object-cover shadow-[inset_0_0_1px_rgba(0,0,0,0.15)]" style="max-height: 200px" />` : '';
+  const imageElement = msg.image
+    ? `<img src="${msg.image}" class="w-full max-w-[280px] rounded-lg mb-1 object-cover shadow-[inset_0_0_1px_rgba(0,0,0,0.15)]" style="max-height: 200px" />`
+    : '';
 
   return `
     <div class="flex flex-col ${align} ${marginTopClass}">
@@ -335,7 +343,9 @@ export function sync(state) {
     inputBar.outerHTML = renderInputBar(state, m);
   }
 
-  byId('im-contact-name', (el) => { el.textContent = state.username; });
+  byId('im-contact-name', (el) => {
+    el.textContent = state.username;
+  });
 
   const slot = document.getElementById('im-avatar');
   if (slot) {
@@ -375,17 +385,25 @@ export function sync(state) {
 
 function syncDesktop(state) {
   const m = mode(state);
-  
-  byId('im-contact-name', (el) => { el.textContent = state.username; });
-  byId('im-contact-name-header', (el) => { el.textContent = state.username; });
-  
+
+  byId('im-contact-name', (el) => {
+    el.textContent = state.username;
+  });
+  byId('im-contact-name-header', (el) => {
+    el.textContent = state.username;
+  });
+
   const lastMsg = state.messages[state.messages.length - 1] || { text: '', time: '' };
   const lastMsgText = lastMsg.text || (lastMsg.image ? '📷 Photo' : '');
-  byId('im-chat-time', (el) => { el.textContent = lastMsg.time || ''; });
-  byId('im-chat-last-message', (el) => { el.textContent = lastMsgText; });
+  byId('im-chat-time', (el) => {
+    el.textContent = lastMsg.time || '';
+  });
+  byId('im-chat-last-message', (el) => {
+    el.textContent = lastMsgText;
+  });
 
   const slots = document.querySelectorAll('#im-avatar');
-  slots.forEach(slot => {
+  slots.forEach((slot) => {
     if (state.avatar) {
       const img = document.createElement('img');
       img.id = 'im-avatar';
@@ -396,7 +414,8 @@ function syncDesktop(state) {
     } else {
       const div = document.createElement('div');
       div.id = 'im-avatar';
-      div.className = 'w-full h-full rounded-full bg-[#8e8e93] flex items-center justify-center text-white text-[13px] font-bold';
+      div.className =
+        'w-full h-full rounded-full bg-[#8e8e93] flex items-center justify-center text-white text-[13px] font-bold';
       div.textContent = state.username.slice(0, 2);
       slot.replaceWith(div);
     }

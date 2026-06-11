@@ -95,7 +95,7 @@ function renderDesktop(state, m) {
   const lastMsg = state.messages[state.messages.length - 1] || { text: '', time: '' };
   const lastMsgText = lastMsg.text || (lastMsg.image ? '📷 Photo' : '');
   const lastMsgTime = lastMsg.time || '';
-  
+
   let checkIcon = '';
   if (lastMsg.type === 'sent') {
     if (lastMsg.status === 'read' || lastMsg.status === 'delivered') checkIcon = CHECK_READ;
@@ -207,9 +207,10 @@ function renderHeader(state, m) {
     <div class="flex items-center gap-2 px-3 py-2 shrink-0" style="background:${m.barBg}">
       <span class="shrink-0">${BACK_SVG}</span>
       <div class="w-9 h-9 rounded-full overflow-hidden shrink-0">
-        ${state.avatar
-          ? `<img id="tg-avatar" src="${state.avatar}" class="w-full h-full rounded-full object-cover" />`
-          : `<div id="tg-avatar" class="w-full h-full rounded-full bg-[#527da3] flex items-center justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="#e9edef"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>`
+        ${
+          state.avatar
+            ? `<img id="tg-avatar" src="${state.avatar}" class="w-full h-full rounded-full object-cover" />`
+            : `<div id="tg-avatar" class="w-full h-full rounded-full bg-[#527da3] flex items-center justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="#e9edef"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>`
         }
       </div>
       <div class="flex-1 min-w-0">
@@ -254,11 +255,14 @@ function renderBubble(msg, idx, state, m) {
   const colorIndex = (msg.senderName || '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) % nameColors.length;
   const nameColor = nameColors[colorIndex];
 
-  const senderNameHtml = state.isGroup && !isSent && isFirstInBlock && msg.senderName ? `
+  const senderNameHtml =
+    state.isGroup && !isSent && isFirstInBlock && msg.senderName
+      ? `
     <div class="text-[12px] font-semibold mb-0.5 leading-tight select-none" style="color:${nameColor}">
       ${escapeHtml(msg.senderName)}
     </div>
-  ` : '';
+  `
+      : '';
 
   if (isLastInBlock) {
     if (isSent) {
@@ -271,18 +275,22 @@ function renderBubble(msg, idx, state, m) {
   }
 
   // Reactions badge
-  const reactionBadge = msg.reactions?.[0] ? `
+  const reactionBadge = msg.reactions?.[0]
+    ? `
     <div class="absolute -bottom-[8px] right-[10px] flex items-center justify-center bg-[#efefef] dark:bg-[#181818] border border-black/10 dark:border-white/10 rounded-full px-1.5 py-[2px] shadow-[0_1px_2px_rgba(0,0,0,0.15)] select-none z-10 scale-[0.88] origin-bottom-right">
       <span class="text-[11px] leading-none">${msg.reactions[0]}</span>
     </div>
-  ` : '';
+  `
+    : '';
 
   if (msg.reactions?.[0]) {
     paddingClass += ' pb-[10px]';
   }
 
   // Image attachment
-  const imageElement = msg.image ? `<img src="${msg.image}" class="w-full max-w-[280px] rounded-lg mb-1 object-cover shadow-[inset_0_0_1px_rgba(0,0,0,0.15)]" style="max-height: 200px" />` : '';
+  const imageElement = msg.image
+    ? `<img src="${msg.image}" class="w-full max-w-[280px] rounded-lg mb-1 object-cover shadow-[inset_0_0_1px_rgba(0,0,0,0.15)]" style="max-height: 200px" />`
+    : '';
 
   let checkIcon = '';
   if (isSent) {
@@ -330,9 +338,15 @@ export function sync(state) {
   if (statusBar) {
     statusBar.outerHTML = renderStatusBar(state, m);
   }
-  byId('tg-contact-name', (el) => { el.textContent = state.username; });
-  byId('tg-status-text', (el) => { el.textContent = state.statusText || 'online'; });
-  byId('tg-statusbar-time', (el) => { el.textContent = state.statusBarTime || '09:41'; });
+  byId('tg-contact-name', (el) => {
+    el.textContent = state.username;
+  });
+  byId('tg-status-text', (el) => {
+    el.textContent = state.statusText || 'online';
+  });
+  byId('tg-statusbar-time', (el) => {
+    el.textContent = state.statusBarTime || '09:41';
+  });
 
   const slot = document.getElementById('tg-avatar');
   if (slot) {
@@ -374,15 +388,23 @@ export function sync(state) {
 
 function syncDesktop(state) {
   const m = mode(state);
-  
-  byId('tg-contact-name', (el) => { el.textContent = state.username; });
-  byId('tg-contact-name-header', (el) => { el.textContent = state.username; });
-  byId('tg-status-text', (el) => { el.textContent = state.statusText || 'online'; });
-  
+
+  byId('tg-contact-name', (el) => {
+    el.textContent = state.username;
+  });
+  byId('tg-contact-name-header', (el) => {
+    el.textContent = state.username;
+  });
+  byId('tg-status-text', (el) => {
+    el.textContent = state.statusText || 'online';
+  });
+
   const lastMsg = state.messages[state.messages.length - 1] || { text: '', time: '' };
   const lastMsgText = lastMsg.text || (lastMsg.image ? '📷 Photo' : '');
-  byId('tg-chat-time', (el) => { el.textContent = lastMsg.time || ''; });
-  
+  byId('tg-chat-time', (el) => {
+    el.textContent = lastMsg.time || '';
+  });
+
   let checkIcon = '';
   if (lastMsg.type === 'sent') {
     if (lastMsg.status === 'read' || lastMsg.status === 'delivered') checkIcon = CHECK_READ;
@@ -393,7 +415,7 @@ function syncDesktop(state) {
   });
 
   const slots = document.querySelectorAll('#tg-avatar');
-  slots.forEach(slot => {
+  slots.forEach((slot) => {
     if (state.avatar) {
       const img = document.createElement('img');
       img.id = 'tg-avatar';
@@ -404,7 +426,8 @@ function syncDesktop(state) {
     } else {
       const div = document.createElement('div');
       div.id = 'tg-avatar';
-      div.className = 'w-full h-full rounded-full bg-[#527da3] flex items-center justify-center text-white text-[13px] font-bold';
+      div.className =
+        'w-full h-full rounded-full bg-[#527da3] flex items-center justify-center text-white text-[13px] font-bold';
       div.textContent = state.username.slice(0, 2);
       slot.replaceWith(div);
     }

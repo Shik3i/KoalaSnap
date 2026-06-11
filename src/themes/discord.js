@@ -107,8 +107,12 @@ export function sync(state) {
     el.textContent = state.username;
     el.style.color = state.roleColor;
   });
-  byId('discord-timestamp', (el) => { el.textContent = state.timestamp; });
-  byId('discord-message', (el) => { el.textContent = state.message; });
+  byId('discord-timestamp', (el) => {
+    el.textContent = state.timestamp;
+  });
+  byId('discord-message', (el) => {
+    el.textContent = state.message;
+  });
 
   const slot = document.getElementById('discord-avatar');
   if (slot) {
@@ -122,7 +126,8 @@ export function sync(state) {
     } else {
       const div = document.createElement('div');
       div.id = 'discord-avatar';
-      div.className = 'w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-xs font-bold';
+      div.className =
+        'w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-xs font-bold';
       div.textContent = '?';
       slot.replaceWith(div);
     }
@@ -134,7 +139,7 @@ function renderDesktop(state, m) {
   const textPrimary = isDark ? '#dbdee1' : '#2e3035';
   const textSecondary = isDark ? '#949ba4' : '#5c5e66';
   const headerText = isDark ? '#ffffff' : '#313338';
-  
+
   const avatarHtml = state.avatar
     ? `<img id="discord-avatar" src="${state.avatar}" class="w-full h-full rounded-full object-cover" />`
     : `<div id="discord-avatar" class="w-full h-full rounded-full bg-[#5865F2] flex items-center justify-center text-white text-[11px] font-bold">?</div>`;
@@ -281,11 +286,15 @@ function syncDesktop(state) {
     el.textContent = state.username;
     el.style.color = state.roleColor;
   });
-  byId('discord-timestamp', (el) => { el.textContent = state.timestamp; });
-  byId('discord-message', (el) => { el.textContent = state.message; });
+  byId('discord-timestamp', (el) => {
+    el.textContent = state.timestamp;
+  });
+  byId('discord-message', (el) => {
+    el.textContent = state.message;
+  });
 
   const slots = document.querySelectorAll('#discord-avatar');
-  slots.forEach(slot => {
+  slots.forEach((slot) => {
     if (state.avatar) {
       const img = document.createElement('img');
       img.id = 'discord-avatar';
@@ -296,7 +305,8 @@ function syncDesktop(state) {
     } else {
       const div = document.createElement('div');
       div.id = 'discord-avatar';
-      div.className = 'w-full h-full rounded-full bg-[#5865F2] flex items-center justify-center text-white text-[11px] font-bold';
+      div.className =
+        'w-full h-full rounded-full bg-[#5865F2] flex items-center justify-center text-white text-[11px] font-bold';
       div.textContent = '?';
       slot.replaceWith(div);
     }

@@ -42,7 +42,9 @@ function loadPersisted(defaults) {
       }
       return { ...defaults, ...stored };
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return { ...defaults };
 }
 
@@ -50,7 +52,9 @@ function savePersisted(state) {
   try {
     const { avatar: _, ...rest } = state;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(rest));
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 function loadStateFromUrl() {
@@ -63,7 +67,9 @@ function loadStateFromUrl() {
     const json = new TextDecoder().decode(bytes);
     const parsed = JSON.parse(json);
     if (parsed && typeof parsed === 'object') return parsed;
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return null;
 }
 
@@ -154,7 +160,9 @@ function createStore(defaults) {
         templates[name] = rest;
         localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
         return true;
-      } catch { return false; }
+      } catch {
+        return false;
+      }
     },
     deleteTemplate(name) {
       try {
@@ -162,7 +170,9 @@ function createStore(defaults) {
         delete templates[name];
         localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
         return true;
-      } catch { return false; }
+      } catch {
+        return false;
+      }
     },
     loadTemplate(name) {
       try {
@@ -171,12 +181,16 @@ function createStore(defaults) {
         if (!tmpl) return false;
         this.mutate(tmpl);
         return true;
-      } catch { return false; }
+      } catch {
+        return false;
+      }
     },
     listTemplates() {
       try {
         return Object.keys(JSON.parse(localStorage.getItem(TEMPLATES_KEY) || '{}'));
-      } catch { return []; }
+      } catch {
+        return [];
+      }
     },
     /* Sidebar state */
     getSidebarOpen() {
@@ -196,7 +210,9 @@ function createStore(defaults) {
         const url = new URL(window.location.href.split('?')[0].split('#')[0]);
         url.searchParams.set('state', encoded);
         return url.toString();
-      } catch { return null; }
+      } catch {
+        return null;
+      }
     },
   };
 }

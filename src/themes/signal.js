@@ -201,9 +201,10 @@ function renderHeader(state, m) {
     <div class="flex items-center gap-2 px-3 py-2 shrink-0" style="background:${m.barBg}">
       <span class="shrink-0">${BACK_SVG}</span>
       <div class="w-9 h-9 rounded-full overflow-hidden shrink-0">
-        ${state.avatar
-          ? `<img id="sg-avatar" src="${state.avatar}" class="w-full h-full rounded-full object-cover" />`
-          : `<div id="sg-avatar" class="w-full h-full rounded-full bg-[#2c2c2c] flex items-center justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="#8696a0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>`
+        ${
+          state.avatar
+            ? `<img id="sg-avatar" src="${state.avatar}" class="w-full h-full rounded-full object-cover" />`
+            : `<div id="sg-avatar" class="w-full h-full rounded-full bg-[#2c2c2c] flex items-center justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="#8696a0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>`
         }
       </div>
       <div class="flex-1 min-w-0">
@@ -271,18 +272,23 @@ function renderBubble(msg, idx, state, m) {
   const colorIndex = (msg.senderName || '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) % nameColors.length;
   const nameColor = nameColors[colorIndex];
 
-  const senderNameHtml = state.isGroup && !isSent && isFirstInBlock && msg.senderName ? `
+  const senderNameHtml =
+    state.isGroup && !isSent && isFirstInBlock && msg.senderName
+      ? `
     <div class="text-[12px] font-semibold mb-0.5 leading-tight select-none" style="color:${nameColor}">
       ${escapeHtml(msg.senderName)}
     </div>
-  ` : '';
+  `
+      : '';
 
   // Reactions badge
-  const reactionBadge = msg.reactions?.[0] ? `
+  const reactionBadge = msg.reactions?.[0]
+    ? `
     <div class="absolute -bottom-[8px] right-[10px] flex items-center justify-center bg-white dark:bg-[#2b2d30] border border-[#e9edef] dark:border-[#3b4a54] rounded-full px-1.5 py-[2px] shadow-[0_1.5px_2px_rgba(0,0,0,0.15)] select-none z-10 scale-[0.88] origin-bottom-right">
       <span class="text-[11px] leading-none">${msg.reactions[0]}</span>
     </div>
-  ` : '';
+  `
+    : '';
 
   let paddingClass = 'px-3.5 py-1.5';
   if (msg.reactions?.[0]) {
@@ -290,7 +296,9 @@ function renderBubble(msg, idx, state, m) {
   }
 
   // Image attachment
-  const imageElement = msg.image ? `<img src="${msg.image}" class="w-full max-w-[280px] rounded-lg mb-1 object-cover shadow-[inset_0_0_1px_rgba(0,0,0,0.15)]" style="max-height: 200px" />` : '';
+  const imageElement = msg.image
+    ? `<img src="${msg.image}" class="w-full max-w-[280px] rounded-lg mb-1 object-cover shadow-[inset_0_0_1px_rgba(0,0,0,0.15)]" style="max-height: 200px" />`
+    : '';
 
   let checkIcon = '';
   if (isSent) {
@@ -325,105 +333,120 @@ function renderFooter(m) {
               <span>${MIC_SVG}</span>
             </div>
           `;
-        }
+}
 
-        export function sync(state) {
-          if (state.viewMode === 'desktop') {
-            syncDesktop(state);
-            return;
-          }
-          const m = mode(state);
-          const statusBar = document.getElementById('sg-statusbar');
-          if (statusBar) {
-            statusBar.outerHTML = renderStatusBar(state, m);
-          }
-          byId('sg-contact-name', (el) => { el.textContent = state.username; });
-          byId('sg-status-text', (el) => { el.textContent = state.statusText || 'online'; });
+export function sync(state) {
+  if (state.viewMode === 'desktop') {
+    syncDesktop(state);
+    return;
+  }
+  const m = mode(state);
+  const statusBar = document.getElementById('sg-statusbar');
+  if (statusBar) {
+    statusBar.outerHTML = renderStatusBar(state, m);
+  }
+  byId('sg-contact-name', (el) => {
+    el.textContent = state.username;
+  });
+  byId('sg-status-text', (el) => {
+    el.textContent = state.statusText || 'online';
+  });
 
-          const slot = document.getElementById('sg-avatar');
-          if (slot) {
-            if (state.avatar) {
-              const img = document.createElement('img');
-              img.id = 'sg-avatar';
-              img.src = state.avatar;
-              img.className = 'w-full h-full rounded-full object-cover';
-              img.alt = '';
-              slot.replaceWith(img);
-            } else {
-              const div = document.createElement('div');
-              div.id = 'sg-avatar';
-              div.className = 'w-full h-full rounded-full bg-[#2c2c2c] flex items-center justify-center';
-              div.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="#8696a0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
-              slot.replaceWith(div);
-            }
-          }
+  const slot = document.getElementById('sg-avatar');
+  if (slot) {
+    if (state.avatar) {
+      const img = document.createElement('img');
+      img.id = 'sg-avatar';
+      img.src = state.avatar;
+      img.className = 'w-full h-full rounded-full object-cover';
+      img.alt = '';
+      slot.replaceWith(img);
+    } else {
+      const div = document.createElement('div');
+      div.id = 'sg-avatar';
+      div.className = 'w-full h-full rounded-full bg-[#2c2c2c] flex items-center justify-center';
+      div.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="#8696a0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+      slot.replaceWith(div);
+    }
+  }
 
-          const msgContainer = document.getElementById('sg-messages');
-          if (msgContainer) {
-            const m = mode(state);
-            msgContainer.innerHTML = state.messages.map((msg, idx) => renderBubble(msg, idx, state, m)).join('');
-          }
+  const msgContainer = document.getElementById('sg-messages');
+  if (msgContainer) {
+    const m = mode(state);
+    msgContainer.innerHTML = state.messages.map((msg, idx) => renderBubble(msg, idx, state, m)).join('');
+  }
 
-          const chatContainer = document.getElementById('sg-chat-container');
-          if (chatContainer) {
-            chatContainer.style.background = `var(--chat-bg, ${m.chatBg})`;
-            if (state.chatBg) {
-              chatContainer.style.backgroundImage = `url(${state.chatBg})`;
-              chatContainer.style.backgroundSize = 'cover';
-            } else {
-              chatContainer.style.backgroundImage = '';
-            }
-          }
-        }
+  const chatContainer = document.getElementById('sg-chat-container');
+  if (chatContainer) {
+    chatContainer.style.background = `var(--chat-bg, ${m.chatBg})`;
+    if (state.chatBg) {
+      chatContainer.style.backgroundImage = `url(${state.chatBg})`;
+      chatContainer.style.backgroundSize = 'cover';
+    } else {
+      chatContainer.style.backgroundImage = '';
+    }
+  }
+}
 
-        function syncDesktop(state) {
-          const m = mode(state);
-          
-          byId('sg-contact-name', (el) => { el.textContent = state.username; });
-          byId('sg-contact-name-header', (el) => { el.textContent = state.username; });
-          byId('sg-status-text', (el) => { el.textContent = state.statusText || 'online'; });
-          
-          const lastMsg = state.messages[state.messages.length - 1] || { text: '', time: '' };
-          const lastMsgText = lastMsg.text || (lastMsg.image ? '📷 Photo' : '');
-          byId('sg-chat-time', (el) => { el.textContent = lastMsg.time || ''; });
-          byId('sg-chat-last-message', (el) => { el.textContent = lastMsgText; });
+function syncDesktop(state) {
+  const m = mode(state);
 
-          const slots = document.querySelectorAll('#sg-avatar');
-          slots.forEach(slot => {
-            if (state.avatar) {
-              const img = document.createElement('img');
-              img.id = 'sg-avatar';
-              img.src = state.avatar;
-              img.className = 'w-full h-full rounded-full object-cover';
-              img.alt = '';
-              slot.replaceWith(img);
-            } else {
-              const div = document.createElement('div');
-              div.id = 'sg-avatar';
-              div.className = 'w-full h-full rounded-full bg-[#2c2c2c] flex items-center justify-center text-white text-[13px] font-bold';
-              div.textContent = state.username.slice(0, 2);
-              slot.replaceWith(div);
-            }
-          });
+  byId('sg-contact-name', (el) => {
+    el.textContent = state.username;
+  });
+  byId('sg-contact-name-header', (el) => {
+    el.textContent = state.username;
+  });
+  byId('sg-status-text', (el) => {
+    el.textContent = state.statusText || 'online';
+  });
 
-          const msgContainer = document.getElementById('sg-messages');
-          if (msgContainer) {
-            msgContainer.innerHTML = state.messages.map((msg, idx) => renderBubble(msg, idx, state, m)).join('');
-          }
+  const lastMsg = state.messages[state.messages.length - 1] || { text: '', time: '' };
+  const lastMsgText = lastMsg.text || (lastMsg.image ? '📷 Photo' : '');
+  byId('sg-chat-time', (el) => {
+    el.textContent = lastMsg.time || '';
+  });
+  byId('sg-chat-last-message', (el) => {
+    el.textContent = lastMsgText;
+  });
 
-          const chatContainer = document.getElementById('sg-chat-container');
-          if (chatContainer) {
-            chatContainer.style.background = `var(--chat-bg, ${m.chatBg})`;
-            if (state.chatBg) {
-              chatContainer.style.backgroundImage = `url(${state.chatBg})`;
-              chatContainer.style.backgroundSize = 'cover';
-            } else {
-              chatContainer.style.backgroundImage = '';
-            }
-          }
-        }
+  const slots = document.querySelectorAll('#sg-avatar');
+  slots.forEach((slot) => {
+    if (state.avatar) {
+      const img = document.createElement('img');
+      img.id = 'sg-avatar';
+      img.src = state.avatar;
+      img.className = 'w-full h-full rounded-full object-cover';
+      img.alt = '';
+      slot.replaceWith(img);
+    } else {
+      const div = document.createElement('div');
+      div.id = 'sg-avatar';
+      div.className =
+        'w-full h-full rounded-full bg-[#2c2c2c] flex items-center justify-center text-white text-[13px] font-bold';
+      div.textContent = state.username.slice(0, 2);
+      slot.replaceWith(div);
+    }
+  });
 
-        function byId(id, fn) {
-          const el = document.getElementById(id);
-          if (el) fn(el);
-        }
+  const msgContainer = document.getElementById('sg-messages');
+  if (msgContainer) {
+    msgContainer.innerHTML = state.messages.map((msg, idx) => renderBubble(msg, idx, state, m)).join('');
+  }
+
+  const chatContainer = document.getElementById('sg-chat-container');
+  if (chatContainer) {
+    chatContainer.style.background = `var(--chat-bg, ${m.chatBg})`;
+    if (state.chatBg) {
+      chatContainer.style.backgroundImage = `url(${state.chatBg})`;
+      chatContainer.style.backgroundSize = 'cover';
+    } else {
+      chatContainer.style.backgroundImage = '';
+    }
+  }
+}
+
+function byId(id, fn) {
+  const el = document.getElementById(id);
+  if (el) fn(el);
+}

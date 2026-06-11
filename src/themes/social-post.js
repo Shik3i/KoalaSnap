@@ -204,28 +204,50 @@ export function sync(state) {
   const platform = state.theme || 'twitter';
 
   /* fields used by multiple layouts */
-  byId('mockup-author', (el) => { if (el) el.textContent = state.author; });
-  byId('mockup-message', (el) => { if (el) el.textContent = state.message; });
-  byId('mockup-likes', (el) => { if (el) el.textContent = '142'; });
-  byId('mockup-replies', (el) => { if (el) el.textContent = '1'; });
-  byId('mockup-retweets', (el) => { if (el) el.textContent = '3'; });
+  byId('mockup-author', (el) => {
+    if (el) el.textContent = state.author;
+  });
+  byId('mockup-message', (el) => {
+    if (el) el.textContent = state.message;
+  });
+  byId('mockup-likes', (el) => {
+    if (el) el.textContent = '142';
+  });
+  byId('mockup-replies', (el) => {
+    if (el) el.textContent = '1';
+  });
+  byId('mockup-retweets', (el) => {
+    if (el) el.textContent = '3';
+  });
 
   if (platform === 'messenger') {
-    byId('mockup-avatar', (el) => { if (el) avatarToggle(el, state, false); });
+    byId('mockup-avatar', (el) => {
+      if (el) avatarToggle(el, state, false);
+    });
   } else {
-    byId('mockup-avatar', (el) => { if (el) avatarToggle(el, state, state.mockupTheme === 'dark'); });
+    byId('mockup-avatar', (el) => {
+      if (el) avatarToggle(el, state, state.mockupTheme === 'dark');
+    });
   }
 }
 
 function syncDesktop(state) {
   const isDark = state.mockupTheme === 'dark';
-  byId('mockup-author', (el) => { if (el) el.textContent = state.author; });
-  byId('mockup-author-header', (el) => { if (el) el.textContent = state.author; });
-  byId('mockup-message', (el) => { if (el) el.textContent = state.message; });
-  byId('mockup-message-preview', (el) => { if (el) el.textContent = state.message; });
+  byId('mockup-author', (el) => {
+    if (el) el.textContent = state.author;
+  });
+  byId('mockup-author-header', (el) => {
+    if (el) el.textContent = state.author;
+  });
+  byId('mockup-message', (el) => {
+    if (el) el.textContent = state.message;
+  });
+  byId('mockup-message-preview', (el) => {
+    if (el) el.textContent = state.message;
+  });
 
   const slots = document.querySelectorAll('#mockup-avatar');
-  slots.forEach(slot => {
+  slots.forEach((slot) => {
     avatarToggle(slot, state, isDark);
   });
 }
@@ -236,7 +258,7 @@ function renderTwitterDesktop(state, isDark) {
   const textPrimary = isDark ? 'text-zinc-100' : 'text-zinc-900';
   const textSecondary = 'text-zinc-500';
   const border = isDark ? 'border-zinc-800' : 'border-zinc-200';
-  
+
   const avatarHtml = avatarMarkup(state.avatar, isDark);
 
   return `
@@ -330,7 +352,7 @@ function renderInstagramDesktop(state, isDark) {
   const textPrimary = isDark ? 'text-white' : 'text-zinc-900';
   const textSecondary = 'text-zinc-500';
   const border = isDark ? 'border-zinc-800' : 'border-zinc-200';
-  
+
   const avatarHtml = avatarMarkup(state.avatar, isDark);
 
   return `
@@ -396,7 +418,7 @@ function renderTiktokDesktop(state, isDark) {
   const textPrimary = isDark ? 'text-zinc-100' : 'text-zinc-900';
   const textSecondary = 'text-zinc-500';
   const border = isDark ? 'border-zinc-800' : 'border-zinc-200';
-  
+
   const avatarHtml = avatarMarkup(state.avatar, isDark);
 
   return `

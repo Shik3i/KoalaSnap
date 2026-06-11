@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @font-face {
   font-family: 'Twemoji Country Flags';
@@ -8,7 +8,12 @@
 }
 
 .font-flags {
-  font-family: 'Twemoji Country Flags', 'Inter', system-ui, -apple-system, sans-serif !important;
+  font-family:
+    'Twemoji Country Flags',
+    'Inter',
+    system-ui,
+    -apple-system,
+    sans-serif !important;
 }
 
 @font-face {
@@ -31,8 +36,14 @@
 }
 
 @keyframes fade-in {
-  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 .animate-fade-in {
   animation: fade-in 0.25s ease-out both;
@@ -52,13 +63,25 @@
 }
 
 @keyframes blob-float-1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(40px, -60px) scale(1.1); }
-  66% { transform: translate(-30px, 30px) scale(0.9); }
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(40px, -60px) scale(1.1);
+  }
+  66% {
+    transform: translate(-30px, 30px) scale(0.9);
+  }
 }
 @keyframes blob-float-2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(-50px, 50px) scale(1.05); }
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-50px, 50px) scale(1.05);
+  }
 }
 .animate-blob-1 {
   animation: blob-float-1 22s infinite ease-in-out;
