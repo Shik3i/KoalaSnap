@@ -1284,7 +1284,7 @@
       ${vt()}
 
       <div class="flex items-center gap-4 mt-auto pt-4 border-t border-white/[6%]">
-        <a href="${n}/imprint" class="text-[10px] text-zinc-600 hover:text-zinc-200 transition-colors">${f("bottom.imprint")}</a>
+        <a href="https://koalastuff.net/legal" class="text-[10px] text-zinc-600 hover:text-zinc-200 transition-colors">${f("bottom.imprint")}</a>
         <a href="${n}/privacy" class="text-[10px] text-zinc-600 hover:text-zinc-200 transition-colors">${f("bottom.privacy")}</a>
       </div>
     </aside>

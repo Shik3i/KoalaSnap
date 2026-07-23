@@ -206,7 +206,7 @@ function renderSidebar(state) {
       ${renderTemplateSection()}
 
       <div class="flex items-center gap-4 mt-auto pt-4 border-t border-white/[6%]">
-        <a href="${prefix}/imprint" class="text-[10px] text-zinc-600 hover:text-zinc-200 transition-colors">${t('bottom.imprint')}</a>
+        <a href="https://koalastuff.net/legal" class="text-[10px] text-zinc-600 hover:text-zinc-200 transition-colors">${t('bottom.imprint')}</a>
         <a href="${prefix}/privacy" class="text-[10px] text-zinc-600 hover:text-zinc-200 transition-colors">${t('bottom.privacy')}</a>
       </div>
     </aside>
